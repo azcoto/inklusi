@@ -1,0 +1,6 @@
+{
+  "extends": "tsconfig/sms-fe.json",
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", ".eslintrc.js"]
+}

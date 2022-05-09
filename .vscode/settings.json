@@ -1,0 +1,5 @@
+{
+  "eslint.workingDirectories": ["apps/sms-fe", "apps/server"],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
