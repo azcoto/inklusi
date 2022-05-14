@@ -1,35 +1,90 @@
 import {
+  Text,
   AppShell,
-  ColorScheme,
-  ColorSchemeProvider,
-  MantineProvider,
+  Drawer,
+  Stack,
+  UnstyledButton,
+  Box,
 } from '@mantine/core';
-import React, { useState } from 'react';
-import { NotificationsProvider } from '@mantine/notifications';
+import { useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import AppHeader from './AppHeader';
 
-type Props = {
-  children: React.ReactNode;
-};
-const Shell = ({ children }: Props) => {
-  const [scheme, setColorScheme] = useState<ColorScheme>('light');
-  const toggleScheme = (value?: ColorScheme) =>
-    setColorScheme(value || (scheme === 'dark' ? 'light' : 'dark'));
+const Shell = () => {
+  const navigate = useNavigate();
+  const [opened, setOpened] = useState(false);
 
+  const toggleDrawer = () => {
+    setOpened(!opened);
+  };
   return (
-    <ColorSchemeProvider colorScheme={scheme} toggleColorScheme={toggleScheme}>
-      <MantineProvider
-        theme={{ colorScheme: scheme }}
-        withGlobalStyles
-        withNormalizeCSS
+    <AppShell
+      padding="xs"
+      fixed
+      header={<AppHeader toggleDrawer={toggleDrawer} />}
+    >
+      <Drawer
+        opened={opened}
+        withCloseButton={false}
+        onClose={() => setOpened(false)}
+        padding="xs"
+        size="xs"
       >
-        <NotificationsProvider>
-          <AppShell padding="xs" header={<AppHeader />}>
-            {children}
-          </AppShell>
-        </NotificationsProvider>
-      </MantineProvider>
-    </ColorSchemeProvider>
+        <Box
+          sx={{
+            minHeight: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+          pl={8}
+        >
+          <Stack>
+            <UnstyledButton
+              onClick={() => {
+                setOpened(false);
+                navigate('/');
+              }}
+            >
+              <Text weight={'bold'}>Home</Text>
+            </UnstyledButton>
+            <UnstyledButton
+              onClick={() => {
+                setOpened(false);
+                navigate('/assign-visit');
+              }}
+            >
+              <Text weight={'bold'}>Assign Visit</Text>
+            </UnstyledButton>
+            <UnstyledButton
+              onClick={() => {
+                setOpened(false);
+                navigate('/visit');
+              }}
+            >
+              <Text weight={'bold'}>Visit</Text>
+            </UnstyledButton>
+            <UnstyledButton
+              onClick={() => {
+                setOpened(false);
+                navigate('/simulasi');
+              }}
+            >
+              <Text weight={'bold'}>Simulasi</Text>
+            </UnstyledButton>
+          </Stack>
+          <UnstyledButton
+            onClick={() => {
+              setOpened(false);
+              navigate('/signin');
+            }}
+          >
+            <Text weight={'bold'}>Logout</Text>
+          </UnstyledButton>
+        </Box>
+      </Drawer>
+      <Outlet />
+    </AppShell>
   );
 };
 

@@ -1,5 +1,16 @@
 {
   "extends": "tsconfig/server.json",
-  "include": ["src"],
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "baseUrl": "./",
+    "paths": {
+      "@libs/*": ["src/trpc/libs/*"],
+      "@db/*": ["prisma/*"]
+    }
+  },
+  "include": ["./src/**/*.ts", "./prisma/**/*.ts"],
   "exclude": ["node_modules", "dist", ".eslintrc.js"]
 }

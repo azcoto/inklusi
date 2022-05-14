@@ -15,6 +15,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   settings: {
     'import/resolver': {
+      typescript: {},
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },

@@ -1,0 +1,21 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import 'dayjs/locale/id';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+import { ColorSchemeProvider, MantineProvider, } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import '@fontsource/open-sans';
+import Shell from './components/Shell';
+import Home from './pages/Home';
+import SignIn from './pages/SignIn';
+import React from 'react';
+import Calc from './pages/Calc';
+const App = () => {
+    const [scheme, setColorScheme] = useState(import.meta.env.DEV ? 'dark' : 'light');
+    const toggleScheme = (value) => setColorScheme(value || (scheme === 'dark' ? 'light' : 'dark'));
+    const [queryClient] = useState(() => new QueryClient());
+    return (_jsx(React.StrictMode, { children: _jsx(Router, { children: _jsx(ColorSchemeProvider, { colorScheme: scheme, toggleColorScheme: toggleScheme, children: _jsx(MantineProvider, { theme: { fontFamily: 'Open Sans', colorScheme: scheme }, withGlobalStyles: true, withNormalizeCSS: true, children: _jsx(NotificationsProvider, { children: _jsx(QueryClientProvider, { client: queryClient, children: _jsxs(Routes, { children: [_jsx(Route, { path: "/signin", element: _jsx(SignIn, {}) }), _jsxs(Route, { path: "/", element: _jsx(Shell, {}), children: [_jsx(Route, { index: true, element: _jsx(Home, {}) }), _jsx(Route, { path: "simulasi", element: _jsx(Calc, {}) })] })] }) }) }) }) }) }) }));
+};
+ReactDOM.render(_jsx(App, {}), document.getElementById('root'));

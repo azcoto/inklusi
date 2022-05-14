@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int       @id @default(autoincrement())
+  notelp    String    @db.VarChar(13)
+  appname   String    @db.VarChar(20)
+  password  String    @db.Char(60)
+  lastLogin DateTime? @map("last_login")
+
+  karyawan Karyawan @relation(fields: [notelp], references: [notelp])
+
+  @@unique([notelp, appname])
+  @@map("users")
+}
+
+model Karyawan {
+  id        Int     @id @default(autoincrement())
+  nip       String  @unique @db.VarChar(14)
+  nik       String  @unique @db.VarChar(16)
+  nama      String  @db.VarChar(40)
+  alamat    String? @db.VarChar(256)
+  dati4     String? @db.VarChar(256)
+  dati3     String? @db.VarChar(256)
+  dati2     String? @db.VarChar(256)
+  dati1     String? @db.VarChar(256)
+  notelp    String  @unique @db.VarChar(13)
+  jabatan   String  @db.VarChar(10)
+  nipAtasan String? @map("nip_atasan") @db.VarChar(14)
+
+  bawahan Karyawan[] @relation(name: "level")
+  atasan  Karyawan?  @relation(name: "level", fields: [nipAtasan], references: [nip])
+
+
+  users  Users[]
+  tlArea TlArea[]
+
+  tlVisit Visit[] @relation("tlKaryawan")
+  soVisit Visit[] @relation("soKaryawan")
+  @@map("karyawan")
+}
+
+model Area {
+  id     Int      @id @default(autoincrement())
+  dati1  String   @db.VarChar(256)
+  dati2  String   @unique @db.VarChar(256)
+  dati3  String   @db.VarChar(256)
+  dati4  String   @db.VarChar(256)
+  tlArea TlArea[]
+
+  @@map("area")
+}
+
+model TlArea {
+  id        Int    @id @default(autoincrement())
+  tlNIP     String @db.VarChar(14)
+  areaDati2 String @db.VarChar(40)
+
+  Karyawan Karyawan? @relation(fields: [tlNIP], references: [nip])
+  Area     Area?     @relation(fields: [areaDati2], references: [dati2])
+  @@map("tl_city")
+}
+
+model Visit {
+  id          Int      @id @default(autoincrement())
+  tlNIP       String   @db.VarChar(14)
+  soNIP       String   @db.VarChar(40)
+  visited     Boolean  @default(false) @db.Boolean
+  notas       String   @db.VarChar(256)
+  alamatValid Boolean? @db.Boolean
+  interaksi   Boolean? @db.Boolean
+  prospek     String?  @db.VarChar(256)
+  alasan      String?  @db.VarChar(256)
+  assignedAt  DateTime @default(now()) @map("assigned_at")
+  tlKaryawan  Karyawan @relation(name: "tlKaryawan", fields: [tlNIP], references: [nip])
+  soKaryawan  Karyawan @relation(name: "soKaryawan", fields: [soNIP], references: [nip])
+
+
+  Maspen Maspen? @relation(fields: [notas], references: [notas])
+  @@map("visit")
+}
+
+model Maspen {
+  notas            String    @id @db.VarChar(20)
+  jenis            String    @db.Char(4)
+  kdjiwa           String    @db.VarChar(4)
+  namaPensiunan    String    @map("nama_pensiunan") @db.VarChar(256)
+  tgLahirPensiunan DateTime  @map("tg_lahir_pensiunan") @db.Date
+  namaPenerima     String    @map("nama_penerima") @db.VarChar(256)
+  tgLahirPenerima  DateTime  @map("tg_lahir_penerima") @db.Date
+  penpok           Decimal   @db.Decimal(10, 0)
+  tanak            Decimal   @db.Decimal(10, 0)
+  tistri           Decimal   @db.Decimal(10, 0)
+  tberas           Decimal   @db.Decimal(10, 0)
+  penyesuaian      Decimal   @db.Decimal(10, 0)
+  tbulat           Decimal   @db.Decimal(10, 0)
+  kotor            Decimal   @db.Decimal(10, 0)
+  bersih           Decimal   @db.Decimal(10, 0)
+  alamat           String?   @db.VarChar(256)
+  dati4            String?   @db.VarChar(256)
+  dati3            String?   @db.VarChar(256)
+  dati2            String?   @db.VarChar(256)
+  dati1            String?   @db.VarChar(256)
+  kodebyr          String    @db.VarChar(12)
+  nmkanbyr         String    @db.VarChar(256)
+  norek            String?   @db.VarChar(256)
+  tmtpensiun       DateTime? @db.Date
+  noskep           String?   @db.VarChar(256)
+  tglskep          DateTime? @db.Date
+  penerbitskep     String?   @db.VarChar(256)
+  npwp             String?   @db.VarChar(256)
+  tmtstop          DateTime? @db.Date
+  nmstop           String?   @db.VarChar(256)
+  telepon          String?   @db.VarChar(256)
+  awalflag         DateTime? @db.Date
+  akhirflag        DateTime? @db.Date
+  mitraflag        DateTime? @db.Date
+  jk               String?   @db.Char(1)
+  agama            String?   @db.Char(1)
+  noktp            String?   @db.Char(20)
+  cleaned          Boolean   @default(false) @db.Boolean
+
+  Visit Visit[]
+  @@map("maspen")
+}

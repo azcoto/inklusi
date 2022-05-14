@@ -6,44 +6,32 @@ import {
   Box,
   Group,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { showNotification } from '@mantine/notifications';
-import { z } from 'zod';
+import { useForm, zodResolver } from '@mantine/form';
+import { zSignInForm, SignInForm } from '@api/auth/dto';
+import React from 'react';
+import { useSignIn } from 'src/services/auth';
 
 const SignIn = () => {
-  const FormValues = z.object({
-    phone: z.string(),
-    password: z.string(),
-  });
-
-  type FormValues = z.infer<typeof FormValues>;
-
-  const form = useForm<FormValues>({
+  const form = useForm<SignInForm>({
+    schema: zodResolver(zSignInForm),
     initialValues: {
       phone: '',
       password: '',
     },
   });
 
-  const signIn = async (values: FormValues) => {
-    const data = await fetch('api/auth/signin', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json;charset=UTF-8',
-      },
-      body: JSON.stringify({
-        values,
-      }),
-    });
-    if (data.status != 200) {
-      showNotification({
-        title: 'Sign In Error',
-        message: 'Check Network Connectivity',
-        color: 'red',
-      });
-      return;
-    }
-    console.log(data);
+  const { data, mutate } = useSignIn({
+    onSuccess: (data) => {
+      console.log(data.token);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const signIn = (values: SignInForm, event: React.FormEvent) => {
+    event.preventDefault();
+    mutate(values);
   };
 
   return (

@@ -1,19 +1,41 @@
 {
-  "name": "server",
+  "name": "@inklusi/server",
   "private": true,
   "version": "0.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "ts-node-dev --poll --respawn --transpile-only src/index.ts "
+    "dev": "nodemon -r dotenv/config src/main.ts",
+    "db-migrate": "yarn prisma migrate dev",
+    "db-reset": "yarn prisma migrate reset",
+    "db-seed": "yarn prisma db seed"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
-    "express": "^4.18.1"
+    "@prisma/client": "^3.14.0",
+    "@trpc/server": "^9.23.2",
+    "@types/cors": "^2.8.12",
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "zod": "^3.15.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^17.0.32",
     "config": "*",
     "nodemon": "^2.0.16",
-    "ts-node-dev": "^1.1.8",
-    "tsconfig": "*"
+    "prisma": "^3.14.0",
+    "ts-node": "^10.7.0",
+    "tsconfig": "*",
+    "tsconfig-paths": "^4.0.0"
   }
 }
