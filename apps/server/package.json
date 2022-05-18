@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon -r dotenv/config src/main.ts",
+    "build": "tsc",
     "db-migrate": "yarn prisma migrate dev",
     "db-reset": "yarn prisma migrate reset",
     "db-seed": "yarn prisma db seed"

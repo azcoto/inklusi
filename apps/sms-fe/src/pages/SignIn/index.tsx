@@ -9,7 +9,8 @@ import {
 import { useForm, zodResolver } from '@mantine/form';
 import { zSignInForm, SignInForm } from '@api/auth/dto';
 import React from 'react';
-import { useSignIn } from 'src/services/auth';
+import { useSignIn } from 'services/auth';
+import { setItem } from 'services/localStorage';
 
 const SignIn = () => {
   const form = useForm<SignInForm>({
@@ -20,9 +21,9 @@ const SignIn = () => {
     },
   });
 
-  const { data, mutate } = useSignIn({
+  const { mutate } = useSignIn({
     onSuccess: (data) => {
-      console.log(data.token);
+      setItem('user', data.user);
     },
     onError: (error) => {
       console.log(error);

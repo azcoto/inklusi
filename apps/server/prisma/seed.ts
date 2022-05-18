@@ -22,6 +22,28 @@ const userData: Prisma.UsersCreateInput[] = [
   },
 ];
 
+const bungaData: Prisma.BungaCreateInput[] = [
+  {
+    rate: 11.0,
+    skema: 'anuitas',
+  },
+  {
+    rate: 9.96,
+    skema: 'flat',
+  },
+];
+
+const produkData: Prisma.ProdukCreateInput[] = [
+  {
+    nama: 'PENSIUN',
+    rateAnuitas: 11.0,
+    rateFlat: 9.96,
+    pProvisi: 1.0,
+    pAdministrasi: 1.0,
+    cBlokir: 3,
+  },
+];
+
 async function main() {
   console.log(`Start seeding ...`);
   for (const u of userData) {
@@ -29,6 +51,20 @@ async function main() {
       data: u,
     });
     console.log(`Created user with id: ${user.id}`);
+  }
+
+  for (const u of bungaData) {
+    const bunga = await prisma.bunga.create({
+      data: u,
+    });
+    console.log(`Created bunga with id: ${bunga.id}`);
+  }
+
+  for (const u of produkData) {
+    const produk = await prisma.produk.create({
+      data: u,
+    });
+    console.log(`Created produk with id: ${produk.id}`);
   }
   console.log(`Seeding finished.`);
 }

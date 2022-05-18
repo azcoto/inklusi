@@ -1,14 +1,13 @@
 {
+  "extends": "tsconfig/sms-fe.json",
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules", "dist", ".eslintrc.js"],
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "./src",
+    "outDir": "./dist",
     "paths": {
-      "@libs/*": ["src/libs/*"],
-      "trpcRouter": ["../server/src/trpc/routes/index.ts"],
-      "@api/*": ["../server/src/api/*"]
+      "@api/*": ["../../server/src/api/*"]
     }
   },
-  "extends": "tsconfig/sms-fe.json",
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "../server" }],
-  "include": ["src", "vite.config.ts"],
-  "exclude": ["node_modules", "dist", ".eslintrc.js"]
+  "references": [{ "path": "./tsconfig.node.json" }, { "path": "../server" }]
 }

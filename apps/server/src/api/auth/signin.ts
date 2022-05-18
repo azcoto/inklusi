@@ -19,6 +19,7 @@ const signIn = async (
           nip: true,
           nama: true,
           notelp: true,
+          jabatan: true,
         },
       },
     },
@@ -44,7 +45,10 @@ const signIn = async (
 
   return res
     .status(200)
-    .send({ token: sign(user.karyawan, secret, jwtOptions) });
+    .send({
+      user: user.karyawan,
+      token: sign(user.karyawan, secret, jwtOptions),
+    });
 };
 
 export default signIn;

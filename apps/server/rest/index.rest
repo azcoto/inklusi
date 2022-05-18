@@ -17,3 +17,25 @@ content-type: application/json
     "phone": "08123456789",
     "password": "123"
 }
+
+
+###
+GET  http://localhost:8080/api/bunga HTTP/1.1
+content-type: application/json
+
+
+###
+GET  http://localhost:8080/api/produk HTTP/1.1
+content-type: application/json
+
+###
+GET  http://localhost:8080/api/area-potensi-tl/100000001 HTTP/1.1
+content-type: application/json
+
+###
+GET  http://localhost:8080/api/area-potensi-tl/100000001/KOTA PADANG HTTP/1.1
+content-type: application/json
+
+###
+GET  http://localhost:8080/api/area-potensi-tl/100000001/KOTA PADANG/KURANJI HTTP/1.1
+content-type: application/json

@@ -6,6 +6,7 @@
     "declarationMap": true,
     "composite": true,
     "baseUrl": "./",
+    "outDir": "./dist",
     "paths": {
       "@libs/*": ["src/trpc/libs/*"],
       "@db/*": ["prisma/*"]

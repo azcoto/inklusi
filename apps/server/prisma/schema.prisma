@@ -10,6 +10,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Produk {
+  id            Int     @id @default(autoincrement())
+  nama          String  @db.VarChar(256)
+  rateAnuitas   Decimal @map("rate_anuitas") @db.Decimal(4, 2)
+  rateFlat      Decimal @map("rate_flat") @db.Decimal(4, 2)
+  pProvisi      Decimal @map("persen_provisi") @db.Decimal(4, 2)
+  pAdministrasi Decimal @map("persen_administrasi") @db.Decimal(4, 2)
+  cBlokir       Int     @map("count_blokir")
+
+}
+
+model Bunga {
+  id    Int     @id @default(autoincrement())
+  rate  Decimal @db.Decimal(4, 2)
+  skema String  @db.VarChar(255)
+}
+
 model Users {
   id        Int       @id @default(autoincrement())
   notelp    String    @db.VarChar(13)
@@ -49,24 +66,39 @@ model Karyawan {
   @@map("karyawan")
 }
 
-model Area {
-  id     Int      @id @default(autoincrement())
-  dati1  String   @db.VarChar(256)
-  dati2  String   @unique @db.VarChar(256)
-  dati3  String   @db.VarChar(256)
-  dati4  String   @db.VarChar(256)
-  tlArea TlArea[]
+model Wilayah {
+  id      Int      @id @default(autoincrement())
+  dati1   String   @db.VarChar(256)
+  dati2   String   @db.VarChar(256)
+  dati3   String   @db.VarChar(256)
+  dati4   String   @db.VarChar(256)
+  potensi Maspen[]
 
-  @@map("area")
+  @@unique(fields: [dati1, dati2, dati3, dati4], name: "wilayahIdentifier")
+  @@map("wilayah")
+}
+
+model Distribusi {
+  id       Int    @id @default(autoincrement())
+  dati1    String @db.VarChar(256)
+  dati2    String @db.VarChar(256)
+  dati3    String @db.VarChar(256)
+  dati4    String @db.VarChar(256)
+  cPotensi BigInt @map("count_potensi")
+
+
+  @@unique(fields: [dati1, dati2, dati3, dati4], name: "distibusiIdentifier")
+  @@map("distribusi")
 }
 
 model TlArea {
-  id        Int    @id @default(autoincrement())
-  tlNIP     String @db.VarChar(14)
-  areaDati2 String @db.VarChar(40)
+  id    Int    @id @default(autoincrement())
+  tlNIP String @db.VarChar(14)
+  dati2 String @db.VarChar(256)
+
 
   Karyawan Karyawan? @relation(fields: [tlNIP], references: [nip])
-  Area     Area?     @relation(fields: [areaDati2], references: [dati2])
+  @@unique(fields: [tlNIP, dati2], name: "tlAreaIdentifier")
   @@map("tl_city")
 }
 
@@ -106,10 +138,10 @@ model Maspen {
   kotor            Decimal   @db.Decimal(10, 0)
   bersih           Decimal   @db.Decimal(10, 0)
   alamat           String?   @db.VarChar(256)
-  dati4            String?   @db.VarChar(256)
-  dati3            String?   @db.VarChar(256)
-  dati2            String?   @db.VarChar(256)
-  dati1            String?   @db.VarChar(256)
+  dati4            String    @db.VarChar(256)
+  dati3            String    @db.VarChar(256)
+  dati2            String    @db.VarChar(256)
+  dati1            String    @db.VarChar(256)
   kodebyr          String    @db.VarChar(12)
   nmkanbyr         String    @db.VarChar(256)
   norek            String?   @db.VarChar(256)
@@ -123,12 +155,17 @@ model Maspen {
   telepon          String?   @db.VarChar(256)
   awalflag         DateTime? @db.Date
   akhirflag        DateTime? @db.Date
-  mitraflag        DateTime? @db.Date
+  mitraflag        String?   @db.VarChar(256)
   jk               String?   @db.Char(1)
   agama            String?   @db.Char(1)
   noktp            String?   @db.Char(20)
   cleaned          Boolean   @default(false) @db.Boolean
 
   Visit Visit[]
+
+
+
+  Wilayah Wilayah? @relation(fields: [dati1, dati2, dati3, dati4], references: [dati1, dati2, dati3, dati4])
+
   @@map("maspen")
 }
