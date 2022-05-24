@@ -1,0 +1,17 @@
+{
+  "apps": [
+    {
+      "name": "INKLUSI",
+      "script": "apps/server/dist/index.js",
+      "instances": 4,
+      "exec_mode": "cluster",
+      "watch": true,
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "env_staging": {
+        "NODE_ENV": "staging"
+      }
+    }
+  ]
+}
