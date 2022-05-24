@@ -204,10 +204,10 @@ const Calc = () => {
         >
           <Grid gutter={'xs'} align="flex-end">
             <Rows title="Sales Officer">
-              <Text>{/*fetch*/}</Text>
+              <Text weight="bold">SF12</Text>
             </Rows>
             <Rows title="Team Leader">
-              <Text>{/*fetch*/}</Text>
+              <Text weight="bold">TL1</Text>
             </Rows>
             {/* DIVIDER */}
             <Grid.Col span={12}>
@@ -314,6 +314,16 @@ const Calc = () => {
                   <Divider my="sm" />
                 </Grid.Col>
 
+                <Rows title="IIR">
+                  <Text size="xs" mr={5} align="right">
+                    {(
+                      (simulasiResult.angsuran / form.values.gaji) *
+                      100
+                    ).toFixed(2)}{' '}
+                    %
+                  </Text>
+                </Rows>
+
                 <Rows title="Bunga">
                   <Text size="xs" mr={5} align="right">
                     {form.values.skemaBunga === 'ANUITAS'
@@ -376,7 +386,7 @@ const Calc = () => {
         <Box
           sx={{
             position: 'fixed',
-            bottom: 0,
+            bottom: 10,
             left: 0,
             right: 0,
             display: 'flex',

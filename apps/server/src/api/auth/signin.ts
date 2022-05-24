@@ -1,15 +1,14 @@
 import bcrypt from 'bcrypt';
 import db from '@db/prisma-client';
 import { Request, Response } from 'express';
-import { SignInDto } from './dto';
+import { SignInDTO } from './dto';
 import { sign, SignOptions } from 'jsonwebtoken';
 import { secret } from '@libs/config';
 
 const signIn = async (
-  req: Request<unknown, unknown, SignInDto['body']>,
+  req: Request<unknown, unknown, SignInDTO>,
   res: Response,
 ) => {
-  console.log(req.body);
   const { phone, password } = req.body;
   const user = await db.users.findUnique({
     select: {
@@ -43,12 +42,10 @@ const signIn = async (
     expiresIn: '1m',
   };
 
-  return res
-    .status(200)
-    .send({
-      user: user.karyawan,
-      token: sign(user.karyawan, secret, jwtOptions),
-    });
+  return res.status(200).send({
+    user: user.karyawan,
+    token: sign(user.karyawan, secret, jwtOptions),
+  });
 };
 
 export default signIn;

@@ -41,7 +41,29 @@ const App = () => {
             toggleColorScheme={toggleScheme}
           >
             <MantineProvider
-              theme={{ fontFamily: 'Open Sans', colorScheme: colorScheme }}
+              theme={{
+                fontFamily: 'Open Sans',
+                colorScheme: colorScheme,
+                primaryShade: 7,
+              }}
+              styles={{
+                AppShell: (theme) => ({
+                  root: {
+                    background:
+                      theme.colorScheme === 'dark'
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[1],
+                  },
+                }),
+                Footer: (theme) => ({
+                  root: {
+                    background:
+                      theme.colorScheme === 'dark'
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[1],
+                  },
+                }),
+              }}
               withGlobalStyles
               withNormalizeCSS
             >

@@ -6,11 +6,11 @@ import {
 import api from 'libs/axios-instance';
 import { useQuery, UseQueryOptions } from 'react-query';
 
-export const getPotensiKotaTL = async (tlNIP: string | null) => {
-  if (!tlNIP) return;
-  const response = await api.get<DataPotensiKotaTL>('/area-potensi-tl', {
-    params: { tlNIP },
-  });
+export const getPotensiKotaTL = async (tlNIP: string) => {
+  // if (!tlNIP) return;
+  const response = await api.get<DataPotensiKotaTL>(
+    `/area-potensi-tl/${tlNIP}`,
+  );
   return response.data;
 };
 
@@ -21,7 +21,7 @@ export const usePotensiKotaTL = (
   return useQuery(
     ['getPotensiKotaTL', { tlNIP }],
     async () => {
-      if (!tlNIP) throw new Error('User is not logged in');
+      // if (!tlNIP) throw new Error('User is not logged in');
       const response = await api.get<DataPotensiKotaTL>(
         `area-potensi-tl/${tlNIP}`,
       );
@@ -40,11 +40,11 @@ export const usePotensiKecamatanTL = (
   >,
 ) => {
   return useQuery(
-    ['getPotensiKotaTL', { tlNIP, kota }],
+    ['getPotensiKecamatanTl', { tlNIP, kota }],
     async () => {
       if (!tlNIP) throw new Error('User is not logged in');
       const response = await api.get<DataPotensiKecamatanTL>(
-        `area-potensi-tl/${tlNIP}`,
+        `area-potensi-tl/${tlNIP}/${kota}`,
       );
       return response.data;
     },
@@ -62,14 +62,11 @@ export const usePotensiKelurahanTL = (
   >,
 ) => {
   return useQuery(
-    ['getPotensiKotaTL', { tlNIP, kota, kecamatan }],
+    ['getPotensiKelurahanTl', { tlNIP, kota, kecamatan }],
     async () => {
       if (!tlNIP) throw new Error('User is not logged in');
       const response = await api.get<DataPotensiKelurahanTL>(
-        '/area-potensi-tl',
-        {
-          params: { tlNIP, kota, kecamatan },
-        },
+        `area-potensi-tl/${tlNIP}/${kota}/${kecamatan}`,
       );
       return response.data;
     },

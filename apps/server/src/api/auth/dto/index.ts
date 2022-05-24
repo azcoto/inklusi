@@ -1,19 +1,17 @@
 import z from 'zod';
 
 // For Client
-export const zSignInForm = z.object({
+export const zSignInDTO = z.object({
   phone: z.string({ required_error: 'Phone is required' }),
   password: z.string({ required_error: 'Password is required' }),
 });
 
-export type SignInForm = z.infer<typeof zSignInForm>;
+export type SignInDTO = z.infer<typeof zSignInDTO>;
 
 // For API Validation
-export const zSignInDto = z.object({
-  body: zSignInForm,
+export const zSignInValidator = z.object({
+  query: zSignInDTO,
 });
-
-export type SignInDto = z.infer<typeof zSignInDto>;
 
 export const zSignInResponse = z.object({
   user: z.object({

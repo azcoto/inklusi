@@ -1,20 +1,20 @@
 import {
-  Container,
   TextInput,
   PasswordInput,
   Button,
   Box,
   Group,
+  AppShell,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
-import { zSignInForm, SignInForm } from '@api/auth/dto';
+import { zSignInDTO, SignInDTO } from '@api/auth/dto';
 import React from 'react';
 import { useSignIn } from 'services/auth';
 import { setItem } from 'services/localStorage';
 
 const SignIn = () => {
-  const form = useForm<SignInForm>({
-    schema: zodResolver(zSignInForm),
+  const form = useForm<SignInDTO>({
+    schema: zodResolver(zSignInDTO),
     initialValues: {
       phone: '',
       password: '',
@@ -30,13 +30,13 @@ const SignIn = () => {
     },
   });
 
-  const signIn = (values: SignInForm, event: React.FormEvent) => {
+  const signIn = (values: SignInDTO, event: React.FormEvent) => {
     event.preventDefault();
     mutate(values);
   };
 
   return (
-    <Container size="xs" px="xs">
+    <AppShell sx={{ height: '100vh' }} padding="xs" fixed>
       <Box sx={{ maxWidth: 200 }} mx="auto">
         <form onSubmit={form.onSubmit(signIn)}>
           <TextInput
@@ -54,7 +54,7 @@ const SignIn = () => {
           </Group>
         </form>
       </Box>
-    </Container>
+    </AppShell>
   );
 };
 

@@ -4,6 +4,7 @@ import auth from './auth';
 import bunga from './bunga';
 import produk from './produk';
 import areaPotensiTL from './area-potensi-tl';
+import potensi from './potensi';
 
 const apiRouter = Router();
 
@@ -16,5 +17,6 @@ apiRouter.use('/auth', auth);
 apiRouter.use('/produk', produk);
 apiRouter.use('/bunga', bunga);
 apiRouter.use('/area-potensi-tl', areaPotensiTL);
+apiRouter.use('/potensi', potensi);
 
 export default apiRouter;

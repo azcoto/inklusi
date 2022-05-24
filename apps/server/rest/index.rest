@@ -39,3 +39,8 @@ content-type: application/json
 ###
 GET  http://localhost:8080/api/area-potensi-tl/100000001/KOTA PADANG/KURANJI HTTP/1.1
 content-type: application/json
+
+
+###
+GET  http://localhost:8080/api/potensi/area?kota=KOTA%20PADANG&kecamatan=KURANJI&kelurahan=KURANJI&page=3 HTTP/1.1
+content-type: application/json
