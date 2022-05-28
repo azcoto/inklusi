@@ -27,7 +27,9 @@ content-type: application/json
 ###
 GET  http://localhost:8080/api/produk HTTP/1.1
 content-type: application/json
-
+###
+GET https://sms2.coto.dev/api/produk
+content-type: application/json
 ###
 GET  http://localhost:8080/api/area-potensi-tl/100000001 HTTP/1.1
 content-type: application/json

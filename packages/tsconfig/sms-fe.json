@@ -3,7 +3,7 @@
   "display": "SMS-FE",
   "extends": "./base.json",
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "es6",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,

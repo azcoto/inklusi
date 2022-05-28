@@ -1,1 +1,0 @@
-{"version":3,"file":"signin.d.ts","sourceRoot":"","sources":["../../../../src/api/auth/signin.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAC5C,OAAO,EAAE,SAAS,EAAE,MAAM,OAAO,CAAC;AAIlC,QAAA,MAAM,MAAM,QACL,QAAQ,OAAO,EAAE,OAAO,EAAE,SAAS,CAAC,MAAM,CAAC,CAAC,OAC5C,QAAQ,gDAsCd,CAAC;AAEF,eAAe,MAAM,CAAC"}

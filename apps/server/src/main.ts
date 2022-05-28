@@ -7,7 +7,7 @@ import 'dotenv/config';
 import { errorHandler } from './api/errorHandler';
 
 const app: Application = express();
-const port = 8080;
+const port = 3003;
 
 import * as trpcExpress from '@trpc/server/adapters/express';
 import apiRouter from './api';
