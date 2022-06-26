@@ -8,7 +8,6 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import '@fontsource/open-sans';
 import Shell from './components/Shell';
 import Home from './pages/Home';
@@ -19,6 +18,8 @@ import { useLocalStorage } from '@mantine/hooks';
 import AssignVisit from 'pages/AssignVisit';
 import { AuthProvider } from 'context/auth';
 import { getItem } from 'services/localStorage';
+import VisitPortal from 'pages/VisitPortal';
+import Visit from 'pages/Visit';
 
 const App = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -30,59 +31,57 @@ const App = () => {
   const toggleScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
-  const [queryClient] = useState(() => new QueryClient());
-
   return (
     <React.StrictMode>
-      <AuthProvider user={getItem('user')}>
-        <Router>
-          <ColorSchemeProvider
-            colorScheme={colorScheme}
-            toggleColorScheme={toggleScheme}
+      <Router>
+        <ColorSchemeProvider
+          colorScheme={colorScheme}
+          toggleColorScheme={toggleScheme}
+        >
+          <MantineProvider
+            theme={{
+              fontFamily: 'Open Sans',
+              colorScheme: colorScheme,
+              primaryShade: 7,
+            }}
+            styles={{
+              AppShell: (theme) => ({
+                root: {
+                  background:
+                    theme.colorScheme === 'dark'
+                      ? theme.colors.dark[8]
+                      : theme.colors.gray[1],
+                },
+              }),
+              Footer: (theme) => ({
+                root: {
+                  background:
+                    theme.colorScheme === 'dark'
+                      ? theme.colors.dark[8]
+                      : theme.colors.gray[1],
+                },
+              }),
+            }}
+            withGlobalStyles
+            withNormalizeCSS
           >
-            <MantineProvider
-              theme={{
-                fontFamily: 'Open Sans',
-                colorScheme: colorScheme,
-                primaryShade: 7,
-              }}
-              styles={{
-                AppShell: (theme) => ({
-                  root: {
-                    background:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[8]
-                        : theme.colors.gray[1],
-                  },
-                }),
-                Footer: (theme) => ({
-                  root: {
-                    background:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[8]
-                        : theme.colors.gray[1],
-                  },
-                }),
-              }}
-              withGlobalStyles
-              withNormalizeCSS
-            >
-              <NotificationsProvider>
-                <QueryClientProvider client={queryClient}>
-                  <Routes>
-                    <Route path="/signin" element={<SignIn />} />
-                    <Route path="/" element={<Shell />}>
-                      <Route index element={<Home />} />
-                      <Route path="simulasi" element={<Calc />} />
-                      <Route path="assign-visit" element={<AssignVisit />} />
-                    </Route>
-                  </Routes>
-                </QueryClientProvider>
-              </NotificationsProvider>
-            </MantineProvider>
-          </ColorSchemeProvider>
-        </Router>
-      </AuthProvider>
+            <NotificationsProvider position="top-center" zIndex={2077}>
+              <AuthProvider user={getItem('user')}>
+                <Routes>
+                  <Route path="/signin" element={<SignIn />} />
+                  <Route path="/" element={<Shell />}>
+                    <Route index element={<Home />} />
+                    <Route path="simulasi" element={<Calc />} />
+                    <Route path="assign-visit" element={<AssignVisit />} />
+                    <Route path="visit" element={<VisitPortal />} />
+                    <Route path="visit/:notas" element={<Visit />} />
+                  </Route>
+                </Routes>
+              </AuthProvider>
+            </NotificationsProvider>
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </Router>
     </React.StrictMode>
   );
 };

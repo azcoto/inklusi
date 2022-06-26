@@ -32,6 +32,7 @@ model Users {
   notelp    String    @db.VarChar(13)
   appname   String    @db.VarChar(20)
   password  String    @db.Char(60)
+  enabled   Boolean   @default(true) @db.Boolean
   lastLogin DateTime? @map("last_login")
 
   karyawan Karyawan @relation(fields: [notelp], references: [notelp])
@@ -59,7 +60,7 @@ model Karyawan {
 
 
   users  Users[]
-  tlArea TlArea[]
+  tlArea Leader[]
 
   tlVisit Visit[] @relation("tlKaryawan")
   soVisit Visit[] @relation("soKaryawan")
@@ -91,21 +92,21 @@ model Distribusi {
   @@map("distribusi")
 }
 
-model TlArea {
+model Leader {
   id    Int    @id @default(autoincrement())
-  tlNIP String @db.VarChar(14)
+  nip   String @db.VarChar(14)
   dati2 String @db.VarChar(256)
 
 
-  Karyawan Karyawan? @relation(fields: [tlNIP], references: [nip])
-  @@unique(fields: [tlNIP, dati2], name: "tlAreaIdentifier")
-  @@map("tl_city")
+  Karyawan Karyawan? @relation(fields: [nip], references: [nip])
+  @@unique(fields: [nip, dati2], name: "leaderIdentifier")
+  @@map("leader")
 }
 
 model Visit {
   id          Int      @id @default(autoincrement())
-  tlNIP       String   @db.VarChar(14)
-  soNIP       String   @db.VarChar(40)
+  nipTl       String   @map("nip_tl") @db.VarChar(14)
+  nipSo       String   @map("nip_so") @db.VarChar(40)
   visited     Boolean  @default(false) @db.Boolean
   notas       String   @db.VarChar(256)
   alamatValid Boolean? @db.Boolean
@@ -113,8 +114,8 @@ model Visit {
   prospek     String?  @db.VarChar(256)
   alasan      String?  @db.VarChar(256)
   assignedAt  DateTime @default(now()) @map("assigned_at")
-  tlKaryawan  Karyawan @relation(name: "tlKaryawan", fields: [tlNIP], references: [nip])
-  soKaryawan  Karyawan @relation(name: "soKaryawan", fields: [soNIP], references: [nip])
+  tlKaryawan  Karyawan @relation(name: "tlKaryawan", fields: [nipTl], references: [nip])
+  soKaryawan  Karyawan @relation(name: "soKaryawan", fields: [nipSo], references: [nip])
 
 
   Maspen Maspen? @relation(fields: [notas], references: [notas])
@@ -160,8 +161,8 @@ model Maspen {
   agama            String?   @db.Char(1)
   noktp            String?   @db.Char(20)
   cleaned          Boolean   @default(false) @db.Boolean
-
-  Visit Visit[]
+  onVisit          Boolean   @default(false) @map("on_visit") @db.Boolean
+  Visit            Visit[]
 
 
 

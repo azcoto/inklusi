@@ -14,12 +14,14 @@ import {
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm, zodResolver } from '@mantine/form';
+import { showNotification } from '@mantine/notifications';
+import { useAuthed } from 'context/auth';
 import dayjs from 'dayjs';
 import html2canvas from 'html2canvas';
 import { xPMT, xPV } from 'libs/fin';
 import { saveAs } from 'libs/save-as';
-import { useRef, useState } from 'react';
-import { useGetProduk } from 'services/produk';
+import { useEffect, useRef, useState } from 'react';
+import services from 'services';
 import z from 'zod';
 import Rows from './rows';
 
@@ -56,22 +58,36 @@ const zSimulasiForm = z.object({
     .transform((s) => Number(s))
     .superRefine((arg, ctx) => ctx.addIssue),
   maksPlafond: z.number(),
-  pelunasan: z.number().optional(),
+  pelunasan: z
+    .string({ invalid_type_error: 'Harus Diisi' })
+    .transform((s) => Number(s))
+    .superRefine((arg, ctx) => ctx.addIssue)
+    .optional(),
 });
 
 type SimulasiForm = z.infer<typeof zSimulasiForm>;
 
 const Calc = () => {
+  const { currentUser } = useAuthed();
+  const calcRef = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
   const simRef = useRef<HTMLDivElement>(null);
-  useGetProduk({
-    onSuccess: (data) => {
-      const filtered = data.find((obj) => obj.nama === form.values.produk);
-      setSelectedProduk(filtered);
-    },
-  });
+
+  useEffect(() => {
+    if (calcRef.current) return;
+    const getProduk = async () => {
+      const data = await services.produk.getProduk();
+      setListProduk(data);
+    };
+    getProduk();
+
+    calcRef.current = true;
+  }, []);
+
+  const [listProduk, setListProduk] = useState<GetProdukResponse>([]);
   const [selectedProduk, setSelectedProduk] = useState<GetProdukResponse[0]>();
   const [simulasiResult, setSimulasiResult] = useState<SimulasiResult>();
+
   const form = useForm<SimulasiForm>({
     schema: zodResolver(zSimulasiForm),
     initialValues: {
@@ -89,6 +105,15 @@ const Calc = () => {
     },
   });
 
+  useEffect(() => {
+    if (listProduk.length > 0 && form.values.produk) {
+      const filtered = listProduk.find(
+        (obj) => obj.nama === form.values.produk,
+      );
+      setSelectedProduk(filtered);
+    }
+  }, [listProduk, form.values.produk]);
+
   const getMaksPlafond = () => {
     if (!selectedProduk) return;
     const { gaji, jangkaWaktu, skemaBunga } = form.values;
@@ -102,7 +127,9 @@ const Calc = () => {
       form.setFieldValue('maksPlafond', maksPlafond);
     }
   };
+
   const simulasi = () => {
+    console.log('executed');
     if (!selectedProduk) return;
     const { plafond, maksPlafond, pelunasan, jangkaWaktu, skemaBunga } =
       form.values;
@@ -178,6 +205,11 @@ const Calc = () => {
       simRef.current.style.height = original.height;
       simRef.current.style.backgroundColor = original.backgroundColor;
     }
+    showNotification({
+      message: 'Simulasi berhasil disimpan',
+      color: 'green',
+      autoClose: 2000,
+    });
   };
   const moneyMasker = (
     evt: React.ChangeEvent<HTMLInputElement>,
@@ -203,12 +235,18 @@ const Calc = () => {
           sx={{ div: { div: { paddingRight: '3px' } } }}
         >
           <Grid gutter={'xs'} align="flex-end">
-            <Rows title="Sales Officer">
-              <Text weight="bold">SF12</Text>
-            </Rows>
-            <Rows title="Team Leader">
-              <Text weight="bold">TL1</Text>
-            </Rows>
+            {currentUser && currentUser.jabatan === 'SF' && (
+              <Rows title="Sales Officer">
+                <Text weight="bold">{currentUser.nama}</Text>
+              </Rows>
+            )}
+
+            {currentUser && currentUser.jabatan === 'TL' && (
+              <Rows title="Team Leader">
+                <Text weight="bold">{currentUser.nama}</Text>
+              </Rows>
+            )}
+
             {/* DIVIDER */}
             <Grid.Col span={12}>
               <Divider my="sm" />
@@ -224,10 +262,11 @@ const Calc = () => {
                 locale="id"
                 inputFormat="DD MMMM YYYY"
                 size="xs"
+                initialLevel="year"
                 {...form.getInputProps('tgLahir')}
               />
             </Rows>
-            <Rows title="kantor Bayar Asal">
+            <Rows title="Kantor Bayar Asal">
               <TextInput size="xs" {...form.getInputProps('kanBayarAsal')} />
             </Rows>
             <Rows title="Take Over">
@@ -240,22 +279,25 @@ const Calc = () => {
             {form.values.takeOver && (
               <>
                 <Rows title="Pelunasan">
-                  <NumberInput
+                  <TextInput
                     sx={{ input: { textAlign: 'right' } }}
-                    hideControls
                     size="xs"
-                    {...form.getInputProps('pelunasan')}
+                    onChange={(evt) => moneyMasker(evt, 'pelunasan')}
+                    error={form.errors.pelunasan}
                   />
                 </Rows>
               </>
             )}
-            <Rows title="Produk">
-              <NativeSelect
-                data={['PENSIUN', 'PNS AKTIF']}
-                size="xs"
-                {...form.getInputProps('produk')}
-              />
-            </Rows>
+            {listProduk && (
+              <Rows title="Produk">
+                <NativeSelect
+                  data={listProduk.map((item) => item.nama)}
+                  size="xs"
+                  {...form.getInputProps('produk')}
+                />
+              </Rows>
+            )}
+
             <Rows title="Skema Bunga">
               <NativeSelect
                 data={['ANUITAS', 'FLAT']}
@@ -266,7 +308,7 @@ const Calc = () => {
             <Rows title="jangka Waktu">
               <NativeSelect
                 itemType="number"
-                data={[...Array(15).keys()].map((x) => String((x + 1) * 12))}
+                data={[...Array(25).keys()].map((x) => String((x + 1) * 12))}
                 rightSection={
                   <Text size="xs" mr={20}>
                     Bulan
@@ -400,6 +442,7 @@ const Calc = () => {
               sx={{ flexGrow: 1 }}
               type="submit"
               disabled={form.values.maksPlafond === 0}
+              onClick={() => simulasi()}
             >
               Simulasi
             </Button>

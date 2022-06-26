@@ -4,13 +4,14 @@ import z from 'zod';
 export const zSignInDTO = z.object({
   phone: z.string({ required_error: 'Phone is required' }),
   password: z.string({ required_error: 'Password is required' }),
+  app: z.string({ required_error: 'App is required' }),
 });
 
 export type SignInDTO = z.infer<typeof zSignInDTO>;
 
 // For API Validation
 export const zSignInValidator = z.object({
-  query: zSignInDTO,
+  body: zSignInDTO,
 });
 
 export const zSignInResponse = z.object({
@@ -19,8 +20,16 @@ export const zSignInResponse = z.object({
     nama: z.string(),
     telp: z.string(),
     jabatan: z.string(),
+    appname: z.string(),
   }),
   token: z.string(),
 });
 
+const zRefreshResponse = z.object({
+  token: z.string(),
+});
+
 export type SignInResponse = z.infer<typeof zSignInResponse>;
+const zJWTData = zSignInResponse.shape.user;
+export type JWTData = z.infer<typeof zJWTData>;
+export type RefreshResponse = z.infer<typeof zRefreshResponse>;

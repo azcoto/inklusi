@@ -11,16 +11,16 @@ const areaPotensiKelurahanTL = async (
   const { tlNIP, dati2, dati3 } = req.params;
   const areaKerjaTL = await db.$queryRaw<DataPotensiKelurahanTL>(
     Prisma.sql`select sq.dati4, sq.count_potensi as cnt
-      from tl_city tc 
+      from leader l 
       join(
         select dati2, dati3, dati4, sum(count_potensi) as count_potensi
         from distribusi
         where dati3 = ${dati3}
         group by dati2, dati3, dati4
       ) as sq
-      on tc.dati2 = sq.dati2
-      where tc."tlNIP" = ${tlNIP}
-      and tc.dati2 = ${dati2}`,
+      on l.dati2 = sq.dati2
+      where l.nip = ${tlNIP}
+      and l.dati2 = ${dati2}`,
   );
   const parsed = zDataPotensiKelurahanTL.parse(areaKerjaTL);
 

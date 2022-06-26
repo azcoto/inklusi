@@ -2,7 +2,7 @@ import {
   DataPotensiKecamatanTL,
   DataPotensiKelurahanTL,
   DataPotensiKotaTL,
-} from '@api/area-potensi-tl/dto';
+} from '@api/leader/dto';
 import { PotensiDTO } from '@api/potensi/dto';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline';
 import {
@@ -15,18 +15,29 @@ import {
   ActionIcon,
   Box,
   ScrollArea,
+  LoadingOverlay,
+  Checkbox,
+  Button,
 } from '@mantine/core';
-import { useAuth } from 'context/auth';
+import { useAuthed } from 'context/auth';
+import dayjs from 'dayjs';
+import exactAge from 'libs/exact-age';
 import { forwardRef, useEffect, useState } from 'react';
-import { UseGetPotensiByArea } from 'services/potensi';
+import { getPotensiByArea, testConcurrent } from 'services/potensi';
 import {
-  usePotensiKotaTL,
-  usePotensiKecamatanTL,
-  usePotensiKelurahanTL,
-} from 'services/potensiTL';
+  getPotensiKotaTL,
+  getPotensiKecamatanTL,
+  getPotensiKelurahanTL,
+} from 'services/leader';
+import { boolean } from 'zod';
+import { GetSoByTlResponse } from '@api/tlso/dto';
+import { getSoByTl } from 'services/tlso';
+import { postAssignVisit } from 'services/visit';
+import { notifySuccess } from 'libs/notify';
+import { showNotification } from '@mantine/notifications';
 
 const SelectItem = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
-  const { label, value, count, ...others } = props;
+  const { label, value: _, count, ...others } = props;
   return (
     <div ref={ref} {...others}>
       <Group position="apart">
@@ -52,9 +63,9 @@ interface ItemProps
     SelectItems {}
 
 const AssignVisit = () => {
-  //#region State
-  const { currentUser } = useAuth();
-  const tlNIP = currentUser ? currentUser.nip : '';
+  //#region State Hooks
+  const { currentUser } = useAuthed();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [listKota, setListKota] = useState<SelectItems[]>([]);
   const [selectedKota, setSelectedKota] = useState<string>('');
   const [listKecamatan, setListKecamatan] = useState<SelectItems[]>([]);
@@ -62,13 +73,35 @@ const AssignVisit = () => {
   const [listKelurahan, setListKelurahan] = useState<SelectItems[]>([]);
   const [selectedKelurahan, setSelectedKelurahan] = useState<string>('');
   const [listPotensi, setListPotensi] = useState<PotensiDTO[]>([]);
+  const [listSo, setListSo] = useState<GetSoByTlResponse>([]);
+  const [selectedSo, setSelectedSo] = useState('');
+  const [listNotas, setListNotas] = useState<string[]>([]);
   const [page, setPage] = useState<number>(1);
   const [jumlahData, setJumlahData] = useState<number>(0);
   const [maxPage, setMaxPage] = useState<number>(0);
   //#endregion
 
-  //#region Query Hook Callback
-  const dataKotaOnSuccess = (data: DataPotensiKotaTL) => {
+  //#region Data Kota Logic
+  useEffect(() => {
+    try {
+      const fetchKota = async () => {
+        setIsLoading(true);
+        // if (currentUser.nip !== '') {
+        const pKota = getPotensiKotaTL(currentUser.nip);
+        const pSo = getSoByTl(currentUser.nip);
+        const [dataKota, dataSo] = await Promise.all([pKota, pSo]);
+        parseDataKota(dataKota);
+        setListSo(() => dataSo);
+        // }
+        setIsLoading(false);
+      };
+      fetchKota();
+    } catch (err) {
+      console.log('Notify Error');
+    }
+  }, []);
+
+  const parseDataKota = (data: DataPotensiKotaTL) => {
     const mapped = data.map((item) => ({
       label: item.dati2,
       value: item.dati2,
@@ -76,7 +109,37 @@ const AssignVisit = () => {
     }));
     setListKota(mapped);
   };
-  const dataKecamatanOnSuccess = (data: DataPotensiKecamatanTL) => {
+
+  const kotaChanged = (value: string) => {
+    setSelectedKota(value);
+  };
+  //#endregion
+
+  //#region Data Kecamatan
+  useEffect(() => {
+    try {
+      const fetchKecamatan = async () => {
+        setIsLoading(true);
+        const dataKecamatan = await getPotensiKecamatanTL(
+          currentUser.nip,
+          selectedKota,
+        );
+        parseDataKecamatan(dataKecamatan);
+        setIsLoading(false);
+      };
+      if (selectedKota !== '') fetchKecamatan();
+    } catch (err) {
+      console.log('Notify Error');
+    }
+
+    setSelectedKelurahan('');
+    setSelectedKecamatan('');
+    setListKecamatan([]);
+    setListKelurahan([]);
+    setListPotensi([]);
+  }, [selectedKota]);
+
+  const parseDataKecamatan = (data: DataPotensiKecamatanTL) => {
     const mapped = data.map((item) => ({
       label: item.dati3,
       value: item.dati3,
@@ -84,7 +147,35 @@ const AssignVisit = () => {
     }));
     setListKecamatan(mapped);
   };
-  const dataKelurahanOnSuccess = (data: DataPotensiKelurahanTL) => {
+
+  const kecamatanChanged = (value: string) => {
+    setSelectedKecamatan(value);
+  };
+  //#endregion
+
+  //#region Data Kelurahan Logic
+  useEffect(() => {
+    try {
+      const fetchKelurahan = async () => {
+        setIsLoading(true);
+        const dataKelurahan = await getPotensiKelurahanTL(
+          currentUser.nip,
+          selectedKota,
+          selectedKecamatan,
+        );
+        parseDataKelurahan(dataKelurahan);
+        setIsLoading(false);
+      };
+      if (selectedKecamatan !== '') fetchKelurahan();
+    } catch (err) {
+      console.log('Notify Error');
+    }
+    setSelectedKelurahan('');
+    setListKelurahan([]);
+    setListPotensi([]);
+  }, [selectedKecamatan]);
+
+  const parseDataKelurahan = (data: DataPotensiKelurahanTL) => {
     const mapped = data.map((item) => ({
       label: item.dati4,
       value: item.dati4,
@@ -92,185 +183,263 @@ const AssignVisit = () => {
     }));
     setListKelurahan(mapped);
   };
-  const dataPotensiOnSuccess = (data: PotensiDTO[]) => {
-    setListPotensi(data);
-  };
-  //#endregion
-
-  //#region Query Hook
-  usePotensiKotaTL(tlNIP, {
-    enabled: !!tlNIP,
-    onSuccess: dataKotaOnSuccess,
-    staleTime: Infinity,
-  });
-
-  usePotensiKecamatanTL(tlNIP, selectedKota, {
-    enabled: !!tlNIP && selectedKota !== '',
-    onSuccess: dataKecamatanOnSuccess,
-    staleTime: Infinity,
-  });
-
-  usePotensiKelurahanTL(tlNIP, selectedKota, selectedKecamatan, {
-    enabled: !!tlNIP && selectedKota !== '' && selectedKecamatan !== '',
-    onSuccess: dataKelurahanOnSuccess,
-    staleTime: Infinity,
-  });
-
-  UseGetPotensiByArea(
-    {
-      kota: selectedKota,
-      kecamatan: selectedKecamatan,
-      kelurahan: selectedKelurahan,
-      page: page,
-    },
-    {
-      enabled:
-        !!tlNIP &&
-        selectedKota !== '' &&
-        selectedKecamatan !== '' &&
-        selectedKelurahan !== '',
-      onSuccess: dataPotensiOnSuccess,
-      // staleTime: Infinity,
-    },
-  );
-  //#endregion
-
-  //#region Effects
-  useEffect(() => {
-    const selectedItem = listKelurahan.find(
-      (o) => o.value === selectedKelurahan,
-    );
-    const count = selectedItem ? selectedItem.count : 0;
-    setPage(1);
-    setJumlahData(count);
-    setMaxPage(
-      jumlahData % 10 ? Math.floor(jumlahData / 10) + 1 : jumlahData / 10,
-    );
-  }, [listKelurahan, selectedKelurahan, jumlahData]);
 
   useEffect(() => {
-    setSelectedKelurahan('');
-    setListKelurahan([]);
-    setListPotensi([]);
-  }, [selectedKecamatan]);
-
-  useEffect(() => {
-    setSelectedKelurahan('');
-    setSelectedKecamatan('');
-    setListKecamatan([]);
-    setListKelurahan([]);
-    setListPotensi([]);
-  }, [selectedKota]);
-  //#endregion
-
-  //#region Evt Handlers
-  const kotaChanged = (value: string) => {
-    setSelectedKota(value);
-  };
-
-  const kecamatanChanged = (value: string) => {
-    setSelectedKecamatan(value);
-  };
+    try {
+      const fetchPotensi = async () => {
+        setIsLoading(true);
+        const dataPotensi = await getPotensiByArea({
+          kota: selectedKota,
+          kecamatan: selectedKecamatan,
+          kelurahan: selectedKelurahan,
+          page: String(page),
+        });
+        setListPotensi(dataPotensi);
+        const selectedItem = listKelurahan.find(
+          (o) => o.value === selectedKelurahan,
+        );
+        const count = selectedItem ? selectedItem.count : 0;
+        setPage((current) => 1);
+        setJumlahData((current) => count);
+        setMaxPage((current) => {
+          return count % 10 ? Math.floor(count / 10) + 1 : count / 10;
+        });
+        setIsLoading(false);
+      };
+      if (selectedKelurahan !== '') {
+        fetchPotensi();
+      }
+    } catch (err) {
+      console.log('Notify Error');
+    }
+  }, [selectedKelurahan]);
 
   const kelurahanChanged = (value: string) => {
     setSelectedKelurahan(() => {
       return value;
     });
-    setJumlahData(0);
   };
+
   //#endregion
 
+  //#region Potensi
+  useEffect(() => {
+    const fetchPotensi = async () => {
+      setIsLoading(true);
+      const dataPotensi = await getPotensiByArea({
+        kota: selectedKota,
+        kecamatan: selectedKecamatan,
+        kelurahan: selectedKelurahan,
+        page: String(page),
+      });
+
+      setIsLoading(false);
+      setListPotensi(dataPotensi);
+    };
+    if (listPotensi.length > 0) {
+      setListPotensi([]);
+      fetchPotensi();
+    }
+  }, [page]);
+
+  //#region
+
+  const assignOnClick = async () => {
+    setIsLoading(true);
+    const res = await postAssignVisit(currentUser.nip, selectedSo, listNotas);
+    setIsLoading(false);
+    if (res.status === 200) {
+      notifySuccess('Success', showNotification);
+      setListKecamatan([]);
+      setListKelurahan([]);
+      setListPotensi([]);
+      setListNotas([]);
+      setSelectedKelurahan('');
+    }
+  };
   return (
-    <Container
-      sx={{ display: 'flex', flexDirection: 'column', height: '85vh' }}
-    >
-      {listKota.length !== 0 && (
-        <Select
-          sx={{ flex: 0 }}
-          itemComponent={SelectItem}
-          data={listKota}
-          label="Kota/Kabupaten"
-          onChange={kotaChanged}
-        />
-      )}
+    <>
+      <Container
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '85vh',
+          position: 'relative',
+        }}
+      >
+        <LoadingOverlay visible={isLoading} />
+        {listSo.length !== 0 && (
+          <Select
+            sx={{ flex: 0 }}
+            value={selectedSo}
+            onChange={(x) => {
+              if (x) setSelectedSo(x);
+            }}
+            data={listSo.map((o) => ({
+              label: o.nama,
+              value: o.nip,
+            }))}
+            label="Sales Fronting"
+          />
+        )}
+        {listKota.length !== 0 && (
+          <Select
+            sx={{ flex: 0 }}
+            itemComponent={SelectItem}
+            data={listKota}
+            label="Kota/Kabupaten"
+            onChange={kotaChanged}
+          />
+        )}
 
-      {listKecamatan.length !== 0 && (
-        <Select
-          sx={{ flex: 0 }}
-          itemComponent={SelectItem}
-          data={listKecamatan}
-          label="Kecamatan"
-          onChange={kecamatanChanged}
-        />
-      )}
+        {listKecamatan.length !== 0 && (
+          <Select
+            sx={{ flex: 0 }}
+            itemComponent={SelectItem}
+            data={listKecamatan}
+            label="Kecamatan"
+            onChange={kecamatanChanged}
+          />
+        )}
 
-      {listKelurahan.length !== 0 && (
-        <Select
-          sx={{ flex: 0 }}
-          itemComponent={SelectItem}
-          data={listKelurahan}
-          label="Kelurahan"
-          onChange={kelurahanChanged}
-        />
-      )}
+        {listKelurahan.length !== 0 && (
+          <Select
+            sx={{ flex: 0 }}
+            itemComponent={SelectItem}
+            data={listKelurahan}
+            label="Kelurahan"
+            onChange={kelurahanChanged}
+          />
+        )}
 
-      {selectedKelurahan !== '' && (
-        <Box sx={{ flex: 0 }} mt={8}>
-          <Card shadow="sm">
-            <Group position="apart">
-              <Stack>
-                <Text size="xs" weight="bold">
-                  Jumlah Data : {jumlahData}
-                </Text>
-                <Text size="xs" weight="bold">
-                  Selected :
-                </Text>
-              </Stack>
-              <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <ActionIcon
-                  disabled={page === 1}
-                  variant="transparent"
-                  onClick={() => {
-                    setPage(page - 1);
-                  }}
-                >
-                  <ChevronLeftIcon />
-                </ActionIcon>
-                <Text size="md" weight="bold">
-                  Page {page} of {maxPage}
-                </Text>
-                <ActionIcon
-                  disabled={page === maxPage}
-                  variant="transparent"
-                  onClick={() => {
-                    setPage(page + 1);
-                  }}
-                >
-                  <ChevronRightIcon />
-                </ActionIcon>
-              </Box>
-            </Group>
-          </Card>
-        </Box>
-      )}
-
-      {listPotensi.length !== 0 && (
-        <ScrollArea sx={{ flex: 1 }} type="scroll" mt={8}>
-          <Stack>
-            {listPotensi.map((p, idx) => {
-              return (
-                <Card key={idx} shadow="sm">
+        {selectedKelurahan !== '' && (
+          <Box sx={{ flex: 0 }} mt={8}>
+            <Card shadow="sm">
+              <Group position="apart">
+                <Stack>
                   <Text size="xs" weight="bold">
-                    {p.namaPenerima}
+                    Jumlah Data : {jumlahData}
                   </Text>
-                  <Text size="xs">{p.alamat}</Text>
-                </Card>
-              );
-            })}
-          </Stack>
-        </ScrollArea>
-      )}
-    </Container>
+                  <Text size="xs" weight="bold">
+                    Selected : {listNotas.length}
+                  </Text>
+                </Stack>
+                <Box
+                  sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+                >
+                  <ActionIcon
+                    disabled={page === 1}
+                    variant="transparent"
+                    onClick={() => {
+                      setPage(page - 1);
+                    }}
+                  >
+                    <ChevronLeftIcon />
+                  </ActionIcon>
+                  <Text size="xs" weight="bold">
+                    Page {page} of {maxPage}
+                  </Text>
+                  <ActionIcon
+                    disabled={page === maxPage}
+                    variant="transparent"
+                    onClick={() => {
+                      setPage(page + 1);
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </ActionIcon>
+                </Box>
+              </Group>
+            </Card>
+          </Box>
+        )}
+
+        {listPotensi.length !== 0 && (
+          <ScrollArea sx={{ flex: 1 }} type="scroll" mt={8}>
+            <Stack>
+              {listPotensi.map((p, idx) => {
+                return (
+                  <Card
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                    key={idx}
+                    shadow="sm"
+                  >
+                    <Box mr={12}>
+                      <Text size="xs" weight="bold">
+                        Nama : {p.namaPenerima}
+                      </Text>
+                      <Text size="xs">
+                        <b>Alamat : </b>
+                        {p.alamat}
+                      </Text>
+                      <Text size="xs">
+                        <b>Tanggal Lahir : </b>
+                        {dayjs(p.tgLahirPenerima).format('DD/MM/YYYY')}
+                      </Text>
+                      <Text size="xs">
+                        <b>Usia : </b>
+                        {(() => {
+                          const { days, months, years } = exactAge(
+                            dayjs(p.tgLahirPenerima),
+                          );
+                          return `${years} Tahun ${months} Bulan ${days} Hari`;
+                        })()}
+                      </Text>
+                    </Box>
+                    <Box mr={12}>
+                      <Checkbox
+                        size="md"
+                        key={p.notas}
+                        checked={listNotas.some((e) => e === p.notas)}
+                        onChange={(evt) => {
+                          console.log(evt);
+                          if (evt.currentTarget.checked === true) {
+                            setListNotas((state) => [...state, p.notas]);
+                          } else {
+                            setListNotas((state) =>
+                              state.filter((o) => o !== p.notas),
+                            );
+                          }
+                        }}
+                      />
+                    </Box>
+                  </Card>
+                );
+              })}
+            </Stack>
+          </ScrollArea>
+        )}
+        {listNotas.length > 0 && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              gap: '10px',
+            }}
+            mt={8}
+          >
+            <Button
+              size="xs"
+              onClick={() => {
+                setListNotas([]);
+                setPage(1);
+              }}
+            >
+              RESET
+            </Button>
+            <Button size="xs" sx={{ flexGrow: 1 }} onClick={assignOnClick}>
+              ASSIGN
+            </Button>
+          </Box>
+        )}
+      </Container>
+    </>
   );
 };
 

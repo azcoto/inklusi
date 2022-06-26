@@ -1,9 +1,46 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 
-export interface AppError {
-  from: string;
-  data: unknown;
+export class AuthError extends Error {
+  code: number;
+  from: string = 'AUTH';
+  constructor({
+    name,
+    message,
+    data,
+    code,
+  }: {
+    code: number;
+    name: string;
+    message: string;
+    data?: Record<string, any>;
+  }) {
+    super(message);
+    this.code = code;
+    this.name = name;
+  }
+}
+
+export class ApiError extends Error {
+  code: number;
+  data?: Record<string, any>;
+  from: string = 'API';
+  constructor({
+    name,
+    message,
+    data,
+    code,
+  }: {
+    code: number;
+    name: string;
+    message: string;
+    data?: Record<string, any>;
+  }) {
+    super(message);
+    this.code = code;
+    this.name = name;
+    this.data = data;
+  }
 }
 
 export const errorHandler: ErrorRequestHandler = (
@@ -12,11 +49,23 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
-  if (error instanceof ZodError) {
-    const err: AppError = {
-      from: 'API Validator',
-      data: error.issues,
-    };
-    return res.status(400).json(err);
+  switch ((error as Error).constructor) {
+    case ZodError:
+      return res.status(400).json({
+        from: 'VALIDATOR',
+        name: 'VALIDATION_ERROR',
+        message: (error as ZodError).message,
+        data: (error as ZodError).issues,
+      });
+    case AuthError:
+      return res.status((error as AuthError).code).json(error);
+    case ApiError:
+      return res.status((error as ApiError).code).json(error);
+    default:
+      return res.status(500).json({
+        from: 'INTERNAL',
+        type: (error as Error).name,
+        data: (error as Error).message,
+      });
   }
 };

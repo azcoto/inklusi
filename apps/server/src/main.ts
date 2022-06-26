@@ -14,7 +14,16 @@ import apiRouter from './api';
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors({ origin: '*' }));
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+    ],
+    credentials: true,
+  }),
+);
 app.get('/', (_, res: Response) => {
   res.status(200).send('Hello World!');
 });

@@ -1,3 +1,4 @@
+import logo from 'assets/logo.svg';
 import {
   TextInput,
   PasswordInput,
@@ -5,42 +6,88 @@ import {
   Box,
   Group,
   AppShell,
+  Container,
+  LoadingOverlay,
+  Image,
+  Text,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { zSignInDTO, SignInDTO } from '@api/auth/dto';
-import React from 'react';
-import { useSignIn } from 'services/auth';
-import { setItem } from 'services/localStorage';
+import React, { useEffect, useRef, useState } from 'react';
+import services from 'services';
+import { removeItem, setItem } from 'services/localStorage';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { handleError } from 'libs/handleError';
+import { showNotification } from '@mantine/notifications';
+import { useAuth } from 'context/auth';
+import { setToken } from 'libs/axios-instance';
 
 const SignIn = () => {
+  const signInRef = useRef(false);
+  const { setCurrentUser } = useAuth();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (signInRef.current) {
+      return;
+    }
+    removeItem('user');
+    removeItem('token');
+    signInRef.current = true;
+  }, []);
+  let navigate = useNavigate();
   const form = useForm<SignInDTO>({
     schema: zodResolver(zSignInDTO),
     initialValues: {
       phone: '',
       password: '',
+      app: 'sms-fe',
     },
   });
 
-  const { mutate } = useSignIn({
-    onSuccess: (data) => {
-      setItem('user', data.user);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  const signIn = (values: SignInDTO, event: React.FormEvent) => {
+  const doSignIn = async (values: SignInDTO, event: React.FormEvent) => {
     event.preventDefault();
-    mutate(values);
+    try {
+      setIsLoading(true);
+      const data = await services.auth.signIn(values);
+      setItem('user', data.user);
+      setCurrentUser(data.user);
+      setItem('token', data.token);
+      setToken(data.token);
+      navigate('/', { replace: true });
+    } catch (error) {
+      setIsLoading(false);
+      handleError(error, showNotification);
+    }
   };
 
   return (
-    <AppShell sx={{ height: '100vh' }} padding="xs" fixed>
+    <Container
+      sx={{ height: '100vh', position: 'relative', backgroundColor: '#F1F3F5' }}
+      p={4}
+    >
+      <LoadingOverlay visible={isLoading} />
+      <Box
+        sx={{
+          maxWidth: 300,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+        mx="auto"
+        mt={100}
+        mb={30}
+      >
+        <Image src={logo} width="150px" />
+        <Text align="center" size="xl" weight="bold" mt={30}>
+          Sales Management System
+        </Text>
+      </Box>
+
       <Box sx={{ maxWidth: 200 }} mx="auto">
-        <form onSubmit={form.onSubmit(signIn)}>
+        <form onSubmit={form.onSubmit(doSignIn)}>
           <TextInput
-            label="Phone Number"
+            label="Nomor Telepon"
             required
             {...form.getInputProps('phone')}
           />
@@ -50,11 +97,25 @@ const SignIn = () => {
             {...form.getInputProps('password')}
           />
           <Group position="right" mt="md">
-            <Button type="submit">Sign In</Button>
+            <Button type="submit">LOGIN</Button>
           </Group>
         </form>
       </Box>
-    </AppShell>
+      <Box
+        sx={{
+          width: '100%',
+          left: '0',
+          bottom: '0',
+          position: 'fixed',
+          textAlign: 'right',
+          paddingRight: '20px',
+        }}
+      >
+        <Text size="xs" weight="lighter">
+          Copyright Jaringan Inklusi Keuangan 2022
+        </Text>
+      </Box>
+    </Container>
   );
 };
 
