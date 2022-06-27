@@ -40,6 +40,8 @@ const zEntryForm = z.object({
   tgRealisasi: z
     .date({ required_error: 'Tanggal Realisasi tidak boleh kosong' })
     .default(new Date()),
+  tipeDebitur: z.string(),
+  produk: z.string(),
   jangkaWaktu: z
     .string()
     .or(z.number())
@@ -51,6 +53,9 @@ const zEntryForm = z.object({
   norekKredit: z
     .string()
     .min(1, { message: 'Norek Kredit tidak boleh kosong' }),
+  nikTl: z.string(),
+  nikMr: z.string(),
+  cabang: z.string(),
 });
 
 type EntryForm = z.infer<typeof zEntryForm>;
@@ -63,10 +68,15 @@ const DisburseEntry = () => {
     initialValues: {
       nopen: '',
       nama: '',
-      jangkaWaktu: 12,
+      produk: '',
+      cabang: '',
+      tipeDebitur: '',
+      jangkaWaktu: 0,
       plafond: 0,
       norekKredit: '',
       tgRealisasi: new Date(),
+      nikTl: '',
+      nikMr: '',
     },
   });
 
@@ -74,6 +84,7 @@ const DisburseEntry = () => {
     evt: React.ChangeEvent<HTMLInputElement>,
     field: keyof EntryForm,
   ) => {
+    console.log(evt);
     evt.target.value = evt.target.value.replaceAll('.', '');
     form.setFieldValue(field, evt.target.value);
     evt.target.value = Number(evt.target.value).toLocaleString('id');
@@ -91,13 +102,20 @@ const DisburseEntry = () => {
             sx={{ alignSelf: 'stretch' }}
             size="xs"
             label="Nopen / NIP"
+            {...form.getInputProps('nopen')}
           />
-          <TextInput sx={{ alignSelf: 'stretch' }} size="xs" label="Nama" />
+          <TextInput
+            sx={{ alignSelf: 'stretch' }}
+            size="xs"
+            label="Nama"
+            {...form.getInputProps('nama')}
+          />
           <Select
             sx={{ alignSelf: 'stretch' }}
             size="xs"
             label="Tipe Debitur"
             data={tipeDebitur}
+            {...form.getInputProps('tipeDebitur')}
           />
 
           <Group sx={{ alignSelf: 'stretch', alignItems: 'flex-end' }}>
@@ -106,6 +124,7 @@ const DisburseEntry = () => {
               size="xs"
               label="Produk"
               data={produk}
+              {...form.getInputProps('produk')}
             />
             <Switch label="SK On Hand" />
           </Group>
@@ -120,12 +139,18 @@ const DisburseEntry = () => {
                   Bulan
                 </Text>
               }
+              onChange={(evt) => moneyMasker(evt, 'jangkaWaktu')}
+              error={form.errors.jangkaWaktu}
             />
             <TextInput
-              sx={{ flexGrow: 1, input: { textAlign: 'right' } }}
+              sx={{
+                flexGrow: 1,
+                input: { textAlign: 'right' },
+              }}
               size="xs"
               label="Plafond"
               onChange={(evt) => moneyMasker(evt, 'plafond')}
+              error={form.errors.plafond}
             />
           </Group>
 
@@ -136,17 +161,35 @@ const DisburseEntry = () => {
               locale="id"
               inputFormat="DD MMMM YYYY"
               label="Tanggal Realisasi"
+              {...form.getInputProps('tgRealisasi')}
             />
-            <Select sx={{ flexGrow: 1 }} size="xs" label="Cabang" data={[]} />
+            <Select
+              sx={{ flexGrow: 1 }}
+              size="xs"
+              label="Cabang"
+              data={[]}
+              {...form.getInputProps('cabang')}
+            />
           </Group>
           <Group sx={{ alignSelf: 'stretch' }} grow>
-            <Select size="xs" label="Team Leader" data={[]} />
-            <Select size="xs" label="Marketing Representative" data={[]} />
+            <Select
+              size="xs"
+              label="Team Leader"
+              data={[]}
+              {...form.getInputProps('nikTl')}
+            />
+            <Select
+              size="xs"
+              label="Marketing Representative"
+              data={[]}
+              {...form.getInputProps('nikMr')}
+            />
           </Group>
           <TextInput
             sx={{ alignSelf: 'stretch' }}
             size="xs"
             label="Nomor Rekening Kredit"
+            {...form.getInputProps('norekKredit')}
           />
           <Button fullWidth>SUBMIT</Button>
         </Stack>

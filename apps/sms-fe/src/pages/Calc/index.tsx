@@ -1,4 +1,5 @@
 import { GetProdukResponse } from '@api/produk/dto';
+import { AlltipeDebiturResponse } from '@api/tipeDebitur/dto';
 import {
   Box,
   Text,
@@ -7,7 +8,6 @@ import {
   Button,
   ScrollArea,
   TextInput,
-  NumberInput,
   NativeSelect,
   Divider,
   Switch,
@@ -18,7 +18,7 @@ import { showNotification } from '@mantine/notifications';
 import { useAuthed } from 'context/auth';
 import dayjs from 'dayjs';
 import html2canvas from 'html2canvas';
-import { xPMT, xPV } from 'libs/fin';
+import { xPMT } from 'libs/fin';
 import { saveAs } from 'libs/save-as';
 import { useEffect, useRef, useState } from 'react';
 import services from 'services';
@@ -43,8 +43,9 @@ const zSimulasiForm = z.object({
     .default(new Date('1970-01-01')),
   kanBayarAsal: z.string().min(1, { message: 'Asal tidak boleh kosong' }),
   takeOver: z.boolean(),
-  produk: z.enum(['PENSIUN', 'PNS AKTIF']),
-  skemaBunga: z.enum(['ANUITAS', 'FLAT']),
+  tipeDebitur: z.string(),
+  produk: z.string(),
+  skemaBunga: z.string(),
   jangkaWaktu: z
     .string()
     .or(z.number())
@@ -53,6 +54,7 @@ const zSimulasiForm = z.object({
     .string()
     .transform((s) => Number(s))
     .refine((n) => n > 100000 && n < 20000000, 'Gaji invalid'),
+  blokirAngsuran: z.string().transform((s) => Number(s)),
   plafond: z
     .string({ invalid_type_error: 'Harus Diisi' })
     .transform((s) => Number(s))
@@ -75,15 +77,20 @@ const Calc = () => {
 
   useEffect(() => {
     if (calcRef.current) return;
-    const getProduk = async () => {
-      const data = await services.produk.getProduk();
-      setListProduk(data);
+    const fetchData = async () => {
+      const pProduk = services.produk.getProduk();
+      const pTipe = services.tipeDebitur.getAlltipeDebitur();
+      const [produk, tipe] = await Promise.all([pProduk, pTipe]);
+      setListProduk(produk);
+      setListAllTipeDebitur(tipe);
     };
-    getProduk();
+    fetchData();
 
     calcRef.current = true;
   }, []);
 
+  const [listAllTipeDebitur, setListAllTipeDebitur] =
+    useState<AlltipeDebiturResponse>([]);
   const [listProduk, setListProduk] = useState<GetProdukResponse>([]);
   const [selectedProduk, setSelectedProduk] = useState<GetProdukResponse[0]>();
   const [simulasiResult, setSimulasiResult] = useState<SimulasiResult>();
@@ -95,10 +102,12 @@ const Calc = () => {
       tgLahir: new Date('1970-01-01'),
       kanBayarAsal: '',
       takeOver: false,
-      produk: 'PENSIUN',
+      tipeDebitur: 'PNS/CPNS OTONOM',
+      produk: 'KCU UMUM ANUITAS',
       skemaBunga: 'ANUITAS',
       jangkaWaktu: 12,
       gaji: 0,
+      blokirAngsuran: 0,
       plafond: 0,
       maksPlafond: 0,
       pelunasan: 0,
@@ -114,16 +123,19 @@ const Calc = () => {
     }
   }, [listProduk, form.values.produk]);
 
-  const getMaksPlafond = () => {
+  const getMaksPlafond = async () => {
     if (!selectedProduk) return;
-    const { gaji, jangkaWaktu, skemaBunga } = form.values;
+    const { gaji, jangkaWaktu } = form.values;
+    console.log(gaji);
     if (gaji >= 500000) {
-      const maksPlafond = xPV(
-        selectedProduk.rateAnuitas / 100,
+      const p = await services.indeksPengali.getIndeksPengali(
+        selectedProduk.id,
         jangkaWaktu,
-        (gaji * 90) / 100,
-        skemaBunga,
       );
+      console.log(p);
+      const maksPlafond = p.pengali * gaji;
+      console.log(maksPlafond);
+
       form.setFieldValue('maksPlafond', maksPlafond);
     }
   };
@@ -131,7 +143,7 @@ const Calc = () => {
   const simulasi = () => {
     console.log('executed');
     if (!selectedProduk) return;
-    const { plafond, maksPlafond, pelunasan, jangkaWaktu, skemaBunga } =
+    const { plafond, maksPlafond, pelunasan, jangkaWaktu, blokirAngsuran } =
       form.values;
     if (plafond > maksPlafond) {
       form.setFieldError(
@@ -140,28 +152,18 @@ const Calc = () => {
       );
       return;
     }
-    const angsuran =
-      form.values.skemaBunga === 'ANUITAS'
-        ? xPMT(
-            plafond,
-            selectedProduk.rateAnuitas / 100,
-            jangkaWaktu,
-            skemaBunga,
-          )
-        : xPMT(
-            plafond,
-            selectedProduk?.rateFlat / 100,
-            jangkaWaktu,
-            skemaBunga,
-          );
-    const asuransi = (10 / 100) * plafond;
-    const provisi = Math.round((selectedProduk.pProvisi / 100) * plafond);
-
-    const administrasi = Math.round(
-      (selectedProduk.pAdministrasi / 100) * plafond,
+    const angsuran = xPMT(
+      plafond,
+      selectedProduk.bunga,
+      jangkaWaktu,
+      selectedProduk.skema,
     );
-    const tBlokir = selectedProduk.cBlokir * angsuran;
-    const tBiaya = asuransi + provisi + administrasi + tBlokir;
+    const asuransi = (10 / 100) * plafond;
+    const provisi = Math.round((1.5 / 100) * plafond);
+
+    const administrasi = 0;
+    const tBlokir = blokirAngsuran * angsuran;
+    const tBiaya = asuransi + provisi + administrasi;
     const tBersih = plafond - tBiaya;
     let tTerima: number;
     if (pelunasan) {
@@ -288,6 +290,16 @@ const Calc = () => {
                 </Rows>
               </>
             )}
+            {listAllTipeDebitur && (
+              <Rows title="Tipe Debitur">
+                <NativeSelect
+                  data={listAllTipeDebitur.map((item) => item.nama)}
+                  size="xs"
+                  {...form.getInputProps('tipeDebitur')}
+                />
+              </Rows>
+            )}
+
             {listProduk && (
               <Rows title="Produk">
                 <NativeSelect
@@ -298,13 +310,6 @@ const Calc = () => {
               </Rows>
             )}
 
-            <Rows title="Skema Bunga">
-              <NativeSelect
-                data={['ANUITAS', 'FLAT']}
-                size="xs"
-                {...form.getInputProps('skemaBunga')}
-              />
-            </Rows>
             <Rows title="jangka Waktu">
               <NativeSelect
                 itemType="number"
@@ -327,6 +332,18 @@ const Calc = () => {
                 size="xs"
                 onChange={(evt) => moneyMasker(evt, 'gaji')}
                 error={form.errors.gaji}
+              />
+            </Grid.Col>
+
+            <Grid.Col span={5}>
+              <Text size="sm">Blokir</Text>
+            </Grid.Col>
+            <Grid.Col span={4}>
+              <TextInput
+                sx={{ input: { textAlign: 'right' } }}
+                size="xs"
+                onChange={(evt) => moneyMasker(evt, 'blokirAngsuran')}
+                error={form.errors.blokirAngsuran}
               />
             </Grid.Col>
             <Grid.Col span={3}>
@@ -368,9 +385,7 @@ const Calc = () => {
 
                 <Rows title="Bunga">
                   <Text size="xs" mr={5} align="right">
-                    {form.values.skemaBunga === 'ANUITAS'
-                      ? `${selectedProduk.rateAnuitas}%`
-                      : `${selectedProduk.rateFlat}%`}
+                    {Math.round(selectedProduk.bunga * 10000) / 100} {'%'}
                   </Text>
                 </Rows>
                 <Rows title="Angsuran">

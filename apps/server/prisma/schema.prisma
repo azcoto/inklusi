@@ -10,21 +10,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Produk {
-  id            Int     @id @default(autoincrement())
-  nama          String  @db.VarChar(256)
-  rateAnuitas   Decimal @map("rate_anuitas") @db.Decimal(4, 2)
-  rateFlat      Decimal @map("rate_flat") @db.Decimal(4, 2)
-  pProvisi      Decimal @map("persen_provisi") @db.Decimal(4, 2)
-  pAdministrasi Decimal @map("persen_administrasi") @db.Decimal(4, 2)
-  cBlokir       Int     @map("count_blokir")
+model TipeDebitur {
+  id               Int    @id @default(autoincrement())
+  nama             String @db.VarChar(256)
+  kategoriAsuransi String @map("kategori_asuransi") @db.Char(1)
 
+  @@map("tipe_debitur")
 }
 
-model Bunga {
+model Produk {
   id    Int     @id @default(autoincrement())
-  rate  Decimal @db.Decimal(4, 2)
+  nama  String  @unique @db.VarChar(256)
+  bunga Decimal @db.Decimal(5, 4)
   skema String  @db.VarChar(255)
+
+  IndeksPengali IndeksPengali[]
+
+  @@map("produk")
+}
+
+model IndeksPengali {
+  id       Int @id @default(autoincrement())
+  produkId Int @map("produk_id")
+  tenor    Int
+  pengali  Int
+
+  Produk Produk @relation(fields: [produkId], references: [id])
+
+  @@map("indeks_pengali")
+}
+
+model Asuransi {
+  id       Int     @id @default(autoincrement())
+  kategori String  @db.Char(1)
+  tenor    Int
+  rate     Decimal @db.Decimal(6, 5)
+
+  @@map("asuransi")
 }
 
 model Users {

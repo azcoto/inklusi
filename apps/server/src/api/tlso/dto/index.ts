@@ -19,3 +19,4 @@ const argsSoByTl = Prisma.validator<Prisma.KaryawanArgs>()({
 });
 
 export type GetSoByTlResponse = Prisma.KaryawanGetPayload<typeof argsSoByTl>[];
+export type GetAllTlResponse = Prisma.KaryawanGetPayload<typeof argsSoByTl>[];

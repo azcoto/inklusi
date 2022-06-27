@@ -1,12 +1,12 @@
 import { Request, Response, Router } from 'express';
 import db from '@db/prisma-client';
 import auth from './auth';
-import bunga from './bunga';
 import produk from './produk';
 import areaPotensiTL from './leader';
 import potensi from './potensi';
 import tlSo from './tlso';
 import visit from './visit';
+import tipeDebitur from './tipeDebitur';
 
 const apiRouter = Router();
 
@@ -17,10 +17,10 @@ apiRouter.get('/', async (_: Request, res: Response) => {
 
 apiRouter.use('/auth', auth);
 apiRouter.use('/produk', produk);
-apiRouter.use('/bunga', bunga);
 apiRouter.use('/leader', areaPotensiTL);
 apiRouter.use('/potensi', potensi);
 apiRouter.use('/visit', visit);
 apiRouter.use('/tlso', tlSo);
+apiRouter.use('/tipe-debitur', tipeDebitur);
 
 export default apiRouter;

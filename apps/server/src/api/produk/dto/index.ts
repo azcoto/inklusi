@@ -3,13 +3,23 @@ import { z } from 'zod';
 
 export const zGetProdukResponse = z.array(
   z.object({
+    id: z.number(),
     nama: z.string(),
-    rateAnuitas: z.instanceof(Decimal).transform((value) => value.toNumber()),
-    rateFlat: z.instanceof(Decimal).transform((value) => value.toNumber()),
-    pProvisi: z.instanceof(Decimal).transform((value) => value.toNumber()),
-    pAdministrasi: z.instanceof(Decimal).transform((value) => value.toNumber()),
-    cBlokir: z.number(),
+    bunga: z.instanceof(Decimal).transform((value) => value.toNumber()),
+    skema: z.string(),
   }),
 );
 
 export type GetProdukResponse = z.infer<typeof zGetProdukResponse>;
+
+export type IndeksPengaliParams = {
+  produkId: string;
+  tenor: string;
+};
+
+export type IndeksPengaliResponse = {
+  id: number;
+  produkId: number;
+  tenor: number;
+  pengali: number;
+};

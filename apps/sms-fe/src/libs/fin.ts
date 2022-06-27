@@ -20,12 +20,7 @@ export const xPV = (
   return raw;
 };
 
-export const xPMT = (
-  pv: number,
-  rate: number,
-  nper: number,
-  skema: skemaBunga,
-) => {
+export const xPMT = (pv: number, rate: number, nper: number, skema: string) => {
   let raw: number;
   if (skema === 'ANUITAS') {
     raw = -pmt(rate / 12, nper, pv);

@@ -6,7 +6,9 @@ import {
   getPotensiKelurahanTL,
   getPotensiKotaTL,
 } from './leader';
+import { getAlltipeDebitur } from './tipeDebitur';
 import { getProduk } from './produk';
+import { getIndeksPengali } from './indeksPengali';
 import { postAssignVisit, bySFVisit, visitDetail, patchVisit } from './visit';
 
 const services = {
@@ -26,8 +28,14 @@ const services = {
     getPotensiKecamatanTL,
     getPotensiKelurahanTL,
   },
+  tipeDebitur: {
+    getAlltipeDebitur,
+  },
   produk: {
     getProduk,
+  },
+  indeksPengali: {
+    getIndeksPengali,
   },
   visit: {
     postAssignVisit,

@@ -7,6 +7,7 @@ import { AuthError } from '../errorHandler';
 export enum Roles {
   tl = 'TL',
   so = 'SF',
+  adm = 'ADM',
 }
 export enum AppName {
   sms = 'sms-fe',
@@ -24,6 +25,8 @@ const authorize =
       const token = req.headers.authorization!.split(' ')[1];
       const dec = verify(token, secret);
       const jwtData = dec as JWTData;
+      console.log(jwtData);
+      console.log(role);
       if (
         role.role.includes(jwtData.jabatan as Roles) &&
         role.appname.includes(jwtData.appname as AppName)
