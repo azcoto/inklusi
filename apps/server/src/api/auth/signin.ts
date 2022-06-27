@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import db from '@db/prisma-client';
+import db from '../../../prisma/prisma-client';
 import { NextFunction, Request, Response } from 'express';
 import { SignInDTO } from './dto';
 import { sign, SignOptions } from 'jsonwebtoken';
@@ -9,7 +9,7 @@ import {
   jwtRefreshOptions,
   refreshSecret,
   secret,
-} from '@libs/config';
+} from '../../trpc/libs/config';
 import { ApiError } from '../errorHandler';
 
 const signIn = async (

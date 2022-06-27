@@ -1,5 +1,5 @@
 import express, { Application, Response } from 'express';
-import { createContext } from '@libs/context';
+import { createContext } from '../src/trpc/libs/context';
 import { appRouter } from './trpc/routes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';

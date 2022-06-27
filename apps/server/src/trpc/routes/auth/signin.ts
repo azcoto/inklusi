@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt';
-import prisma from '@libs/prisma';
+import prisma from '../../libs/prisma';
 
-import { createRouter } from '@libs/router';
+import { createRouter } from '../../libs/router';
 import { signinSchema } from './schema';
 import { TRPCError } from '@trpc/server';
 import { sign, SignOptions } from 'jsonwebtoken';
-import { secret } from '@libs/config';
+import { secret } from '../../libs/config';
 
 const signin = createRouter().mutation('signin', {
   input: signinSchema,

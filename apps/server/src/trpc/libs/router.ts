@@ -1,5 +1,5 @@
 import { router, TRPCError } from '@trpc/server';
-import { Context } from '@libs/context';
+import { Context } from '../libs/context';
 
 export const createRouter = () => {
   return router<Context>();

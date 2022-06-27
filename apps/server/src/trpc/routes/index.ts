@@ -1,4 +1,4 @@
-import { createRouter } from '@libs/router';
+import { createRouter } from '../libs/router';
 import { auth } from './auth';
 import user from './user';
 

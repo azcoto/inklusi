@@ -1,4 +1,4 @@
-import db from '@db/prisma-client';
+import db from '../../../prisma/prisma-client';
 import { Request, Response } from 'express';
 
 const allTl = async (req: Request, res: Response) => {

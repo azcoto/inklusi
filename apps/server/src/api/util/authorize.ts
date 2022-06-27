@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { decode, JsonWebTokenError, verify } from 'jsonwebtoken';
 import { JWTData, SignInResponse } from '../auth/dto';
-import { secret } from '@libs/config';
+import { secret } from '../../trpc/libs/config';
 import { AuthError } from '../errorHandler';
 
 export enum Roles {

@@ -1,11 +1,11 @@
-import db from '@db/prisma-client';
+import db from '../../../prisma/prisma-client';
 import {
   environment,
   jwtOptions,
   jwtRefreshOptions,
   refreshSecret,
   secret,
-} from '@libs/config';
+} from '../../trpc/libs/config';
 import { NextFunction, Request, Response } from 'express';
 import { JsonWebTokenError, JwtPayload, sign, verify } from 'jsonwebtoken';
 import { AuthError } from '../errorHandler';

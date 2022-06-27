@@ -1,4 +1,4 @@
-import { createRouter } from '@libs/router';
+import { createRouter } from '../../libs/router';
 
 const user = createRouter().query('me', {
   resolve() {

@@ -1,4 +1,4 @@
-import db from '@db/prisma-client';
+import db from '../../../prisma/prisma-client';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { DataPotensiKotaTL, zDataPotensiKotaTL } from './dto';

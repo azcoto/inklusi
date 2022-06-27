@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import db from '@db/prisma-client';
+import db from '../../prisma/prisma-client';
 import auth from './auth';
 import produk from './produk';
 import areaPotensiTL from './leader';

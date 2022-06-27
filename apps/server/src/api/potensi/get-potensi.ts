@@ -1,11 +1,7 @@
-import prisma from '@libs/prisma';
-import { Prisma } from '@prisma/client';
+import db from '../../../prisma/prisma-client';
+
 import { NextFunction, Request, Response } from 'express';
-import {
-  GetPotensiByAreaDTO,
-  selectPotensiByArea,
-  zGetPotensiByAreaDTO,
-} from './dto';
+import { GetPotensiByAreaDTO, selectPotensiByArea } from './dto';
 
 export const getPotensiByArea = async (
   req: Request<unknown, unknown, unknown, GetPotensiByAreaDTO>,
@@ -14,7 +10,7 @@ export const getPotensiByArea = async (
 ) => {
   try {
     const { kota, kecamatan, kelurahan, page } = req.query;
-    const result = await prisma.maspen.findMany({
+    const result = await db.maspen.findMany({
       skip: (Number(page) - 1) * 10,
       take: 10,
       select: selectPotensiByArea,

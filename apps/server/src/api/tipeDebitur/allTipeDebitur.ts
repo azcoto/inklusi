@@ -1,4 +1,4 @@
-import prisma from '@libs/prisma';
+import db from '../../../prisma/prisma-client';
 import { NextFunction, Request, Response } from 'express';
 
 const allTipeDebitur = async (
@@ -7,7 +7,7 @@ const allTipeDebitur = async (
   next: NextFunction,
 ) => {
   try {
-    const tipeDebitur = await prisma.tipeDebitur.findMany();
+    const tipeDebitur = await db.tipeDebitur.findMany();
     return res.status(200).send(tipeDebitur);
   } catch (error) {
     return next(error);
