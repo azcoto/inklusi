@@ -16,6 +16,20 @@ import { AuthProvider } from 'context/auth';
 import { getItem } from 'services/localStorage';
 import Home from 'pages/Home';
 import DisburseEntry from 'pages/DisburseEntry';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { DisburseSummary } from 'pages/DisburseSummary';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      retry: false,
+      staleTime: Infinity,
+    },
+  },
+});
 
 const App = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -29,52 +43,61 @@ const App = () => {
 
   return (
     <React.StrictMode>
-      <Router>
-        <ColorSchemeProvider
-          colorScheme={colorScheme}
-          toggleColorScheme={toggleScheme}
-        >
-          <MantineProvider
-            theme={{
-              fontFamily: 'Open Sans',
-              colorScheme: colorScheme,
-              primaryShade: 7,
-            }}
-            styles={{
-              AppShell: (theme) => ({
-                root: {
-                  background:
-                    theme.colorScheme === 'dark'
-                      ? theme.colors.dark[8]
-                      : theme.colors.gray[1],
-                },
-              }),
-              Footer: (theme) => ({
-                root: {
-                  background:
-                    theme.colorScheme === 'dark'
-                      ? theme.colors.dark[8]
-                      : theme.colors.gray[1],
-                },
-              }),
-            }}
-            withGlobalStyles
-            withNormalizeCSS
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <ColorSchemeProvider
+            colorScheme={colorScheme}
+            toggleColorScheme={toggleScheme}
           >
-            <NotificationsProvider position="top-center" zIndex={2077}>
-              <AuthProvider user={getItem('user')}>
-                <Routes>
-                  <Route path="/signin" element={<SignIn />} />
-                  <Route path="/" element={<Shell />}>
-                    <Route index element={<Home />} />
-                    <Route path="disburse-entry" element={<DisburseEntry />} />
-                  </Route>
-                </Routes>
-              </AuthProvider>
-            </NotificationsProvider>
-          </MantineProvider>
-        </ColorSchemeProvider>
-      </Router>
+            <MantineProvider
+              theme={{
+                fontFamily: 'Open Sans',
+                colorScheme: colorScheme,
+                primaryShade: 7,
+              }}
+              styles={{
+                AppShell: (theme) => ({
+                  root: {
+                    background:
+                      theme.colorScheme === 'dark'
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[1],
+                  },
+                }),
+                Footer: (theme) => ({
+                  root: {
+                    background:
+                      theme.colorScheme === 'dark'
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[1],
+                  },
+                }),
+              }}
+              withGlobalStyles
+              withNormalizeCSS
+            >
+              <NotificationsProvider position="top-center" zIndex={2077}>
+                <AuthProvider user={getItem('user')}>
+                  <Routes>
+                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/" element={<Shell />}>
+                      <Route index element={<Home />} />
+                      <Route
+                        path="disburse-entry"
+                        element={<DisburseEntry />}
+                      />
+                      <Route
+                        path="disburse-summary"
+                        element={<DisburseSummary />}
+                      />
+                    </Route>
+                  </Routes>
+                </AuthProvider>
+              </NotificationsProvider>
+            </MantineProvider>
+          </ColorSchemeProvider>
+        </Router>
+      </QueryClientProvider>
     </React.StrictMode>
   );
 };

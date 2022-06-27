@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
+      'https://ops2.coto.dev',
       'http://localhost:3000',
       'http://localhost:3001',
       'http://localhost:3002',

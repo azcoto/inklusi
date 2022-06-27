@@ -1,5 +1,6 @@
 import {
   Select,
+  Autocomplete,
   TextInput,
   Text,
   Container,
@@ -13,26 +14,8 @@ import { DatePicker } from '@mantine/dates';
 import { useForm, zodResolver } from '@mantine/form';
 import { useRef } from 'react';
 import { z } from 'zod';
-
-const tipeDebitur = [
-  'PNS/CPNS OTONOM',
-  'PENSIUN',
-  'PNS/CPNS VERTIKAL PAYROLL',
-  'PNS/CPNS VERTIKAL NON PAYROLL',
-  'BUMN/BUMD PAYROLL',
-  'BUMN/BUMD NON PAYROLL',
-  'BUMS PAYROLL',
-  'BUMS NON PAYROLL',
-  'PPPK',
-];
-
-const produk = [
-  'KCU UMUM ANUITAS',
-  'KCU UMUM FLAT',
-  'KCU UMUM SLIDING',
-  'MURABAHAH PLUS',
-  'MUSYARAKAH MUTANAQISHAH (MMQ)',
-];
+import { useMutation, useQuery } from 'react-query';
+import services from 'services';
 
 const zEntryForm = z.object({
   nopen: z.string().min(1, { message: 'Nopen tidak boleh kosong' }),
@@ -42,10 +25,7 @@ const zEntryForm = z.object({
     .default(new Date()),
   tipeDebitur: z.string(),
   produk: z.string(),
-  jangkaWaktu: z
-    .string()
-    .or(z.number())
-    .transform((s) => Number(s)),
+  tenor: z.string().transform((s) => Number(s)),
   plafond: z
     .string({ invalid_type_error: 'Harus Diisi' })
     .transform((s) => Number(s))
@@ -71,13 +51,32 @@ const DisburseEntry = () => {
       produk: '',
       cabang: '',
       tipeDebitur: '',
-      jangkaWaktu: 0,
+      tenor: 0,
       plafond: 0,
       norekKredit: '',
       tgRealisasi: new Date(),
       nikTl: '',
       nikMr: '',
     },
+  });
+
+  const produkQuery = useQuery(['produk'], services.produk.getProduk);
+  const tipeDebiturQuery = useQuery(
+    ['tipeDebitur'],
+    services.tipeDebitur.getAlltipeDebitur,
+  );
+  const cabangQuery = useQuery(['cabang'], services.cabang.getAllCabang);
+  const tlQuery = useQuery(['tl'], services.tlso.getAllTl);
+  const mrQuery = useQuery(
+    ['mr', form.values.nikTl],
+    () => services.tlso.getSoByTl(form.values.nikTl),
+    {
+      enabled: form.values.nikTl !== '',
+    },
+  );
+
+  const putDisburseMutation = useMutation(services.disburse.putDisburse, {
+    onSuccess: () => console.log('Success'),
   });
 
   const moneyMasker = (
@@ -90,9 +89,33 @@ const DisburseEntry = () => {
     evt.target.value = Number(evt.target.value).toLocaleString('id');
   };
 
+  const submitData = (param: EntryForm) => {
+    const parsed = zEntryForm.parse(param);
+
+    const data = {
+      nopen: parsed.nopen,
+      nama: parsed.nama,
+      tgRealisasi: parsed.tgRealisasi,
+      tipeDebiturId: tipeDebiturQuery.data?.find(
+        (p) => p.nama === parsed.tipeDebitur,
+      )?.id as number,
+      produkId: produkQuery.data?.find((p) => p.nama === parsed.produk)
+        ?.id as number,
+      tenor: parsed.tenor,
+      plafond: parsed.plafond,
+      norekKredit: parsed.norekKredit,
+      nikTl: parsed.nikTl,
+      nikMr: parsed.nikMr,
+      cabangId: cabangQuery.data?.find((p) => p.nama === parsed.cabang)
+        ?.id as number,
+    };
+    putDisburseMutation.mutate(data);
+    form.reset();
+  };
+
   return (
     <Container fluid>
-      <form ref={formRef}>
+      <form ref={formRef} onSubmit={form.onSubmit(submitData)}>
         <Text size="lg" weight={'bold'}>
           Form Entry Disburse
         </Text>
@@ -110,24 +133,28 @@ const DisburseEntry = () => {
             label="Nama"
             {...form.getInputProps('nama')}
           />
-          <Select
-            sx={{ alignSelf: 'stretch' }}
-            size="xs"
-            label="Tipe Debitur"
-            data={tipeDebitur}
-            {...form.getInputProps('tipeDebitur')}
-          />
-
-          <Group sx={{ alignSelf: 'stretch', alignItems: 'flex-end' }}>
-            <Select
-              sx={{ flexGrow: 1 }}
+          {tipeDebiturQuery.data && (
+            <Autocomplete
+              sx={{ alignSelf: 'stretch' }}
               size="xs"
-              label="Produk"
-              data={produk}
-              {...form.getInputProps('produk')}
+              label="Tipe Debitur"
+              data={tipeDebiturQuery.data.map((p) => p.nama)}
+              {...form.getInputProps('tipeDebitur')}
             />
-            <Switch label="SK On Hand" />
-          </Group>
+          )}
+
+          {produkQuery.data && (
+            <Group sx={{ alignSelf: 'stretch', alignItems: 'flex-end' }}>
+              <Autocomplete
+                sx={{ flexGrow: 1 }}
+                size="xs"
+                label="Produk"
+                data={produkQuery.data.map((p) => p.nama)}
+                {...form.getInputProps('produk')}
+              />
+              <Switch label="SK On Hand" />
+            </Group>
+          )}
 
           <Group sx={{ alignSelf: 'stretch' }}>
             <TextInput
@@ -139,8 +166,8 @@ const DisburseEntry = () => {
                   Bulan
                 </Text>
               }
-              onChange={(evt) => moneyMasker(evt, 'jangkaWaktu')}
-              error={form.errors.jangkaWaktu}
+              onChange={(evt) => moneyMasker(evt, 'tenor')}
+              error={form.errors.tenor}
             />
             <TextInput
               sx={{
@@ -163,27 +190,46 @@ const DisburseEntry = () => {
               label="Tanggal Realisasi"
               {...form.getInputProps('tgRealisasi')}
             />
-            <Select
-              sx={{ flexGrow: 1 }}
-              size="xs"
-              label="Cabang"
-              data={[]}
-              {...form.getInputProps('cabang')}
-            />
+            {cabangQuery.data && (
+              <Autocomplete
+                sx={{ flexGrow: 1 }}
+                size="xs"
+                label="Cabang"
+                limit={10}
+                data={cabangQuery.data.map((p) => {
+                  return {
+                    value: p.nama,
+                    group: p.kanwil,
+                  };
+                })}
+                {...form.getInputProps('cabang')}
+              />
+            )}
           </Group>
           <Group sx={{ alignSelf: 'stretch' }} grow>
-            <Select
-              size="xs"
-              label="Team Leader"
-              data={[]}
-              {...form.getInputProps('nikTl')}
-            />
-            <Select
-              size="xs"
-              label="Marketing Representative"
-              data={[]}
-              {...form.getInputProps('nikMr')}
-            />
+            {tlQuery.data && (
+              <Select
+                size="xs"
+                label="Team Leader"
+                data={tlQuery.data.map((p) => {
+                  return {
+                    value: p.nip,
+                    label: p.nama,
+                  };
+                })}
+                {...form.getInputProps('nikTl')}
+              />
+            )}
+            {mrQuery.data && (
+              <Select
+                size="xs"
+                label="Marketing Representative"
+                data={mrQuery.data.map((p) => {
+                  return { value: p.nip, label: p.nama };
+                })}
+                {...form.getInputProps('nikMr')}
+              />
+            )}
           </Group>
           <TextInput
             sx={{ alignSelf: 'stretch' }}
@@ -191,7 +237,9 @@ const DisburseEntry = () => {
             label="Nomor Rekening Kredit"
             {...form.getInputProps('norekKredit')}
           />
-          <Button fullWidth>SUBMIT</Button>
+          <Button type="submit" fullWidth>
+            SUBMIT
+          </Button>
         </Stack>
       </form>
     </Container>

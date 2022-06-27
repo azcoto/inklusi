@@ -15,6 +15,7 @@ model TipeDebitur {
   nama             String @db.VarChar(256)
   kategoriAsuransi String @map("kategori_asuransi") @db.Char(1)
 
+  Disburse Disburse[]
   @@map("tipe_debitur")
 }
 
@@ -26,7 +27,18 @@ model Produk {
 
   IndeksPengali IndeksPengali[]
 
+  Disburse Disburse[]
   @@map("produk")
+}
+
+model Cabang {
+  id     Int    @id @default(autoincrement())
+  kanwil String @db.VarChar(256)
+  nama   String @unique @db.VarChar(256)
+  tipe   String @db.VarChar(256)
+
+  Disburse Disburse[]
+  @@map("cabang")
 }
 
 model IndeksPengali {
@@ -47,6 +59,29 @@ model Asuransi {
   rate     Decimal @db.Decimal(6, 5)
 
   @@map("asuransi")
+}
+
+model Disburse {
+  id            Int         @id @default(autoincrement())
+  nopen         String      @db.VarChar(255)
+  nama          String      @db.VarChar(255)
+  tipeDebiturId Int         @map("tipe_debitur_id")
+  TipeDebitur   TipeDebitur @relation(fields: [tipeDebiturId], references: [id])
+  produkId      Int         @map("produk_id")
+  Produk        Produk      @relation(fields: [produkId], references: [id])
+  tenor         Int
+  plafond       Decimal     @db.Decimal(14, 0)
+  cabangId      Int         @map("cabang_id")
+  Cabang        Cabang      @relation(fields: [cabangId], references: [id])
+  norekKredit   String      @map("norek_kredit") @db.VarChar(255)
+  nikTl         String      @map("nik_tl") @db.VarChar(255)
+  KaryawanTl    Karyawan    @relation(name: "disbTl", fields: [nikTl], references: [nik])
+  nikMr         String      @map("nik_mr") @db.VarChar(255)
+  KaryawanMr    Karyawan    @relation(name: "disbMr", fields: [nikMr], references: [nik])
+  tgRealisasi   DateTime    @map("tg_realisasi") @db.Date
+  deleted       Boolean     @default(false) @db.Boolean
+
+  @@map("disburse")
 }
 
 model Users {
@@ -84,8 +119,11 @@ model Karyawan {
   users  Users[]
   tlArea Leader[]
 
-  tlVisit Visit[] @relation("tlKaryawan")
-  soVisit Visit[] @relation("soKaryawan")
+  tlVisit    Visit[]    @relation("tlKaryawan")
+  soVisit    Visit[]    @relation("soKaryawan")
+  DisburseTl Disburse[] @relation("disbTl")
+  DisburseMr Disburse[] @relation("disbMr")
+
   @@map("karyawan")
 }
 

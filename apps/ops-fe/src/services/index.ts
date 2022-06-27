@@ -8,6 +8,10 @@ import {
 } from './leader';
 import { getProduk } from './produk';
 import { postAssignVisit, bySFVisit, visitDetail, patchVisit } from './visit';
+import { getAlltipeDebitur } from './tipeDebitur';
+import { getAllCabang } from './cabang';
+import { getAllTl, getSoByTl } from './tlso';
+import { allDisburse, putDisburse } from './disburse';
 
 const services = {
   auth: {
@@ -29,11 +33,25 @@ const services = {
   produk: {
     getProduk,
   },
+  tipeDebitur: {
+    getAlltipeDebitur,
+  },
+  cabang: {
+    getAllCabang,
+  },
   visit: {
     postAssignVisit,
     bySFVisit,
     visitDetail,
     patchVisit,
+  },
+  disburse: {
+    putDisburse,
+    allDisburse,
+  },
+  tlso: {
+    getAllTl,
+    getSoByTl,
   },
 };
 
