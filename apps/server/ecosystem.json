@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "inklusi-api",
+      "script": "./dist/src/main.js",
+      "merge_logs": true,
+      "instances": 4,
+      "env_production": {
+        "NODE_ENV": "production",
+        "NODE_BASEURL": "./dist"
+      }
+    }
+  ]
+}
