@@ -20,10 +20,11 @@ model TipeDebitur {
 }
 
 model Produk {
-  id    Int     @id @default(autoincrement())
-  nama  String  @unique @db.VarChar(256)
-  bunga Decimal @db.Decimal(5, 4)
-  skema String  @db.VarChar(255)
+  id     Int     @id @default(autoincrement())
+  nama   String  @unique @db.VarChar(256)
+  bunga  Decimal @db.Decimal(5, 4)
+  skema  String  @db.VarChar(255)
+  konven String  @db.VarChar(255)
 
   IndeksPengali IndeksPengali[]
 

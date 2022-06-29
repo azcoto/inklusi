@@ -1,3 +1,4 @@
+import { AllAsuransiResponse } from '@api/asuransi/dto';
 import { GetProdukResponse } from '@api/produk/dto';
 import { AlltipeDebiturResponse } from '@api/tipeDebitur/dto';
 import {
@@ -11,6 +12,9 @@ import {
   NativeSelect,
   Divider,
   Switch,
+  Select,
+  NumberInput,
+  useMantineColorScheme,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm, zodResolver } from '@mantine/form';
@@ -18,22 +22,36 @@ import { showNotification } from '@mantine/notifications';
 import { useAuthed } from 'context/auth';
 import dayjs from 'dayjs';
 import html2canvas from 'html2canvas';
+import exactAge from 'libs/exact-age';
 import { xPMT } from 'libs/fin';
 import { saveAs } from 'libs/save-as';
 import { useEffect, useRef, useState } from 'react';
 import services from 'services';
 import z from 'zod';
-import Rows from './rows';
+import Rows from './Rows';
+import SimResult from './SimResult';
 
-interface SimulasiResult {
+export interface SimulasiResult {
+  plafond: number;
   angsuran: number;
+  sisaGaji: number;
   asuransi: number;
-  provisi: number;
-  administrasi: number;
+  provisiOrAdmin: number;
   tBlokir: number;
   tBiaya: number;
   tBersih: number;
-  tTerima: number;
+}
+
+interface SumSimulasi {
+  plafond: number;
+  angsuran: number;
+  asuransi: number;
+  provisiOrAdmin: number;
+  tBlokir: number;
+  tBiaya: number;
+  tBersih: number;
+  tPelunasan: number;
+  tPenerimaan: number;
 }
 
 const zSimulasiForm = z.object({
@@ -54,7 +72,10 @@ const zSimulasiForm = z.object({
     .string()
     .transform((s) => Number(s))
     .refine((n) => n > 100000 && n < 20000000, 'Gaji invalid'),
-  blokirAngsuran: z.string().transform((s) => Number(s)),
+  blokirAngsuran: z
+    .string()
+    .or(z.number())
+    .transform((s) => Number(s)),
   plafond: z
     .string({ invalid_type_error: 'Harus Diisi' })
     .transform((s) => Number(s))
@@ -65,11 +86,20 @@ const zSimulasiForm = z.object({
     .transform((s) => Number(s))
     .superRefine((arg, ctx) => ctx.addIssue)
     .optional(),
+  jumlahAkad: z.string(),
+  bup: z.number().nullable(),
 });
 
 type SimulasiForm = z.infer<typeof zSimulasiForm>;
 
+const jumlahAkadData = [
+  { value: '1', label: '1 AKAD PINJAMAN' },
+  { value: '2', label: '2 AKAD PINJAMAN' },
+  { value: '3', label: '3 AKAD PINJAMAN' },
+];
+
 const Calc = () => {
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { currentUser } = useAuthed();
   const calcRef = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -80,9 +110,15 @@ const Calc = () => {
     const fetchData = async () => {
       const pProduk = services.produk.getProduk();
       const pTipe = services.tipeDebitur.getAlltipeDebitur();
-      const [produk, tipe] = await Promise.all([pProduk, pTipe]);
+      const pAsuransi = services.asuransi.allAsuransi();
+      const [produk, tipe, asuransi] = await Promise.all([
+        pProduk,
+        pTipe,
+        pAsuransi,
+      ]);
       setListProduk(produk);
       setListAllTipeDebitur(tipe);
+      setListRateAsuransi(asuransi);
     };
     fetchData();
 
@@ -92,8 +128,20 @@ const Calc = () => {
   const [listAllTipeDebitur, setListAllTipeDebitur] =
     useState<AlltipeDebiturResponse>([]);
   const [listProduk, setListProduk] = useState<GetProdukResponse>([]);
+  const [listRateAsuransi, setListRateAsuransi] = useState<AllAsuransiResponse>(
+    [],
+  );
   const [selectedProduk, setSelectedProduk] = useState<GetProdukResponse[0]>();
   const [simulasiResult, setSimulasiResult] = useState<SimulasiResult>();
+  const [simulasiResult2, setSimulasiResult2] =
+    useState<SimulasiResult | null>();
+  const [simulasiResult3, setSimulasiResult3] =
+    useState<SimulasiResult | null>();
+  const [sumSimulasiResult, setSumSimulasiResult] = useState<SumSimulasi>();
+  const [currentIndeksPengali, setCurrentIndeksPengali] = useState<number>(0);
+  const [currentRateAsuransi, setCurrentRateAsuransi] = useState<number>(0);
+  const [currentKonven, setCurrentKonven] = useState<string>('');
+  const [maxTenor, setMaxTenor] = useState<number>(0);
 
   const form = useForm<SimulasiForm>({
     schema: zodResolver(zSimulasiForm),
@@ -105,12 +153,14 @@ const Calc = () => {
       tipeDebitur: 'PNS/CPNS OTONOM',
       produk: 'KCU UMUM ANUITAS',
       skemaBunga: 'ANUITAS',
-      jangkaWaktu: 12,
+      jangkaWaktu: 60,
       gaji: 0,
       blokirAngsuran: 0,
       plafond: 0,
       maksPlafond: 0,
       pelunasan: 0,
+      jumlahAkad: '1',
+      bup: null,
     },
   });
 
@@ -126,25 +176,36 @@ const Calc = () => {
   const getMaksPlafond = async () => {
     if (!selectedProduk) return;
     const { gaji, jangkaWaktu } = form.values;
-    console.log(gaji);
     if (gaji >= 500000) {
       const p = await services.indeksPengali.getIndeksPengali(
         selectedProduk.id,
         jangkaWaktu,
       );
-      console.log(p);
-      const maksPlafond = p.pengali * gaji;
-      console.log(maksPlafond);
+      setCurrentIndeksPengali(p.pengali);
+      let maksPlafond: number;
+      if (form.values.jumlahAkad && form.values.jumlahAkad === '3') {
+        maksPlafond = Math.round((p.pengali * gaji * 75) / 100);
+      } else {
+        maksPlafond = p.pengali * gaji;
+      }
 
       form.setFieldValue('maksPlafond', maksPlafond);
     }
   };
 
   const simulasi = () => {
-    console.log('executed');
     if (!selectedProduk) return;
-    const { plafond, maksPlafond, pelunasan, jangkaWaktu, blokirAngsuran } =
-      form.values;
+    const {
+      plafond,
+      gaji,
+      maksPlafond,
+      pelunasan,
+      jangkaWaktu,
+      blokirAngsuran,
+      jumlahAkad,
+      takeOver,
+      produk,
+    } = form.values;
     if (plafond > maksPlafond) {
       form.setFieldError(
         'plafond',
@@ -152,60 +213,174 @@ const Calc = () => {
       );
       return;
     }
+
     const angsuran = xPMT(
       plafond,
       selectedProduk.bunga,
       jangkaWaktu,
       selectedProduk.skema,
     );
-    const asuransi = (10 / 100) * plafond;
-    const provisi = Math.round((1.5 / 100) * plafond);
 
-    const administrasi = 0;
-    const tBlokir = blokirAngsuran * angsuran;
-    const tBiaya = asuransi + provisi + administrasi;
-    const tBersih = plafond - tBiaya;
-    let tTerima: number;
-    if (pelunasan) {
-      tTerima = plafond - tBiaya - pelunasan;
+    // Check kategori asuransi using tipe Debitur
+    let kategoriAsuransi: string;
+    if (Number(form.values.jumlahAkad) < 3) {
+      kategoriAsuransi = listAllTipeDebitur.find((p) => {
+        return p.nama === form.values.tipeDebitur;
+      })?.kategoriAsuransi as string;
     } else {
-      tTerima = tBersih;
+      kategoriAsuransi = '2';
     }
+
+    // Find rate asuransi
+    console.log(kategoriAsuransi, jangkaWaktu);
+    const rateAsuransi = listRateAsuransi.find((p) => {
+      return p.kategori === kategoriAsuransi && p.tenor === Number(jangkaWaktu);
+    })?.rate as number;
+
+    const tipeProduk = listProduk.find((p) => p.nama === produk)
+      ?.konven as string;
+    setCurrentKonven(tipeProduk);
+    console.log(rateAsuransi);
+    let rateProvisiOrAdmin: number;
+    if (takeOver && tipeProduk === 'SYARIAH' && Number(jumlahAkad) === 3) {
+      rateProvisiOrAdmin = 2 / 100;
+    } else if (takeOver) {
+      rateProvisiOrAdmin = 1.5 / 100;
+    } else {
+      rateProvisiOrAdmin = 0;
+    }
+    const asuransi = Math.round(rateAsuransi * plafond);
+    const provisiOrAdmin = Math.round(rateProvisiOrAdmin * plafond);
+
+    const tBlokir = blokirAngsuran * angsuran;
+    const tBiaya = asuransi + provisiOrAdmin;
+    const tBersih = plafond - tBiaya;
+    const sisaGaji =
+      jumlahAkad === '3'
+        ? Math.round((gaji * 75) / 100 - angsuran)
+        : gaji - angsuran;
     const hasil: SimulasiResult = {
+      plafond,
       angsuran,
+      sisaGaji,
       asuransi,
-      provisi,
-      administrasi,
+      provisiOrAdmin,
       tBlokir,
       tBiaya,
       tBersih,
-      tTerima,
     };
-
     setSimulasiResult(hasil);
+    let hasil2: SimulasiResult | undefined;
+    let hasil3: SimulasiResult | undefined;
+    if (Number(form.values.jumlahAkad) === 2) {
+      hasil2 = simulateNext(
+        selectedProduk,
+        Number(jangkaWaktu),
+        hasil.sisaGaji,
+        rateAsuransi,
+        rateProvisiOrAdmin,
+      );
+      setSimulasiResult2(hasil2);
+    } else if (Number(form.values.jumlahAkad) === 3) {
+      const hasil2 = simulateNext(
+        selectedProduk,
+        Number(jangkaWaktu),
+        hasil.sisaGaji,
+        rateAsuransi,
+        rateProvisiOrAdmin,
+      );
+      setSimulasiResult2(hasil2);
+      const hasil3 = simulateNext(
+        selectedProduk,
+        Number(untilBUP()), // jangka waktu III
+        hasil2.sisaGaji,
+        rateAsuransi,
+        rateProvisiOrAdmin,
+      );
+      setSimulasiResult3(hasil3);
+    }
+
+    const sum: SumSimulasi = {
+      plafond,
+      angsuran:
+        hasil.angsuran + (hasil2?.angsuran || 0) + (hasil3?.angsuran || 0),
+      asuransi:
+        hasil.asuransi + (hasil2?.asuransi || 0) + (hasil3?.asuransi || 0),
+      provisiOrAdmin:
+        hasil.provisiOrAdmin +
+        (hasil2?.provisiOrAdmin || 0) +
+        (hasil3?.provisiOrAdmin || 0),
+      tBlokir: hasil.tBlokir + (hasil2?.tBlokir || 0) + (hasil3?.tBlokir || 0),
+      tBiaya: hasil.tBiaya + (hasil2?.tBiaya || 0) + (hasil3?.tBiaya || 0),
+      tBersih: hasil.tBersih + (hasil2?.tBersih || 0) + (hasil3?.tBersih || 0),
+      tPelunasan: pelunasan || 0,
+      tPenerimaan:
+        hasil.tBersih +
+        (hasil2?.tBersih || 0) +
+        (hasil3?.tBersih || 0) -
+        (pelunasan || 0),
+    };
+    setSumSimulasiResult(sum);
   };
-  const saveSimulasi = () => {
+
+  const simulateNext = (
+    selectedProduk: GetProdukResponse[0],
+    jangkaWaktu: number,
+    sisaGaji: number,
+    rateAsuransi: number,
+    rateProvisiOrAdmin: number,
+  ) => {
+    const { blokirAngsuran } = form.values;
+    const plafond2 = currentIndeksPengali * sisaGaji;
+    const angsuran2 = xPMT(
+      plafond2,
+      selectedProduk.bunga,
+      jangkaWaktu,
+      selectedProduk.skema,
+    );
+    const asuransi2 = Math.round(rateAsuransi * plafond2);
+    const provisiOrAdmin2 = Math.round(rateProvisiOrAdmin * plafond2);
+    const tBlokir2 = blokirAngsuran * angsuran2;
+    const tBiaya2 = asuransi2 + provisiOrAdmin2 + tBlokir2;
+    const tBersih = plafond2 - tBiaya2;
+    const hasil2: SimulasiResult = {
+      plafond: plafond2,
+      angsuran: angsuran2,
+      sisaGaji: sisaGaji - angsuran2,
+      asuransi: asuransi2,
+      provisiOrAdmin: provisiOrAdmin2,
+      tBlokir: tBlokir2,
+      tBiaya: tBiaya2,
+      tBersih: tBersih,
+    };
+    return hasil2;
+  };
+
+  const saveSimulasi = async () => {
     if (simRef.current) {
       const original = {
         height: simRef.current.style.height,
         padding: simRef.current.style.padding,
-        backgroundColor: simRef.current.style.backgroundColor,
       };
 
       simRef.current.style.height = 'auto';
-      if (localStorage.getItem('mantine-color-scheme') === 'dark') {
-        simRef.current.style.backgroundColor = '#1A1B1E';
+      console.log(colorScheme);
+      if (colorScheme === 'dark') {
+        await toggleColorScheme();
+        simRef.current.style.padding = '5px';
+
+        html2canvas(simRef.current).then((canvas) => {
+          saveAs(canvas.toDataURL(), `simulasi-${form.values.nama}.png`);
+        });
+        simRef.current.style.height = original.height;
+        await toggleColorScheme();
       } else {
-        simRef.current.style.backgroundColor = '#fff';
+        simRef.current.style.padding = '5px';
+        html2canvas(simRef.current).then((canvas) => {
+          saveAs(canvas.toDataURL(), `simulasi-${form.values.nama}.png`);
+        });
+        simRef.current.style.height = original.height;
       }
-      simRef.current.style.padding = '5px';
-
-      html2canvas(simRef.current).then((canvas) => {
-        saveAs(canvas.toDataURL(), `simulasi-${form.values.nama}.png`);
-      });
-
-      simRef.current.style.height = original.height;
-      simRef.current.style.backgroundColor = original.backgroundColor;
     }
     showNotification({
       message: 'Simulasi berhasil disimpan',
@@ -220,6 +395,22 @@ const Calc = () => {
     evt.target.value = evt.target.value.replaceAll('.', '');
     form.setFieldValue(field, evt.target.value);
     evt.target.value = Number(evt.target.value).toLocaleString('id');
+  };
+
+  const displayAge = () => {
+    const age = exactAge(dayjs(form.values.tgLahir));
+    return `${age.years} Tahun ${age.months} Bulan ${age.days} Hari`;
+  };
+
+  const untilBUP = () => {
+    if (!form.values.bup) return 0;
+    const tglBUP = dayjs(form.values.tgLahir).add(form.values.bup, 'y');
+    return tglBUP.diff(dayjs(), 'M') - 1;
+  };
+
+  const untilPlatinum = () => {
+    const tglPlatinum = dayjs(form.values.tgLahir).add(75, 'y');
+    return tglPlatinum.diff(dayjs(), 'M') - 1;
   };
 
   return (
@@ -254,13 +445,18 @@ const Calc = () => {
               <Divider my="sm" />
             </Grid.Col>
             <Rows title="Nama Calon Debitur">
-              <TextInput size="xs" {...form.getInputProps('nama')} />
+              <TextInput
+                sx={{ input: { textTransform: 'uppercase' } }}
+                size="xs"
+                {...form.getInputProps('nama')}
+              />
             </Rows>
             <Rows title="Tanggal Lahir">
               <DatePicker
                 sx={{ div: { div: { paddingRight: 0 } } }}
                 minDate={dayjs(new Date()).subtract(79, 'y').toDate()}
                 maxDate={dayjs(new Date()).subtract(20, 'y').toDate()}
+                clearable={true}
                 locale="id"
                 inputFormat="DD MMMM YYYY"
                 size="xs"
@@ -268,8 +464,18 @@ const Calc = () => {
                 {...form.getInputProps('tgLahir')}
               />
             </Rows>
+            {form.values.tgLahir && (
+              <Rows title="Usia">
+                <Text size="xs">{displayAge()}</Text>
+              </Rows>
+            )}
+
             <Rows title="Kantor Bayar Asal">
-              <TextInput size="xs" {...form.getInputProps('kanBayarAsal')} />
+              <TextInput
+                sx={{ input: { textTransform: 'uppercase' } }}
+                size="xs"
+                {...form.getInputProps('kanBayarAsal')}
+              />
             </Rows>
             <Rows title="Take Over">
               <Switch
@@ -300,6 +506,52 @@ const Calc = () => {
               </Rows>
             )}
 
+            {form.values.tipeDebitur === 'PNS/CPNS OTONOM' && (
+              <>
+                <Grid.Col span={5}>
+                  <Text size="sm">Batas Usia Pensiun</Text>
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <NumberInput
+                    min={56}
+                    max={65}
+                    sx={{ input: { textAlign: 'right' } }}
+                    size="xs"
+                    hideControls={true}
+                    {...form.getInputProps('bup')}
+                  />
+                </Grid.Col>
+                <Grid.Col span={5}>
+                  <Text size="sm">Tahun</Text>
+                </Grid.Col>
+              </>
+            )}
+            {form.values.tipeDebitur === 'PNS/CPNS OTONOM' &&
+              form.values.bup &&
+              form.values.bup >= 56 &&
+              form.values.bup <= 65 && (
+                <>
+                  <Grid.Col span={5}>
+                    <Text size="sm">Bulan s/d BUP</Text>
+                  </Grid.Col>
+                  <Grid.Col span={7}>
+                    <Text size="sm">{`${untilBUP()} Bulan`}</Text>
+                  </Grid.Col>
+                </>
+              )}
+
+            <Rows title="Jumlah Akad">
+              <Select
+                data={
+                  form.values.tipeDebitur === 'PNS/CPNS OTONOM'
+                    ? jumlahAkadData
+                    : jumlahAkadData.slice(0, 2)
+                }
+                size="xs"
+                {...form.getInputProps('jumlahAkad')}
+              />
+            </Rows>
+
             {listProduk && (
               <Rows title="Produk">
                 <NativeSelect
@@ -309,20 +561,23 @@ const Calc = () => {
                 />
               </Rows>
             )}
-
-            <Rows title="jangka Waktu">
-              <NativeSelect
+            <Grid.Col span={5}>
+              <Text size="sm">Jangka Waktu (Bulan)</Text>
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <NumberInput
                 itemType="number"
-                data={[...Array(25).keys()].map((x) => String((x + 1) * 12))}
-                rightSection={
-                  <Text size="xs" mr={20}>
-                    Bulan
-                  </Text>
-                }
+                min={60}
+                max={300}
                 size="xs"
+                hideControls={true}
                 {...form.getInputProps('jangkaWaktu')}
               />
-            </Rows>
+            </Grid.Col>
+            <Grid.Col span={4}>
+              <Text size="sm">Bulan</Text>
+            </Grid.Col>
+
             <Grid.Col span={5}>
               <Text size="sm">Gaji</Text>
             </Grid.Col>
@@ -338,26 +593,36 @@ const Calc = () => {
             <Grid.Col span={5}>
               <Text size="sm">Blokir</Text>
             </Grid.Col>
-            <Grid.Col span={4}>
-              <TextInput
+            <Grid.Col span={2}>
+              <NumberInput
+                min={0}
+                max={4}
                 sx={{ input: { textAlign: 'right' } }}
                 size="xs"
-                onChange={(evt) => moneyMasker(evt, 'blokirAngsuran')}
+                hideControls={true}
                 error={form.errors.blokirAngsuran}
               />
             </Grid.Col>
             <Grid.Col span={3}>
+              <Text size="sm">x Angsuran</Text>
+            </Grid.Col>
+
+            <Grid.Col span={5}>
+              <Text size="sm">Maksimum Plafond</Text>
+            </Grid.Col>
+            <Grid.Col span={3}>
               <Button size="xs" sx={{ width: '90%' }} onClick={getMaksPlafond}>
-                MAKS
+                HITUNG
               </Button>
             </Grid.Col>
-            {form.values.maksPlafond !== 0 && (
-              <Rows title="Maksimum Plafond">
+            <Grid.Col span={4}>
+              {form.values.maksPlafond !== 0 && (
                 <Text size="xs" mr={14} align="right">
                   {form.values.maksPlafond.toLocaleString('id')}
                 </Text>
-              </Rows>
-            )}
+              )}
+            </Grid.Col>
+
             <Rows title="Plafond">
               <TextInput
                 disabled={form.values.maksPlafond === 0}
@@ -368,75 +633,49 @@ const Calc = () => {
               />
             </Rows>
             {simulasiResult && selectedProduk && (
-              <>
-                <Grid.Col span={12}>
-                  <Divider my="sm" />
-                </Grid.Col>
+              <SimResult
+                s={simulasiResult}
+                akadTitle="AKAD I"
+                currentKonven={currentKonven}
+                gaji={form.values.gaji}
+                selectedProduk={selectedProduk}
+              />
+            )}
+            {simulasiResult && simulasiResult2 && selectedProduk && (
+              <SimResult
+                s={simulasiResult2}
+                akadTitle="AKAD II"
+                currentKonven={currentKonven}
+                gaji={simulasiResult.sisaGaji}
+                selectedProduk={selectedProduk}
+              />
+            )}
+            {simulasiResult &&
+              simulasiResult2 &&
+              simulasiResult3 &&
+              selectedProduk && (
+                <SimResult
+                  s={simulasiResult3}
+                  akadTitle="AKAD III"
+                  currentKonven={currentKonven}
+                  gaji={simulasiResult2.sisaGaji}
+                  selectedProduk={selectedProduk}
+                />
+              )}
 
-                <Rows title="IIR">
-                  <Text size="xs" mr={5} align="right">
-                    {(
-                      (simulasiResult.angsuran / form.values.gaji) *
-                      100
-                    ).toFixed(2)}{' '}
-                    %
-                  </Text>
-                </Rows>
+            {form.values.takeOver && form.values.pelunasan && (
+              <Rows title="Pelunasan">
+                <Text size="xs" mr={5} align="right">
+                  {Number(form.values.pelunasan).toLocaleString('id')}
+                </Text>
+              </Rows>
+            )}
 
-                <Rows title="Bunga">
-                  <Text size="xs" mr={5} align="right">
-                    {Math.round(selectedProduk.bunga * 10000) / 100} {'%'}
-                  </Text>
-                </Rows>
-                <Rows title="Angsuran">
-                  <Text size="xs" mr={5} align="right">
-                    {simulasiResult.angsuran.toLocaleString('id')}
-                  </Text>
-                </Rows>
-                <Grid.Col span={12}>
-                  <Divider my="sm" />
-                </Grid.Col>
-                <Rows title="Asuransi">
-                  <Text size="xs" mr={5} align="right">
-                    {simulasiResult.asuransi.toLocaleString('id')}
-                  </Text>
-                </Rows>
-                <Rows title="Provisi">
-                  <Text size="xs" mr={5} align="right">
-                    {simulasiResult.provisi.toLocaleString('id')}
-                  </Text>
-                </Rows>
-                <Rows title="Administrasi">
-                  <Text size="xs" mr={5} align="right">
-                    {simulasiResult.administrasi.toLocaleString('id')}
-                  </Text>
-                </Rows>
-                <Rows title="Total Blokir">
-                  <Text size="xs" mr={5} align="right">
-                    {simulasiResult.tBlokir.toLocaleString('id')}
-                  </Text>
-                </Rows>
-                <Rows title="Total Biaya">
-                  <Text size="xs" mr={5} align="right">
-                    {simulasiResult.tBiaya.toLocaleString('id')}
-                  </Text>
-                </Rows>
-                <Grid.Col span={12}>
-                  <Divider my="sm" />
-                </Grid.Col>
-                <Rows title="Terima Bersih">
-                  <Text size="xs" mr={5} align="right">
-                    {simulasiResult.tBersih.toLocaleString('id')}
-                  </Text>
-                </Rows>
-
-                <Rows title="Total Penerimaan">
+            {/* <Rows title="Total Penerimaan">
                   <Text size="xs" mr={5} align="right">
                     {simulasiResult.tTerima.toLocaleString('id')}
                   </Text>
-                </Rows>
-              </>
-            )}
+                </Rows> */}
           </Grid>
         </ScrollArea>
 
@@ -452,16 +691,15 @@ const Calc = () => {
           mb={8}
           px={8}
         >
-          {!simulasiResult ? (
-            <Button
-              sx={{ flexGrow: 1 }}
-              type="submit"
-              disabled={form.values.maksPlafond === 0}
-              onClick={() => simulasi()}
-            >
-              Simulasi
-            </Button>
-          ) : (
+          <Button
+            sx={{ flexGrow: 1 }}
+            type="submit"
+            disabled={form.values.maksPlafond === 0}
+            onClick={() => simulasi()}
+          >
+            Simulasi
+          </Button>
+          {simulasiResult && (
             <>
               <Button
                 onClick={() => {

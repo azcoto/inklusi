@@ -24,12 +24,11 @@ export const xPMT = (pv: number, rate: number, nper: number, skema: string) => {
   let raw: number;
   if (skema === 'ANUITAS') {
     raw = -pmt(rate / 12, nper, pv);
+  } else if (skema === 'FLAT') {
+    raw = pv / nper + (rate / 12) * pv;
   } else {
-    console.log(pv, rate, nper);
     raw = pv / nper + (rate / 12) * pv;
   }
-
   raw = Math.ceil(raw);
-
   return raw;
 };

@@ -7,6 +7,7 @@ export const zGetProdukResponse = z.array(
     nama: z.string(),
     bunga: z.instanceof(Decimal).transform((value) => value.toNumber()),
     skema: z.string(),
+    konven: z.string(),
   }),
 );
 

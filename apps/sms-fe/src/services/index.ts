@@ -10,6 +10,7 @@ import { getAlltipeDebitur } from './tipeDebitur';
 import { getProduk } from './produk';
 import { getIndeksPengali } from './indeksPengali';
 import { postAssignVisit, bySFVisit, visitDetail, patchVisit } from './visit';
+import { allAsuransi } from './asuransi';
 
 const services = {
   auth: {
@@ -33,6 +34,9 @@ const services = {
   },
   produk: {
     getProduk,
+  },
+  asuransi: {
+    allAsuransi,
   },
   indeksPengali: {
     getIndeksPengali,
