@@ -8,7 +8,7 @@ import {
 } from './leader';
 import { getAlltipeDebitur } from './tipeDebitur';
 import { getProduk } from './produk';
-import { getIndeksPengali } from './indeksPengali';
+import { allIndeksPengali, getIndeksPengali } from './indeksPengali';
 import { postAssignVisit, bySFVisit, visitDetail, patchVisit } from './visit';
 import { allAsuransi } from './asuransi';
 
@@ -40,6 +40,7 @@ const services = {
   },
   indeksPengali: {
     getIndeksPengali,
+    allIndeksPengali,
   },
   visit: {
     postAssignVisit,

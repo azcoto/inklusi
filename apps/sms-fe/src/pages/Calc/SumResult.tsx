@@ -1,21 +1,19 @@
 import { GetProdukResponse } from '@api/produk/dto';
 import { Divider, Grid, Text } from '@mantine/core';
-import { SimulasiResult } from '.';
+import { SimulasiResult, SumSimulasi } from '.';
 import Rows from './Rows';
 
 interface Props {
-  s: SimulasiResult;
-  gaji: number;
+  s: SumSimulasi;
   selectedProduk: GetProdukResponse[0];
   currentKonven: string;
-  akadTitle: string;
 }
 
-const SimResult = ({ s, selectedProduk, currentKonven, akadTitle }: Props) => {
+const SumResult = ({ s, selectedProduk, currentKonven }: Props) => {
   return (
     <>
       <Grid.Col span={12}>
-        <Divider my="xs" size="md" label={akadTitle} labelPosition="center" />
+        <Divider my="xs" size="md" label="SUMMARY" labelPosition="center" />
         <Divider
           my="xs"
           label={
@@ -26,37 +24,35 @@ const SimResult = ({ s, selectedProduk, currentKonven, akadTitle }: Props) => {
         />
       </Grid.Col>
 
-      <Rows title="Plafond">
+      <Rows title="Total Plafond">
         <Text size="xs" mr={5} align="right">
           {Number(s.plafond).toLocaleString('id')}
         </Text>
       </Rows>
-      <Rows title={currentKonven === 'KONVENSIONAL' ? 'Bunga' : 'Margin'}>
+      {/* <Rows title={currentKonven === 'KONVENSIONAL' ? 'Bunga' : 'Margin'}>
         <Text size="xs" mr={5} align="right">
           {Math.round(selectedProduk.bunga * 10000) / 100} {'%'}
         </Text>
-      </Rows>
-      <Rows title="Angsuran">
+      </Rows> */}
+      <Rows title="Total Angsuran">
         <Text size="xs" mr={5} align="right">
           {s.angsuran.toLocaleString('id')}
         </Text>
       </Rows>
-      <Rows title="Sisa Gaji">
-        <Text size="xs" mr={5} align="right">
-          {s.sisaGaji.toLocaleString('Id')}
-        </Text>
-      </Rows>
-      {/* 
       <Grid.Col span={12}>
         <Divider my="sm" label="Biaya" />
       </Grid.Col>
-      <Rows title="Asuransi">
+      <Rows title="Total Asuransi">
         <Text size="xs" mr={5} align="right">
           {s.asuransi.toLocaleString('id')}
         </Text>
       </Rows>
       <Rows
-        title={currentKonven === 'KONVENSIONAL' ? 'Provisi' : 'Administrasi'}
+        title={
+          currentKonven === 'KONVENSIONAL'
+            ? 'Total Provisi'
+            : 'Total Administrasi'
+        }
       >
         <Text size="xs" mr={5} align="right">
           {s.provisiOrAdmin.toLocaleString('id')}
@@ -80,9 +76,22 @@ const SimResult = ({ s, selectedProduk, currentKonven, akadTitle }: Props) => {
           {s.tBersih.toLocaleString('id')}
         </Text>
       </Rows>
-       */}
+
+      {s.tPelunasan !== 0 && (
+        <Rows title="Pelunasan">
+          <Text size="xs" mr={5} align="right">
+            {Number(s.tPelunasan).toLocaleString('id')}
+          </Text>
+        </Rows>
+      )}
+
+      <Rows title="Total Penerimaan">
+        <Text size="xs" mr={5} align="right">
+          {s.tPenerimaan.toLocaleString('id')}
+        </Text>
+      </Rows>
     </>
   );
 };
 
-export default SimResult;
+export default SumResult;

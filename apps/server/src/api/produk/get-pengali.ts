@@ -1,6 +1,6 @@
 import db from '../../../prisma/prisma-client';
 import { NextFunction, Request, Response } from 'express';
-import { IndeksPengaliParams, zGetProdukResponse } from './dto';
+import { IndeksPengaliParams } from './dto';
 
 const getIndeksPengali = async (
   req: Request<IndeksPengaliParams>,

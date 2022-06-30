@@ -29,6 +29,6 @@ export const xPMT = (pv: number, rate: number, nper: number, skema: string) => {
   } else {
     raw = pv / nper + (rate / 12) * pv;
   }
-  raw = Math.ceil(raw);
+  raw = Math.round(raw);
   return raw;
 };
