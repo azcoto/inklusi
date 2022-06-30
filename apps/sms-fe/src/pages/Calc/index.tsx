@@ -98,7 +98,7 @@ type SimulasiForm = z.infer<typeof zSimulasiForm>;
 const jumlahAkadData = [
   { value: '1', label: '1 AKAD PINJAMAN' },
   { value: '2', label: '2 AKAD PINJAMAN' },
-  { value: '3', label: '2 SELANG WAKTU' },
+  { value: '3', label: 'SELANG 2 WAKTU' },
 ];
 
 const bupData = [

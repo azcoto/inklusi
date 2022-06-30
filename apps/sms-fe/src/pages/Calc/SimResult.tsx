@@ -15,14 +15,15 @@ const SimResult = ({ s, selectedProduk, currentKonven, akadTitle }: Props) => {
   return (
     <>
       <Grid.Col span={12}>
-        <Divider my="xs" size="md" label={akadTitle} labelPosition="center" />
         <Divider
           my="xs"
+          size="md"
           label={
-            currentKonven === 'KONVENSIONAL'
-              ? 'Angsuran & Bunga'
-              : 'Angsuran &Margin'
+            <Text size="sm" weight="bold">
+              {akadTitle}
+            </Text>
           }
+          labelPosition="center"
         />
       </Grid.Col>
 

@@ -13,15 +13,17 @@ const SumResult = ({ s, selectedProduk, currentKonven }: Props) => {
   return (
     <>
       <Grid.Col span={12}>
-        <Divider my="xs" size="md" label="SUMMARY" labelPosition="center" />
         <Divider
           my="xs"
+          size="lg"
           label={
-            currentKonven === 'KONVENSIONAL'
-              ? 'Angsuran & Bunga'
-              : 'Angsuran &Margin'
+            <Text size="sm" weight="bold">
+              SUMMARY
+            </Text>
           }
+          labelPosition="center"
         />
+        <Divider my="xs" label="Angsuran" />
       </Grid.Col>
 
       <Rows title="Total Plafond">
@@ -69,7 +71,7 @@ const SumResult = ({ s, selectedProduk, currentKonven }: Props) => {
         </Text>
       </Rows>
       <Grid.Col span={12}>
-        <Divider my="sm" />
+        <Divider my="sm" label="Penerimaan" />
       </Grid.Col>
       <Rows title="Terima Bersih">
         <Text size="xs" mr={5} align="right">
