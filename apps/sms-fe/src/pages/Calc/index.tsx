@@ -694,7 +694,7 @@ const Calc = () => {
 
         <Box
           sx={{
-            position: sumSimulasiResult ? 'static' : 'relative',
+            position: sumSimulasiResult ? 'fixed' : 'static',
             bottom: 10,
             left: 0,
             right: 0,
