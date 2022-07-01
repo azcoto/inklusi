@@ -27,23 +27,29 @@ const SimResult = ({ s, selectedProduk, currentKonven, akadTitle }: Props) => {
         />
       </Grid.Col>
 
+      <Rows title="Jangka Waktu">
+        <Text size="sm" mr={5} align="right">
+          {`${s.tenor} Bulan`}
+        </Text>
+      </Rows>
+
       <Rows title="Plafond">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {Number(s.plafond).toLocaleString('id')}
         </Text>
       </Rows>
       <Rows title={currentKonven === 'KONVENSIONAL' ? 'Bunga' : 'Margin'}>
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {Math.round(selectedProduk.bunga * 10000) / 100} {'%'}
         </Text>
       </Rows>
       <Rows title="Angsuran">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.angsuran.toLocaleString('id')}
         </Text>
       </Rows>
       <Rows title="Sisa Gaji">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.sisaGaji.toLocaleString('Id')}
         </Text>
       </Rows>

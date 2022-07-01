@@ -23,11 +23,11 @@ const SumResult = ({ s, selectedProduk, currentKonven }: Props) => {
           }
           labelPosition="center"
         />
-        <Divider my="xs" label="Angsuran" />
+        <Divider my="md" label="Angsuran" />
       </Grid.Col>
 
       <Rows title="Total Plafond">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {Number(s.plafond).toLocaleString('id')}
         </Text>
       </Rows>
@@ -37,7 +37,7 @@ const SumResult = ({ s, selectedProduk, currentKonven }: Props) => {
         </Text>
       </Rows> */}
       <Rows title="Total Angsuran">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.angsuran.toLocaleString('id')}
         </Text>
       </Rows>
@@ -45,7 +45,7 @@ const SumResult = ({ s, selectedProduk, currentKonven }: Props) => {
         <Divider my="sm" label="Biaya" />
       </Grid.Col>
       <Rows title="Total Asuransi">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.asuransi.toLocaleString('id')}
         </Text>
       </Rows>
@@ -56,39 +56,39 @@ const SumResult = ({ s, selectedProduk, currentKonven }: Props) => {
             : 'Total Administrasi'
         }
       >
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.provisiOrAdmin.toLocaleString('id')}
         </Text>
       </Rows>
       <Rows title="Total Blokir">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.tBlokir.toLocaleString('id')}
         </Text>
       </Rows>
       <Rows title="Total Biaya">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.tBiaya.toLocaleString('id')}
         </Text>
       </Rows>
       <Grid.Col span={12}>
-        <Divider my="sm" label="Penerimaan" />
+        <Divider my="md" label="Penerimaan" />
       </Grid.Col>
       <Rows title="Terima Bersih">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.tBersih.toLocaleString('id')}
         </Text>
       </Rows>
 
       {s.tPelunasan !== 0 && (
         <Rows title="Pelunasan">
-          <Text size="xs" mr={5} align="right">
+          <Text size="sm" mr={5} align="right">
             {Number(s.tPelunasan).toLocaleString('id')}
           </Text>
         </Rows>
       )}
 
       <Rows title="Total Penerimaan">
-        <Text size="xs" mr={5} align="right">
+        <Text size="sm" mr={5} align="right">
           {s.tPenerimaan.toLocaleString('id')}
         </Text>
       </Rows>

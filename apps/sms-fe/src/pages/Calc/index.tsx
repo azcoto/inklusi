@@ -34,6 +34,7 @@ import SimResult from './SimResult';
 import SumResult from './SumResult';
 
 export interface SimulasiResult {
+  tenor: number;
   plafond: number;
   angsuran: number;
   sisaGaji: number;
@@ -254,9 +255,9 @@ const Calc = () => {
       ?.konven as string;
     setCurrentKonven(tipeProduk);
     let rateProvisiOrAdmin: number;
-    if (takeOver && tipeProduk === 'SYARIAH' && Number(jumlahAkad) === 3) {
+    if (!takeOver && tipeProduk === 'SYARIAH' && Number(jumlahAkad) === 3) {
       rateProvisiOrAdmin = 2 / 100;
-    } else if (takeOver) {
+    } else if (!takeOver) {
       rateProvisiOrAdmin = 1.5 / 100;
     } else {
       rateProvisiOrAdmin = 0;
@@ -272,6 +273,7 @@ const Calc = () => {
         ? Math.round((gaji * 75) / 100 - angsuran)
         : gaji - angsuran;
     const hasil: SimulasiResult = {
+      tenor: Number(jangkaWaktu),
       plafond,
       angsuran,
       sisaGaji,
@@ -294,7 +296,7 @@ const Calc = () => {
       );
       setSimulasiResult2(hasil2);
     } else if (Number(form.values.jumlahAkad) === 3) {
-      const hasil2 = simulateNext(
+      hasil2 = simulateNext(
         selectedProduk,
         Number(jangkaWaktu),
         hasil.sisaGaji,
@@ -302,7 +304,7 @@ const Calc = () => {
         rateProvisiOrAdmin,
       );
       setSimulasiResult2(hasil2);
-      const hasil3 = simulateNext(
+      hasil3 = simulateNext(
         selectedProduk,
         Number(untilBUP()), // jangka waktu III
         hasil2.sisaGaji,
@@ -311,41 +313,29 @@ const Calc = () => {
       );
       setSimulasiResult3(hasil3);
     }
+    console.log();
 
     const sum: SumSimulasi = {
       plafond:
         Number(hasil.plafond) +
-        Number(simulasiResult2?.plafond || 0) +
-        Number(simulasiResult3?.plafond || 0),
+        Number(hasil2?.plafond || 0) +
+        Number(hasil3?.plafond || 0),
       angsuran:
-        hasil.angsuran +
-        (simulasiResult2?.angsuran || 0) +
-        (simulasiResult3?.angsuran || 0),
+        hasil.angsuran + (hasil2?.angsuran || 0) + (hasil3?.angsuran || 0),
       asuransi:
-        hasil.asuransi +
-        (simulasiResult2?.asuransi || 0) +
-        (simulasiResult3?.asuransi || 0),
+        hasil.asuransi + (hasil2?.asuransi || 0) + (hasil3?.asuransi || 0),
       provisiOrAdmin:
         hasil.provisiOrAdmin +
-        (simulasiResult2?.provisiOrAdmin || 0) +
+        (hasil2?.provisiOrAdmin || 0) +
         (hasil3?.provisiOrAdmin || 0),
-      tBlokir:
-        hasil.tBlokir +
-        (simulasiResult2?.tBlokir || 0) +
-        (simulasiResult3?.tBlokir || 0),
-      tBiaya:
-        hasil.tBiaya +
-        (simulasiResult2?.tBiaya || 0) +
-        (simulasiResult3?.tBiaya || 0),
-      tBersih:
-        hasil.tBersih +
-        (simulasiResult2?.tBersih || 0) +
-        (simulasiResult3?.tBersih || 0),
+      tBlokir: hasil.tBlokir + (hasil2?.tBlokir || 0) + (hasil3?.tBlokir || 0),
+      tBiaya: hasil.tBiaya + (hasil2?.tBiaya || 0) + (hasil3?.tBiaya || 0),
+      tBersih: hasil.tBersih + (hasil2?.tBersih || 0) + (hasil3?.tBersih || 0),
       tPelunasan: pelunasan || 0,
       tPenerimaan:
         hasil.tBersih +
-        (simulasiResult2?.tBersih || 0) +
-        (simulasiResult3?.tBersih || 0) -
+        (hasil2?.tBersih || 0) +
+        (hasil3?.tBersih || 0) -
         (pelunasan || 0),
     };
     setSumSimulasiResult(sum);
@@ -375,6 +365,7 @@ const Calc = () => {
     const tBiaya2 = asuransi2 + provisiOrAdmin2 + tBlokir2;
     const tBersih = plafond2 - tBiaya2;
     const hasil2: SimulasiResult = {
+      tenor: Number(jangkaWaktu),
       plafond: plafond2,
       angsuran: angsuran2,
       sisaGaji: sisaGaji - angsuran2,
@@ -464,7 +455,7 @@ const Calc = () => {
               </Rows>
             )}
 
-            {currentUser && currentUser.jabatan === 'TL' && (
+            {currentUser && (
               <Rows title="Team Leader">
                 <Text weight="bold">{currentUser.nama}</Text>
               </Rows>
