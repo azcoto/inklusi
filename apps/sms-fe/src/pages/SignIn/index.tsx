@@ -106,7 +106,6 @@ const SignIn = () => {
           width: '100%',
           left: '0',
           bottom: '0',
-          position: 'fixed',
           textAlign: 'right',
           paddingRight: '20px',
         }}
