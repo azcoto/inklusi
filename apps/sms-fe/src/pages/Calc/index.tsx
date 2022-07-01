@@ -629,12 +629,12 @@ const Calc = () => {
             <Grid.Col span={5}>
               <Text size="sm">Maksimum Plafond</Text>
             </Grid.Col>
-            <Grid.Col span={3}>
+            <Grid.Col span={4}>
               <Button size="xs" sx={{ width: '90%' }} onClick={getMaksPlafond}>
                 HITUNG
               </Button>
             </Grid.Col>
-            <Grid.Col span={4}>
+            <Grid.Col span={3}>
               {form.values.maksPlafond !== 0 && (
                 <Text size="xs" mr={14} align="right">
                   {form.values.maksPlafond.toLocaleString('id')}
@@ -694,7 +694,7 @@ const Calc = () => {
 
         <Box
           sx={{
-            position: sumSimulasiResult ? 'fixed' : 'relative',
+            position: sumSimulasiResult ? 'static' : 'relative',
             bottom: 10,
             left: 0,
             right: 0,
