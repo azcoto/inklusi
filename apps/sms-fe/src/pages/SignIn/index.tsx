@@ -1,3 +1,4 @@
+import useDetectKeyboardOpen from 'use-detect-keyboard-open';
 import logo from '../../assets/inklusi.png';
 import {
   TextInput,
@@ -25,6 +26,7 @@ import { setToken } from 'libs/axios-instance';
 // const logo = new URL('../../assets/inklusi.png', import.meta.url);
 
 const SignIn = () => {
+  const isKeyboardOpen = useDetectKeyboardOpen();
   const signInRef = useRef(false);
   const { setCurrentUser } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -64,10 +66,7 @@ const SignIn = () => {
   };
 
   return (
-    <Container
-      sx={{ height: '100vh', position: 'relative', backgroundColor: '#F1F3F5' }}
-      p={4}
-    >
+    <Container sx={{ height: '100vh', backgroundColor: '#F1F3F5' }} p={4}>
       <LoadingOverlay visible={isLoading} />
       <Box
         sx={{
@@ -85,7 +84,6 @@ const SignIn = () => {
           Sales Management System
         </Text>
       </Box>
-
       <Box sx={{ maxWidth: 200 }} mx="auto">
         <form onSubmit={form.onSubmit(doSignIn)}>
           <TextInput label="NIP" required {...form.getInputProps('phone')} />
@@ -99,20 +97,22 @@ const SignIn = () => {
           </Group>
         </form>
       </Box>
-      <Box
-        sx={{
-          width: '100%',
-          position: 'static',
-          left: '0',
-          bottom: '0',
-          textAlign: 'right',
-          paddingRight: '20px',
-        }}
-      >
-        <Text size="xs" weight="lighter">
-          Copyright Jaringan Inklusi Keuangan 2022
-        </Text>
-      </Box>
+      {isKeyboardOpen && (
+        <Box
+          sx={{
+            width: '100%',
+            position: 'absolute',
+            left: '0',
+            bottom: '0',
+            textAlign: 'right',
+            paddingRight: '20px',
+          }}
+        >
+          <Text size="xs" weight="lighter">
+            Copyright Jaringan Inklusi Keuangan 2022
+          </Text>
+        </Box>
+      )}
     </Container>
   );
 };
