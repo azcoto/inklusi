@@ -37,13 +37,13 @@ const Shell = () => {
       padding="xs"
       fixed
       header={<AppHeader toggleDrawer={toggleDrawer} />}
-      footer={
-        <Footer height={20} px={4}>
-          <Text size="xs" weight="bold" align="right" color="dimmed">
-            Copyright Jaringan Inklusi Keuangan 2022
-          </Text>{' '}
-        </Footer>
-      }
+      // footer={
+      //   <Footer height={20} px={4}>
+      //     <Text size="xs" weight="bold" align="right" color="dimmed">
+      //       Copyright Jaringan Inklusi Keuangan 2022
+      //     </Text>{' '}
+      //   </Footer>
+      // }
     >
       <Drawer
         opened={opened}
