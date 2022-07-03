@@ -1,4 +1,4 @@
-import logo from 'assets/logo.svg';
+import logo from '../../assets/inklusi.png';
 import {
   TextInput,
   PasswordInput,
@@ -21,6 +21,8 @@ import { handleError } from 'libs/handleError';
 import { showNotification } from '@mantine/notifications';
 import { useAuth } from 'context/auth';
 import { setToken } from 'libs/axios-instance';
+
+// const logo = new URL('../../assets/inklusi.png', import.meta.url);
 
 const SignIn = () => {
   const signInRef = useRef(false);
@@ -78,8 +80,8 @@ const SignIn = () => {
         mt={100}
         mb={30}
       >
-        <Image src={logo} width="150px" />
-        <Text align="center" size="xl" weight="bold" mt={30}>
+        <Image src={logo} width="320px" />
+        <Text align="center" size="lg" weight="bold" mt={30}>
           Sales Management System
         </Text>
       </Box>
@@ -104,6 +106,7 @@ const SignIn = () => {
       <Box
         sx={{
           width: '100%',
+          position: 'absolute',
           left: '0',
           bottom: '0',
           textAlign: 'right',
