@@ -1,4 +1,3 @@
-// import useDetectKeyboardOpen from 'use-detect-keyboard-open';
 import logo from '../../assets/inklusi.png';
 import {
   TextInput,
@@ -23,10 +22,7 @@ import { showNotification } from '@mantine/notifications';
 import { useAuth } from 'context/auth';
 import { setToken } from 'libs/axios-instance';
 
-// const logo = new URL('../../assets/inklusi.png', import.meta.url);
-
 const SignIn = () => {
-  // const isKeyboardOpen = useDetectKeyboardOpen();
   const signInRef = useRef(false);
   const { setCurrentUser } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -97,8 +93,7 @@ const SignIn = () => {
           </Group>
         </form>
       </Box>
-      {/* {!isKeyboardOpen && ( */}
-      <Box
+      {/* <Box
         sx={{
           width: '100%',
           position: 'absolute',
@@ -111,8 +106,7 @@ const SignIn = () => {
         <Text size="xs" weight="lighter">
           Copyright Jaringan Inklusi Keuangan 2022
         </Text>
-      </Box>
-      {/* )} */}
+      </Box> */}
     </Container>
   );
 };
