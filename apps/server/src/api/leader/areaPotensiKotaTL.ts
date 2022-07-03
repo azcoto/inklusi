@@ -17,7 +17,8 @@ const areaPotensiKotaTL = async (
         group by dati2
       ) as sq
       on l.dati2 = sq.dati2
-      where l.nip = ${nip}`,
+      where l.nip = ${nip}
+      order by sq.count_potensi desc`,
   );
   const parsed = zDataPotensiKotaTL.parse(areaKerjaTL);
 

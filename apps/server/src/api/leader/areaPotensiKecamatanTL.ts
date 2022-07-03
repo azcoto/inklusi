@@ -19,7 +19,8 @@ const areaPotensiKecamatanTL = async (
       ) as sq
       on l.dati2 = sq.dati2
       where l.nip = ${tlNIP}
-        and l.dati2 = ${dati2}`,
+      and l.dati2 = ${dati2}
+      order by sq.count_potensi desc`,
   );
   const parsed = zDataPotensiKecamatanTL.parse(areaKerjaTL);
 

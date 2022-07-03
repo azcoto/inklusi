@@ -28,7 +28,7 @@ import { xPMT } from 'libs/fin';
 import { saveAs } from 'libs/save-as';
 import { useEffect, useRef, useState } from 'react';
 import services from 'services';
-import z from 'zod';
+import z, { unknown } from 'zod';
 import Rows from './Rows';
 import SimResult from './SimResult';
 import SumResult from './SumResult';
@@ -57,6 +57,13 @@ export interface SumSimulasi {
   tPenerimaan: number;
 }
 
+interface ListPlafond {
+  p1: number;
+  p2: number | null;
+  p3: number | null;
+  c: number;
+}
+
 const zSimulasiForm = z.object({
   nama: z.string().min(1, { message: 'Nama tidak boleh kosong' }),
   tgLahir: z
@@ -68,22 +75,14 @@ const zSimulasiForm = z.object({
   tipeDebitur: z.string(),
   produk: z.string(),
   skemaBunga: z.string(),
-  jangkaWaktu: z
-    .string()
-    .or(z.number())
-    .transform((s) => Number(s)),
-  gaji: z
-    .string()
-    .transform((s) => Number(s))
-    .refine((n) => n > 100000 && n < 20000000, 'Gaji invalid'),
+  jangkaWaktu: z.number(),
+  gaji: z.number(),
+
   blokirAngsuran: z
     .string()
     .or(z.number())
     .transform((s) => Number(s)),
-  plafond: z
-    .string({ invalid_type_error: 'Harus Diisi' })
-    .transform((s) => Number(s))
-    .superRefine((arg, ctx) => ctx.addIssue),
+  plafond: z.number(),
   maksPlafond: z.number(),
   pelunasan: z
     .string({ invalid_type_error: 'Harus Diisi' })
@@ -155,8 +154,8 @@ const Calc = () => {
   const [currentIndeksPengali, setCurrentIndeksPengali] = useState<number>(0);
   const [currentRateAsuransi, setCurrentRateAsuransi] = useState<number>(0);
   const [currentKonven, setCurrentKonven] = useState<string>('');
-  const [maxTenor, setMaxTenor] = useState<number>(0);
   const [listPengali, setListPengali] = useState<AllIndeksPengaliResponse>();
+  const [listPlafond, setListPlafond] = useState<ListPlafond>();
 
   const form = useForm<SimulasiForm>({
     schema: zodResolver(zSimulasiForm),
@@ -170,7 +169,7 @@ const Calc = () => {
       skemaBunga: 'ANUITAS',
       jangkaWaktu: 60,
       gaji: 0,
-      blokirAngsuran: 0,
+      blokirAngsuran: 2,
       plafond: 0,
       maksPlafond: 0,
       pelunasan: 0,
@@ -189,19 +188,62 @@ const Calc = () => {
   }, [listProduk, form.values.produk]);
 
   const getMaksPlafond = async () => {
-    if (!selectedProduk) return;
-    const { gaji, jangkaWaktu } = form.values;
+    const { gaji, jangkaWaktu, jumlahAkad } = form.values;
+    if (!selectedProduk || !jumlahAkad || !gaji || !jangkaWaktu) return;
     if (gaji >= 500000) {
-      const p = await services.indeksPengali.getIndeksPengali(
-        selectedProduk.id,
-        jangkaWaktu,
-      );
-      setCurrentIndeksPengali(p.pengali);
+      const pengali = listPengali?.find((p) => {
+        return p.produkId === selectedProduk.id && p.tenor === jangkaWaktu;
+      })?.pengali as number;
+
       let maksPlafond: number;
-      if (form.values.jumlahAkad && form.values.jumlahAkad === '3') {
-        maksPlafond = Math.round((p.pengali * gaji * 75) / 100);
+      if (form.values.jumlahAkad === '3') {
+        const p1 = (pengali * gaji * 75) / 100;
+        const a1 = xPMT(
+          p1,
+          selectedProduk.bunga,
+          jangkaWaktu,
+          selectedProduk.skema,
+        );
+        const p2 = pengali * ((gaji * 75) / 100 - a1);
+        const a2 = xPMT(
+          p2,
+          selectedProduk.bunga,
+          jangkaWaktu,
+          selectedProduk.skema,
+        );
+        const pengali3 = listPengali?.find((p) => {
+          return p.produkId === selectedProduk.id && p.tenor === untilBUP();
+        })?.pengali as number;
+        const p3 = pengali3 * ((gaji * 75) / 100 - a1 - a2);
+
+        console.log('Plafond 1', p1);
+        console.log('Plafond 2', p2);
+
+        console.log('Angsuran 1', a1);
+        console.log('Angsuran 2', a2);
+        console.log('Faktor Pengali 3', (gaji * 75) / 100 - a1 - a2);
+        console.log('Indeks Pengali 3', pengali3);
+        maksPlafond = p1 + p2 + p3;
+        setListPlafond({ p1, p2, p3, c: 3 });
+        console.log({ p1, p2, p3, c: 3 });
+      } else if (form.values.jumlahAkad === '2') {
+        const p1 = pengali * gaji;
+        const a1 = xPMT(
+          p1,
+          selectedProduk.bunga,
+          jangkaWaktu,
+          selectedProduk.skema,
+        );
+
+        const p2 = pengali * (gaji - a1);
+
+        maksPlafond = p1 + p2;
+        setListPlafond({ p1, p2, p3: null, c: 2 });
+        console.log('Indeks Pengali', pengali);
+        console.log({ p1, p2, p3: null, c: 3 });
       } else {
-        maksPlafond = p.pengali * gaji;
+        maksPlafond = pengali * gaji;
+        setListPlafond({ p1: maksPlafond, p2: null, p3: null, c: 1 });
       }
 
       form.setFieldValue('maksPlafond', maksPlafond);
@@ -209,7 +251,6 @@ const Calc = () => {
   };
 
   const simulasi = () => {
-    if (!selectedProduk || !listPengali) return;
     const {
       plafond,
       gaji,
@@ -221,16 +262,33 @@ const Calc = () => {
       takeOver,
       produk,
     } = form.values;
-    if (plafond > maksPlafond) {
-      form.setFieldError(
-        'plafond',
-        'Plafond tidak boleh melebihi maksimal plafond',
-      );
+    if (
+      !listPlafond ||
+      !selectedProduk ||
+      !listPengali ||
+      !gaji ||
+      !jangkaWaktu ||
+      !plafond
+    )
+      return;
+
+    if (
+      (listPlafond.c === 1 && plafond > listPlafond.p1) ||
+      (listPlafond.c === 2 &&
+        (plafond > listPlafond.p1 + (listPlafond.p2 || 0) ||
+          plafond <= listPlafond.p1)) ||
+      (listPlafond.c === 3 &&
+        (plafond >
+          listPlafond.p1 + (listPlafond.p2 || 0) + (listPlafond.p3 || 0) ||
+          plafond <= listPlafond.p1 + (listPlafond.p2 || 0)))
+    ) {
+      form.setErrors({ plafond: 'Plafond Error' });
       return;
     }
 
+    const px = listPlafond.c === 1 ? plafond : listPlafond.p1;
     const angsuran = xPMT(
-      plafond,
+      px,
       selectedProduk.bunga,
       jangkaWaktu,
       selectedProduk.skema,
@@ -262,19 +320,19 @@ const Calc = () => {
     } else {
       rateProvisiOrAdmin = 0;
     }
-    const asuransi = Math.round(rateAsuransi * plafond);
-    const provisiOrAdmin = Math.round(rateProvisiOrAdmin * plafond);
+    const asuransi = Math.round(rateAsuransi * px);
+    const provisiOrAdmin = Math.round(rateProvisiOrAdmin * px);
 
     const tBlokir = blokirAngsuran * angsuran;
-    const tBiaya = asuransi + provisiOrAdmin;
-    const tBersih = plafond - tBiaya;
+    const tBiaya = asuransi + provisiOrAdmin + tBlokir;
+    const tBersih = px - tBiaya;
     const sisaGaji =
       jumlahAkad === '3'
         ? Math.round((gaji * 75) / 100 - angsuran)
         : gaji - angsuran;
     const hasil: SimulasiResult = {
       tenor: Number(jangkaWaktu),
-      plafond,
+      plafond: px,
       angsuran,
       sisaGaji,
       asuransi,
@@ -288,7 +346,10 @@ const Calc = () => {
     let hasil3: SimulasiResult | undefined;
     if (Number(form.values.jumlahAkad) === 2) {
       hasil2 = simulateNext(
+        2,
         selectedProduk,
+        listPlafond,
+        plafond,
         Number(jangkaWaktu),
         hasil.sisaGaji,
         rateAsuransi,
@@ -297,7 +358,10 @@ const Calc = () => {
       setSimulasiResult2(hasil2);
     } else if (Number(form.values.jumlahAkad) === 3) {
       hasil2 = simulateNext(
+        2,
         selectedProduk,
+        listPlafond,
+        plafond,
         Number(jangkaWaktu),
         hasil.sisaGaji,
         rateAsuransi,
@@ -305,7 +369,10 @@ const Calc = () => {
       );
       setSimulasiResult2(hasil2);
       hasil3 = simulateNext(
+        3,
         selectedProduk,
+        listPlafond,
+        plafond,
         Number(untilBUP()), // jangka waktu III
         hasil2.sisaGaji,
         rateAsuransi,
@@ -313,7 +380,10 @@ const Calc = () => {
       );
       setSimulasiResult3(hasil3);
     }
-    console.log();
+    console.log('asuransi', asuransi);
+    console.log('provisi  1', hasil.provisiOrAdmin);
+    console.log('blokir ', hasil.tBlokir);
+    console.log('biaya ', hasil.tBiaya);
 
     const sum: SumSimulasi = {
       plafond:
@@ -342,7 +412,10 @@ const Calc = () => {
   };
 
   const simulateNext = (
+    iter: number,
     selectedProduk: GetProdukResponse[0],
+    listPlafond2: ListPlafond,
+    inputPlafond: number,
     jangkaWaktu: number,
     sisaGaji: number,
     rateAsuransi: number,
@@ -351,22 +424,33 @@ const Calc = () => {
     const pengali = listPengali?.find((p) => {
       return p.produkId === selectedProduk.id && p.tenor === jangkaWaktu;
     })?.pengali as number;
-    const { blokirAngsuran } = form.values;
-    const plafond2 = pengali * sisaGaji;
+    const { blokirAngsuran, plafond } = form.values;
+    let px2;
+    console.log(listPlafond2.c, iter);
+    if (listPlafond2.c === 2 && iter === 2) {
+      px2 = inputPlafond - listPlafond2.p1 || 0;
+      console.log('c2 iter 2', px2);
+    } else if (listPlafond2.c === 3 && iter === 2) {
+      px2 = listPlafond2.p2 || 0;
+      console.log('c3 iter 2', px2);
+    } else {
+      px2 = inputPlafond - listPlafond2.p1 - (listPlafond2.p2 || 0);
+    }
     const angsuran2 = xPMT(
-      plafond2,
+      px2,
       selectedProduk.bunga,
       jangkaWaktu,
       selectedProduk.skema,
     );
-    const asuransi2 = Math.round(rateAsuransi * plafond2);
-    const provisiOrAdmin2 = Math.round(rateProvisiOrAdmin * plafond2);
+    const asuransi2 = Math.round(rateAsuransi * px2);
+    const provisiOrAdmin2 = Math.round(rateProvisiOrAdmin * px2);
     const tBlokir2 = blokirAngsuran * angsuran2;
     const tBiaya2 = asuransi2 + provisiOrAdmin2 + tBlokir2;
-    const tBersih = plafond2 - tBiaya2;
+
+    const tBersih = px2 - tBiaya2;
     const hasil2: SimulasiResult = {
       tenor: Number(jangkaWaktu),
-      plafond: plafond2,
+      plafond: px2,
       angsuran: angsuran2,
       sisaGaji: sisaGaji - angsuran2,
       asuransi: asuransi2,
@@ -586,6 +670,7 @@ const Calc = () => {
             <Grid.Col span={2}>
               <NumberInput
                 itemType="number"
+                placeholder=""
                 min={60}
                 max={300}
                 size="xs"
@@ -601,11 +686,17 @@ const Calc = () => {
               <Text size="sm">Gaji</Text>
             </Grid.Col>
             <Grid.Col span={4}>
-              <TextInput
+              <NumberInput
                 sx={{ input: { textAlign: 'right' } }}
                 size="xs"
-                onChange={(evt) => moneyMasker(evt, 'gaji')}
-                error={form.errors.gaji}
+                parser={(value) => value?.replace(/\$\s?|(\.*)/g, '')}
+                formatter={(value) =>
+                  value && !Number.isNaN(parseInt(value))
+                    ? `${Number(value).toLocaleString('Id')}`
+                    : ''
+                }
+                hideControls={true}
+                {...form.getInputProps('gaji')}
               />
             </Grid.Col>
 
@@ -643,27 +734,32 @@ const Calc = () => {
             </Grid.Col>
 
             <Rows title="Plafond">
-              <TextInput
-                disabled={form.values.maksPlafond === 0}
+              <NumberInput
                 sx={{ input: { textAlign: 'right' } }}
                 size="xs"
-                onChange={(evt) => moneyMasker(evt, 'plafond')}
-                error={form.errors.plafond}
+                parser={(value) => value?.replace(/\$\s?|(\.*)/g, '')}
+                formatter={(value) =>
+                  value && !Number.isNaN(parseInt(value))
+                    ? `${Number(value).toLocaleString('Id')}`
+                    : ''
+                }
+                hideControls={true}
+                {...form.getInputProps('plafond')}
               />
             </Rows>
             {simulasiResult && selectedProduk && (
               <SimResult
                 s={simulasiResult}
-                akadTitle="AKAD I"
+                akadTitle="PK 1"
                 currentKonven={currentKonven}
-                gaji={form.values.gaji}
+                gaji={form.values.gaji || 0}
                 selectedProduk={selectedProduk}
               />
             )}
             {simulasiResult && simulasiResult2 && selectedProduk && (
               <SimResult
                 s={simulasiResult2}
-                akadTitle="AKAD II"
+                akadTitle="PK 2"
                 currentKonven={currentKonven}
                 gaji={simulasiResult.sisaGaji}
                 selectedProduk={selectedProduk}
@@ -675,7 +771,7 @@ const Calc = () => {
               selectedProduk && (
                 <SimResult
                   s={simulasiResult3}
-                  akadTitle="AKAD III"
+                  akadTitle="PK 3"
                   currentKonven={currentKonven}
                   gaji={simulasiResult2.sisaGaji}
                   selectedProduk={selectedProduk}

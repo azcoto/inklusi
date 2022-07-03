@@ -1,8 +1,10 @@
 import { Container, Text, Divider, Table } from '@mantine/core';
 import {
+  ColumnDef,
   createTable,
+  flexRender,
   getCoreRowModel,
-  useTableInstance,
+  useReactTable,
 } from '@tanstack/react-table';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
@@ -22,51 +24,51 @@ type DisburseData = {
   tgRealisasi: Dayjs;
 };
 
-const table = createTable().setRowType<DisburseData>();
-const defaultColumns = [
-  table.createDataColumn('nopen', {
+const defaultColumns: ColumnDef<DisburseData>[] = [
+  {
     header: 'Nopen',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('nama', {
+  },
+
+  {
     header: 'Nama',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('tipeDebitur', {
+  },
+  {
     header: 'Tipe Debitur',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('produk', {
+  },
+  {
     header: 'Produk',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('tenor', {
+  },
+  {
     header: 'Tenor',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('plafond', {
+  },
+  {
     header: 'Plafond',
     cell: (info) => info.getValue().toLocaleString('id-ID'),
-  }),
-  table.createDataColumn('cabang', {
+  },
+  {
     header: 'Cabang',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('tl', {
+  },
+  {
     header: 'Team Leader',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('mr', {
+  },
+  {
     header: 'Marketing',
     cell: (info) => info.getValue(),
-  }),
-  table.createDataColumn('tgRealisasi', {
+  },
+  {
     header: 'Tgl Realisasi',
     cell: (info) => {
       const d = info.getValue();
       return d.format('DD/MM/YYYY');
     },
-  }),
+  },
 ];
 export const DisburseSummary = () => {
   const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns]);
@@ -93,11 +95,16 @@ export const DisburseSummary = () => {
     },
   );
 
-  const tableInstance = useTableInstance(table, {
+  const tableInstance = useReactTable({
     data: allDisburseQuery.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  // table, {
+  // data: allDisburseQuery.data ?? [],
+  // columns,
+  // getCoreRowModel: getCoreRowModel(),
 
   return (
     <Container fluid>
@@ -113,7 +120,12 @@ export const DisburseSummary = () => {
                 return (
                   <th key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder ? null : (
-                      <div>{header.renderHeader()}</div>
+                      <div>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                      </div>
                     )}
                   </th>
                 );
@@ -125,7 +137,9 @@ export const DisburseSummary = () => {
           {tableInstance.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>{cell.renderCell()}</td>
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
               ))}
             </tr>
           ))}

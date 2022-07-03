@@ -12,7 +12,7 @@ export const getPotensiKotaTL = async (nip: string) => {
 
 export const getPotensiKecamatanTL = async (nip: string, kota: string) => {
   const response = await api.get<DataPotensiKecamatanTL>(
-    `/leader/${nip}/${kota}`,
+    `/leader/${nip}/${encodeURIComponent(kota)}`,
   );
   return response.data;
 };
@@ -23,7 +23,9 @@ export const getPotensiKelurahanTL = async (
   kecamatan: string,
 ) => {
   const response = await api.get<DataPotensiKelurahanTL>(
-    `/leader/${nip}/${kota}/${kecamatan}`,
+    `/leader/${nip}/${encodeURIComponent(kota)}/${encodeURIComponent(
+      kecamatan,
+    )}`,
   );
   return response.data;
 };

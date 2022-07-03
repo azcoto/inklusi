@@ -19,6 +19,9 @@ export const getPotensiByArea = async (
         dati3: kecamatan,
         dati4: kelurahan,
       },
+      orderBy: {
+        tgLahirPenerima: 'desc',
+      },
     });
     return res.status(200).send(result);
   } catch (err) {
