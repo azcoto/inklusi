@@ -88,11 +88,7 @@ const SignIn = () => {
 
       <Box sx={{ maxWidth: 200 }} mx="auto">
         <form onSubmit={form.onSubmit(doSignIn)}>
-          <TextInput
-            label="Nomor Telepon"
-            required
-            {...form.getInputProps('phone')}
-          />
+          <TextInput label="NIP" required {...form.getInputProps('phone')} />
           <PasswordInput
             label="Password"
             required
