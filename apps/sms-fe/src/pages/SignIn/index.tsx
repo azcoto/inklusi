@@ -106,7 +106,7 @@ const SignIn = () => {
       <Box
         sx={{
           width: '100%',
-          position: 'absolute',
+          position: 'static',
           left: '0',
           bottom: '0',
           textAlign: 'right',
