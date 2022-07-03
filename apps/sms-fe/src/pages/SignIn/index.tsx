@@ -97,7 +97,7 @@ const SignIn = () => {
           </Group>
         </form>
       </Box>
-      {isKeyboardOpen && (
+      {!isKeyboardOpen && (
         <Box
           sx={{
             width: '100%',
