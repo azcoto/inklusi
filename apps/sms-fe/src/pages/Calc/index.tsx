@@ -534,12 +534,12 @@ const Calc = () => {
         >
           <Grid gutter={'xs'} align="flex-end">
             {currentUser && currentUser.jabatan === 'SF' && (
-              <Rows title="Sales Officer">
+              <Rows title="Marketing Representative">
                 <Text weight="bold">{currentUser.nama}</Text>
               </Rows>
             )}
 
-            {currentUser && (
+            {currentUser && currentUser.jabatan === 'TL' && (
               <Rows title="Team Leader">
                 <Text weight="bold">{currentUser.nama}</Text>
               </Rows>
