@@ -11,6 +11,7 @@ import assignVisit from './assignVisit';
 import bySF from './bySF';
 import visitDetail from './visitDetail';
 import patchVisit from './patchVisit';
+import allVisitByTl from './allVisit';
 
 const visit = Router();
 
@@ -27,6 +28,8 @@ visit.get(
   authorize({ role: [Roles.so], appname: [AppName.sms] }),
   visitDetail,
 );
+
+visit.get('/tl/:nipTl', allVisitByTl);
 
 visit.get(
   '/sf/:nipSo',

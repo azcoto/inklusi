@@ -96,8 +96,8 @@ const zSimulasiForm = z.object({
 type SimulasiForm = z.infer<typeof zSimulasiForm>;
 
 const jumlahAkadData = [
-  { value: '1', label: '1 AKAD PINJAMAN' },
-  { value: '2', label: '2 AKAD PINJAMAN' },
+  { value: '1', label: '1 PK' },
+  { value: '2', label: '2 PK' },
   { value: '3', label: 'SELANG 2 WAKTU' },
 ];
 
@@ -156,6 +156,7 @@ const Calc = () => {
   const [currentKonven, setCurrentKonven] = useState<string>('');
   const [listPengali, setListPengali] = useState<AllIndeksPengaliResponse>();
   const [listPlafond, setListPlafond] = useState<ListPlafond>();
+  const [maksTenor, setMaksTenor] = useState<number>();
 
   const form = useForm<SimulasiForm>({
     schema: zodResolver(zSimulasiForm),
@@ -186,6 +187,19 @@ const Calc = () => {
       setSelectedProduk(filtered);
     }
   }, [listProduk, form.values.produk]);
+
+  useEffect(() => {
+    if (!form.values.tgLahir || !form.values.produk) return;
+    if (form.values.produk === 'PENSIUN' || form.values.jumlahAkad === '3') {
+      const maxAge = dayjs(form.values.tgLahir).add(75, 'y');
+      console.log(form.values.jumlahAkad);
+      console.log(maxAge.diff(dayjs(), 'M') - 1);
+      setMaksTenor(maxAge.diff(dayjs(), 'M') - 1);
+    } else {
+      console.log(untilBUP());
+      setMaksTenor(untilBUP());
+    }
+  }, [form.values.tgLahir, form.values.produk, form.values.jumlahAkad]);
 
   const getMaksPlafond = async () => {
     const { gaji, jangkaWaktu, jumlahAkad } = form.values;
@@ -643,7 +657,7 @@ const Calc = () => {
                 </>
               )}
 
-            <Rows title="Jumlah Akad">
+            <Rows title="Jumlah PK">
               <Select
                 data={
                   form.values.tipeDebitur === 'PNS/CPNS OTONOM'
@@ -678,8 +692,11 @@ const Calc = () => {
                 {...form.getInputProps('jangkaWaktu')}
               />
             </Grid.Col>
+
             <Grid.Col span={4}>
-              <Text size="sm">Bulan</Text>
+              {maksTenor && maksTenor !== 0 && (
+                <Text size="xs">Maks : {maksTenor} </Text>
+              )}
             </Grid.Col>
 
             <Grid.Col span={5}>
@@ -818,6 +835,7 @@ const Calc = () => {
                   setSimulasiResult2(undefined);
                   setSimulasiResult3(undefined);
                   setSumSimulasiResult(undefined);
+                  setMaksTenor(0);
                 }}
               >
                 Reset

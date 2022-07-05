@@ -9,7 +9,13 @@ import {
 import { getAlltipeDebitur } from './tipeDebitur';
 import { getProduk } from './produk';
 import { allIndeksPengali, getIndeksPengali } from './indeksPengali';
-import { postAssignVisit, bySFVisit, visitDetail, patchVisit } from './visit';
+import {
+  postAssignVisit,
+  bySFVisit,
+  visitDetail,
+  patchVisit,
+  allVisitByTL,
+} from './visit';
 import { allAsuransi } from './asuransi';
 
 const services = {
@@ -47,6 +53,7 @@ const services = {
     bySFVisit,
     visitDetail,
     patchVisit,
+    allVisitByTL,
   },
 };
 

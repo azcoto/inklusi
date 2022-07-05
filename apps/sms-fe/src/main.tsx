@@ -20,6 +20,7 @@ import { AuthProvider } from 'context/auth';
 import { getItem } from 'services/localStorage';
 import VisitPortal from 'pages/VisitPortal';
 import Visit from 'pages/Visit';
+import { ReportVisit } from 'pages/ReportVisit';
 
 const App = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -73,6 +74,7 @@ const App = () => {
                     <Route index element={<Home />} />
                     <Route path="simulasi" element={<Calc />} />
                     <Route path="assign-visit" element={<AssignVisit />} />
+                    <Route path="report-visit" element={<ReportVisit />} />
                     <Route path="visit" element={<VisitPortal />} />
                     <Route path="visit/:notas" element={<Visit />} />
                   </Route>

@@ -441,56 +441,56 @@
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
 "@mantine/core@^4.2.2":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/core/-/core-4.2.11.tgz#b4cc59efcf97b47b90a816bfcb20b5db8b7eb831"
-  integrity sha512-4nLZLIbtiu1uVEqfdxqkEr/gLbI/RC4+8C2j3d9zFs+vPbIuKi2R/LSbwXfFePEPSfb90RqLlXiVZY2z17jwFA==
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/core/-/core-4.2.12.tgz#7c07a352e7f2ea13f693ddd0d1b77d8898593e6c"
+  integrity sha512-PZcVUvcSZiZmLR1moKBJFdFIh6a4C+TE2ao91kzTAlH5Qb8t/V3ONbfPk3swHoYr7OSLJQM8vZ7UD5sFDiq0/g==
   dependencies:
-    "@mantine/styles" "4.2.11"
+    "@mantine/styles" "4.2.12"
     "@popperjs/core" "^2.9.3"
     "@radix-ui/react-scroll-area" "^0.1.1"
     react-popper "^2.2.5"
     react-textarea-autosize "^8.3.2"
 
 "@mantine/dates@^4.2.2":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-4.2.11.tgz#afd7ceb0c86617b4680b9ac67efd5a8a228aeed8"
-  integrity sha512-+mYFVoggL84xGd2i1daHjoKBWau5c1g+N7Ny28rduGiqDkBieSeBtx/jOnG5HfzXfICyz5OrDMhxDhF681WWDA==
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-4.2.12.tgz#9d07cfed274df66c7367ff9dceaa13f57409613e"
+  integrity sha512-zyCZbU0Hx4pH3ylIFNvvg5EFh4b5ZnIE1nBWO0Yes9XI4j3exa6s5d1YQ5G8Hn+hrKWlu4YHVlXB08J0em83EA==
 
 "@mantine/dropzone@^4.2.2":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/dropzone/-/dropzone-4.2.11.tgz#8a5fafa0c6d21392196d7face437e84b271a6d16"
-  integrity sha512-vc0x5dhmxP3LcMr/gDbkKiFOefvNvkpyJ9+ilkEmCpePzUQmxv11p4SEuFFJKSmy83iyR0WWghQ8YJlSlXuDiA==
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/dropzone/-/dropzone-4.2.12.tgz#33a8be3a5b18680a4adca88fac114191daad8f1a"
+  integrity sha512-zGxur1DUeiQm3t4jFam4WI1ZNbrNJ/lMV1ycOJj6CjnWNvzcJwiTBvLDPsMr0fiF4vxEQMlv+H7xwhuJedmJfw==
   dependencies:
     react-dropzone "^11.4.2"
 
 "@mantine/form@^4.2.2":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/form/-/form-4.2.11.tgz#4227419667da816a66ca93a308bc8e2d12360eeb"
-  integrity sha512-9qlxtHIXPhTC7HtjBCDWVxjKaUYRy01HY9h9GIdMtA1++bTtu94NU2/7m0Tjjewl5R0MpLxVAim18WKQxTJ3dw==
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/form/-/form-4.2.12.tgz#c204fa17b0232027d9fb0eeb2a6b214708d9e014"
+  integrity sha512-CnpkzZr7VVekN3gg/4fMG9DYEqDsOg1jJGGxFKZ7GjR4liwEOsL3FvC+Szi3OlI0ytfLFOg8zU8RCoEO758sQA==
 
 "@mantine/hooks@^4.2.2":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-4.2.11.tgz#936d3fdf4eff33620d90902b4091b219aaee7669"
-  integrity sha512-kwbMbpT8ErroVSLK7fxEN0SypvK0rEErYyHKfKSMah5buWSu2F/diIuafL5UjvN7aQfS0ZJnqnH/avUN25H3qg==
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-4.2.12.tgz#8dfbd23763959b721f5c5c784b3c412bb7c9823a"
+  integrity sha512-/2GOsgv1tAUFBXOUV0YBZdDZHj3pHN82Sv1oI/hJMjfIT3ZkGeeiJO8Cw9cBcn76t6caP6Czi3hcuKhjz71O+A==
 
 "@mantine/notifications@^4.2.2":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/notifications/-/notifications-4.2.11.tgz#0ea2f5a10facb7ae147739af80044f328a3ae6ef"
-  integrity sha512-jncNVNdGgs9+q+PgmDB6iTJU3D/4XgC2Thh/SVg8OIqpenwYS7LhyWHW8CoUUQj9xsK5Q13CWd5AE7q62ZNaSQ==
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/notifications/-/notifications-4.2.12.tgz#914cf8efcae7a897c1075f09a39a730a505a02ed"
+  integrity sha512-Ip+8KxH9P1i8uZnhv2zTU+OFJjYBs3122KnVYy6vLsR83agRuY1KzbxjlOVVmP2Dq5aJX2pvefWWjA++NzhNtA==
   dependencies:
     react-transition-group "^4.4.2"
 
 "@mantine/prism@^4.2.2":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/prism/-/prism-4.2.11.tgz#5226158cd6fc8efc2d44c8ad90782183011ca382"
-  integrity sha512-DqmA1iExm/8qRUugKBlLjZiP8vItw4aH5E2ecLrXpPV0s62QaZCp95WqFEDFg53/HHWcSv7kSF1q07f/VtiXog==
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/prism/-/prism-4.2.12.tgz#728169dfad2a05a2bf920ba0bf16acf66fb95460"
+  integrity sha512-zFwkBs0+4kaYnKPWbFaulM6cZGQCJgQzxTzXmZsLoBn5d/3U7pIbm0wX9ZvDoEscpN4YTp4WqvZGYGOMkIjgZw==
   dependencies:
     prism-react-renderer "^1.2.1"
 
-"@mantine/styles@4.2.11":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@mantine/styles/-/styles-4.2.11.tgz#7d4ac340de781285c4b55018dbd5ea93ae14e52e"
-  integrity sha512-K0Ih0TUkGOJoVZRpFg3FfXWcYTXWKsC4O43VC5sPRnejQ1bQ6WiYP8DPeYSlPyXAjPyEu2gKqZ72IIRQG9QOJA==
+"@mantine/styles@4.2.12":
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/@mantine/styles/-/styles-4.2.12.tgz#298ceb87114928916fb69e14efd99958379adf4f"
+  integrity sha512-9q1DzW0UNW/ORMGLHfN2XABOSEm0ZQebhNlLD757R6OQouoLuUf9elUwgGOXSyogMlsAYoy84XbJ3ZbbTm4YCA==
   dependencies:
     "@emotion/cache" "11.7.1"
     "@emotion/react" "11.7.1"
@@ -1252,9 +1252,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001359:
-  version "1.0.30001362"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001362.tgz#4a2a7136ca98313bee9b42f4f9a25bc2802e579d"
-  integrity sha512-PFykHuC7BQTzCGQFaV6wD8IDRM3HpI83BXr99nNJhoOyDufgSuKlt0QVlWYt5ZJtEYFeuNVF5QY3kJcu8hVFjQ==
+  version "1.0.30001363"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001363.tgz#26bec2d606924ba318235944e1193304ea7c4f15"
+  integrity sha512-HpQhpzTGGPVMnCjIomjt+jvyUu8vNFo3TaDiZ/RcoTrlOq/5+tC8zHdsbgFB6MxmaY+jCpsH09aD80Bb4Ow3Sg==
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -4185,11 +4185,6 @@ use-composed-ref@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/use-composed-ref/-/use-composed-ref-1.3.0.tgz#3d8104db34b7b264030a9d916c5e94fbe280dbda"
   integrity sha512-GLMG0Jc/jiKov/3Ulid1wbv3r54K9HlMW29IWcDFPEqFkSO2nS0MuefWgMJpeHQ9YJeXDL3ZUF+P3jdXlZX/cQ==
-
-use-detect-keyboard-open@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/use-detect-keyboard-open/-/use-detect-keyboard-open-0.2.0.tgz#fd2bb9c0871e0cb3e66f0185c8e40c2e2910f5b3"
-  integrity sha512-tW1MHQ5rKFshz0xxcUSdTrLoXPH5VG+X671wQerW7rgMZbp0b9YcTxnq3a8oOT5urxWS3C2TckOYs7LGOp6CiA==
 
 use-isomorphic-layout-effect@^1.1.1:
   version "1.1.2"

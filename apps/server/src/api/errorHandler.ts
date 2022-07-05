@@ -62,6 +62,7 @@ export const errorHandler: ErrorRequestHandler = (
     case ApiError:
       return res.status((error as ApiError).code).json(error);
     default:
+      console.log(error);
       return res.status(500).json({
         from: 'INTERNAL',
         type: (error as Error).name,

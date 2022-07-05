@@ -45,33 +45,51 @@ const Shell = () => {
           hidden={!opened}
           width={{ sm: 250, lg: 250 }}
         >
-          <Stack>
-            <UnstyledButton
-              onClick={() => {
-                setOpened(false);
-                navigate('/');
-              }}
-            >
-              <Text weight={'bold'}>Home</Text>
-            </UnstyledButton>
-            <UnstyledButton
-              onClick={() => {
-                setOpened(false);
-                navigate('/disburse-entry');
-              }}
-            >
-              <Text weight={'bold'}>Disburse Entry</Text>
-            </UnstyledButton>
+          <Box
+            sx={{
+              minHeight: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+            pl={8}
+          >
+            <Stack>
+              <UnstyledButton
+                onClick={() => {
+                  setOpened(false);
+                  navigate('/');
+                }}
+              >
+                <Text weight={'bold'}>Home</Text>
+              </UnstyledButton>
+              <UnstyledButton
+                onClick={() => {
+                  setOpened(false);
+                  navigate('/disburse-entry');
+                }}
+              >
+                <Text weight={'bold'}>Disburse Entry</Text>
+              </UnstyledButton>
 
+              <UnstyledButton
+                onClick={() => {
+                  setOpened(false);
+                  navigate('/disburse-summary');
+                }}
+              >
+                <Text weight={'bold'}>Disburse Summary</Text>
+              </UnstyledButton>
+            </Stack>
             <UnstyledButton
               onClick={() => {
                 setOpened(false);
-                navigate('/disburse-summary');
+                navigate('/signin');
               }}
             >
-              <Text weight={'bold'}>Disburse Summary</Text>
+              <Text weight={'bold'}>Logout</Text>
             </UnstyledButton>
-          </Stack>
+          </Box>
         </Navbar>
       }
       footer={

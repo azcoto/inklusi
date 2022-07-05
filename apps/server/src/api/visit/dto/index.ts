@@ -79,3 +79,36 @@ export const zPatchVisitValidator = z.object({
 });
 
 export type PatchVisitBody = z.infer<typeof zPatchVisitBody>;
+
+const zByTLParams = z.object({
+  nipTl: z.string(),
+});
+
+export const zByTLValidator = z.object({
+  params: zByTLParams,
+});
+
+export type ByTLParams = z.infer<typeof zByTLParams>;
+
+export type AllVisitByTLResponse = {
+  id: number;
+  nipSo: string;
+  visited: boolean;
+  alamatValid: boolean | null;
+  interaksi: boolean | null;
+  prospek: string | null;
+  alasan: string | null;
+  Maspen: {
+    notas: string;
+    namaPenerima: string;
+    tgLahirPenerima: Date;
+    alamat: string;
+    dati4: string;
+    dati3: string;
+    dati2: string;
+  };
+  soKaryawan: {
+    nip: string;
+    nama: string;
+  };
+};

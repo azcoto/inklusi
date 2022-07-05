@@ -3,6 +3,7 @@ import {
   BySFResponse,
   PatchVisitBody,
   VisitDetailResponse,
+  AllVisitByTLResponse,
 } from '@api/visit/dto';
 import api from 'libs/axios-instance';
 
@@ -29,5 +30,10 @@ export const visitDetail = async (nipSf: string, notas: string) => {
 
 export const patchVisit = async (body: PatchVisitBody) => {
   const response = await api.patch(`/visit`, body);
+  return response;
+};
+
+export const allVisitByTL = async (nipTl: string) => {
+  const response = await api.get<AllVisitByTLResponse[]>(`/visit/tl/${nipTl}`);
   return response;
 };
