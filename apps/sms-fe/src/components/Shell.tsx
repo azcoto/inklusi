@@ -87,7 +87,7 @@ const Shell = () => {
                   navigate('/report-visit');
                 }}
               >
-                <Text weight={'bold'}>Assign Visit</Text>
+                <Text weight={'bold'}>Report Visit</Text>
               </UnstyledButton>
             )}
 
