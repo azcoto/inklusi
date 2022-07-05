@@ -1,4 +1,4 @@
-import logo from 'assets/logo.svg';
+import logo from 'assets/inklusi.png';
 import {
   TextInput,
   PasswordInput,
@@ -63,7 +63,12 @@ const SignIn = () => {
 
   return (
     <Container
-      sx={{ height: '100vh', position: 'relative', backgroundColor: '#F1F3F5' }}
+      sx={{
+        maxWidth: '100%',
+        height: '100vh',
+        position: 'relative',
+        backgroundColor: '#F1F3F5',
+      }}
       p={4}
     >
       <LoadingOverlay visible={isLoading} />
@@ -77,7 +82,7 @@ const SignIn = () => {
         mt={100}
         mb={30}
       >
-        <Image src={logo} width="150px" />
+        <Image src={logo} width="320px" />
         <Text align="center" size="xl" weight="bold" mt={30}>
           Loan Operation System
         </Text>
@@ -85,11 +90,7 @@ const SignIn = () => {
 
       <Box sx={{ maxWidth: 200 }} mx="auto">
         <form onSubmit={form.onSubmit(doSignIn)}>
-          <TextInput
-            label="Nomor Telepon"
-            required
-            {...form.getInputProps('phone')}
-          />
+          <TextInput label="NIP" required {...form.getInputProps('phone')} />
           <PasswordInput
             label="Password"
             required

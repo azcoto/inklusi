@@ -76,9 +76,9 @@ model Disburse {
   Cabang        Cabang      @relation(fields: [cabangId], references: [id])
   norekKredit   String      @map("norek_kredit") @db.VarChar(255)
   nikTl         String      @map("nik_tl") @db.VarChar(255)
-  KaryawanTl    Karyawan    @relation(name: "disbTl", fields: [nikTl], references: [nik])
+  KaryawanTl    Karyawan    @relation(name: "disbTl", fields: [nikTl], references: [nip])
   nikMr         String      @map("nik_mr") @db.VarChar(255)
-  KaryawanMr    Karyawan    @relation(name: "disbMr", fields: [nikMr], references: [nik])
+  KaryawanMr    Karyawan    @relation(name: "disbMr", fields: [nikMr], references: [nip])
   tgRealisasi   DateTime    @map("tg_realisasi") @db.Date
   deleted       Boolean     @default(false) @db.Boolean
 

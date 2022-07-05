@@ -328,9 +328,9 @@ const Calc = () => {
     setCurrentKonven(tipeProduk);
     let rateProvisiOrAdmin: number;
     if (!takeOver && tipeProduk === 'SYARIAH' && Number(jumlahAkad) === 3) {
-      rateProvisiOrAdmin = 2 / 100;
+      rateProvisiOrAdmin = 0.5 / 100;
     } else if (!takeOver) {
-      rateProvisiOrAdmin = 1.5 / 100;
+      rateProvisiOrAdmin = 0.5 / 100;
     } else {
       rateProvisiOrAdmin = 0;
     }
@@ -836,6 +836,7 @@ const Calc = () => {
                   setSimulasiResult3(undefined);
                   setSumSimulasiResult(undefined);
                   setMaksTenor(0);
+                  window.location.reload();
                 }}
               >
                 Reset
