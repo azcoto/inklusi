@@ -26,43 +26,47 @@ type DisburseData = {
 
 const defaultColumns: ColumnDef<DisburseData>[] = [
   {
+    accessorKey: 'nopen',
     header: 'Nopen',
-    cell: (info) => info.getValue(),
   },
 
   {
+    accessorKey: 'nama',
     header: 'Nama',
-    cell: (info) => info.getValue(),
   },
   {
+    accessorKey: 'tipeDebitur',
     header: 'Tipe Debitur',
-    cell: (info) => info.getValue(),
   },
   {
+    accessorKey: 'produk',
     header: 'Produk',
-    cell: (info) => info.getValue(),
   },
   {
+    accessorKey: 'tenor',
     header: 'Tenor',
-    cell: (info) => info.getValue(),
   },
   {
+    accessorKey: 'plafond',
     header: 'Plafond',
-    cell: (info) => info.getValue().toLocaleString('id-ID'),
+    cell: (info) => {
+      return info.getValue().toLocaleString('Id');
+    },
   },
   {
+    accessorKey: 'cabang',
     header: 'Cabang',
-    cell: (info) => info.getValue(),
   },
   {
+    accessorKey: 'tl',
     header: 'Team Leader',
-    cell: (info) => info.getValue(),
   },
   {
+    accessorKey: 'mr',
     header: 'Marketing',
-    cell: (info) => info.getValue(),
   },
   {
+    accessorKey: 'tgRealisasi',
     header: 'Tgl Realisasi',
     cell: (info) => {
       const d = info.getValue();
@@ -99,12 +103,10 @@ export const DisburseSummary = () => {
     data: allDisburseQuery.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    debugTable: true,
+    debugHeaders: true,
+    debugColumns: true,
   });
-
-  // table, {
-  // data: allDisburseQuery.data ?? [],
-  // columns,
-  // getCoreRowModel: getCoreRowModel(),
 
   return (
     <Container fluid>
