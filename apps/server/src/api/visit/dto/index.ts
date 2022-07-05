@@ -112,3 +112,14 @@ export type AllVisitByTLResponse = {
     nama: string;
   };
 };
+
+export type SummaryByTLResponse = {
+  nama: string;
+  feedback: number;
+  pending: number;
+  alamatTidakValid: number;
+  tidakInteraksi: number;
+  tidakBerminat: number;
+  raguRagu: number;
+  berminat: number;
+};

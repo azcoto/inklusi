@@ -156,7 +156,7 @@ const Calc = () => {
   const [currentKonven, setCurrentKonven] = useState<string>('');
   const [listPengali, setListPengali] = useState<AllIndeksPengaliResponse>();
   const [listPlafond, setListPlafond] = useState<ListPlafond>();
-  const [maksTenor, setMaksTenor] = useState<number>();
+  const [maksTenor, setMaksTenor] = useState<number>(0);
 
   const form = useForm<SimulasiForm>({
     schema: zodResolver(zSimulasiForm),

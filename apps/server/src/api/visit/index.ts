@@ -12,6 +12,7 @@ import bySF from './bySF';
 import visitDetail from './visitDetail';
 import patchVisit from './patchVisit';
 import allVisitByTl from './allVisit';
+import summaryByTL from './summaryByTL';
 
 const visit = Router();
 
@@ -30,6 +31,7 @@ visit.get(
 );
 
 visit.get('/tl/:nipTl', allVisitByTl);
+visit.get('/report/tl/:nipTl', summaryByTL);
 
 visit.get(
   '/sf/:nipSo',
