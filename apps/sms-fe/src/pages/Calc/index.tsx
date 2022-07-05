@@ -190,16 +190,23 @@ const Calc = () => {
 
   useEffect(() => {
     if (!form.values.tgLahir || !form.values.produk) return;
+    console.log(
+      form.values.tgLahir,
+      form.values.produk,
+      form.values.jumlahAkad,
+    );
     if (form.values.produk === 'PENSIUN' || form.values.jumlahAkad === '3') {
       const maxAge = dayjs(form.values.tgLahir).add(75, 'y');
-      console.log(form.values.jumlahAkad);
-      console.log(maxAge.diff(dayjs(), 'M') - 1);
       setMaksTenor(maxAge.diff(dayjs(), 'M') - 1);
     } else {
-      console.log(untilBUP());
       setMaksTenor(untilBUP());
     }
-  }, [form.values.tgLahir, form.values.produk, form.values.jumlahAkad]);
+  }, [
+    form.values.tgLahir,
+    form.values.produk,
+    form.values.jumlahAkad,
+    form.values.bup,
+  ]);
 
   const getMaksPlafond = async () => {
     const { gaji, jangkaWaktu, jumlahAkad } = form.values;
@@ -694,9 +701,7 @@ const Calc = () => {
             </Grid.Col>
 
             <Grid.Col span={4}>
-              {maksTenor && maksTenor !== 0 && (
-                <Text size="xs">Maks : {maksTenor} </Text>
-              )}
+              {maksTenor !== 0 && <Text size="xs">Maks : {maksTenor} </Text>}
             </Grid.Col>
 
             <Grid.Col span={5}>
