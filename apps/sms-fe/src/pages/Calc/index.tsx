@@ -192,20 +192,22 @@ const Calc = () => {
 
   useEffect(() => {
     if (!form.values.tgLahir || !form.values.produk) return;
-    console.log(
-      form.values.tgLahir,
-      form.values.produk,
-      form.values.jumlahAkad,
-    );
-    if (form.values.produk === 'PENSIUN' || form.values.jumlahAkad === '3') {
+
+    if (
+      form.values.tipeDebitur === 'PENSIUN' ||
+      form.values.jumlahAkad === '3'
+    ) {
+      console.log('fired');
       const maxAge = dayjs(form.values.tgLahir).add(75, 'y');
-      setMaksTenor(maxAge.diff(dayjs(), 'M') - 1);
+      setMaksTenor(maxAge.diff(dayjs(), 'M'));
+      console.log(maxAge.diff(dayjs(), 'M'));
     } else {
       setMaksTenor(untilBUP());
     }
   }, [
     form.values.tgLahir,
     form.values.produk,
+    form.values.tipeDebitur,
     form.values.jumlahAkad,
     form.values.bup,
   ]);
@@ -223,8 +225,8 @@ const Calc = () => {
         const { gajiBersih } = form.values;
         if (!gajiBersih) return;
         const p1 = (pengali * gajiBersih * 75) / 100;
-        console.log('IP1', pengali);
-        console.log(pengali, (gajiBersih * 75) / 100);
+        // console.log('IP1', pengali);
+        // console.log(pengali, (gajiBersih * 75) / 100);
         const a1 = xPMT(
           p1,
           selectedProduk.bunga,
@@ -244,17 +246,17 @@ const Calc = () => {
 
         const p3 = pengali3 * (gaji - (gajiBersih * 75) / 100);
 
-        console.log('Plafond 1', p1);
-        console.log('Plafond 2', p2);
-        console.log('Plafond 3', p3);
+        // console.log('Plafond 1', p1);
+        // console.log('Plafond 2', p2);
+        // console.log('Plafond 3', p3);
 
-        console.log('Angsuran 1', a1);
-        console.log('Angsuran 2', a2);
-        console.log('Faktor Pengali 3', gaji - gajiBersih);
-        console.log('Indeks Pengali 3', pengali3);
+        // console.log('Angsuran 1', a1);
+        // console.log('Angsuran 2', a2);
+        // console.log('Faktor Pengali 3', gaji - gajiBersih);
+        // console.log('Indeks Pengali 3', pengali3);
         maksPlafond = p1 + p2 + p3;
         setListPlafond({ p1, p2, p3, c: 3 });
-        console.log({ p1, p2, p3, c: 3 });
+        // console.log({ p1, p2, p3, c: 3 });
       } else if (form.values.jumlahAkad === '2') {
         const p1 = pengali * gaji;
         const a1 = xPMT(
@@ -268,8 +270,8 @@ const Calc = () => {
 
         maksPlafond = p1 + p2;
         setListPlafond({ p1, p2, p3: null, c: 2 });
-        console.log('Indeks Pengali', pengali);
-        console.log({ p1, p2, p3: null, c: 3 });
+        // console.log('Indeks Pengali', pengali);
+        // console.log({ p1, p2, p3: null, c: 3 });
       } else {
         maksPlafond = pengali * gaji;
         setListPlafond({ p1: maksPlafond, p2: null, p3: null, c: 1 });
@@ -291,13 +293,15 @@ const Calc = () => {
       jumlahAkad,
       takeOver,
       produk,
+      tipeDebitur,
     } = form.values;
+
     if (
       !listPlafond ||
       !selectedProduk ||
       !listPengali ||
       !gaji ||
-      !gajiBersih ||
+      (!gajiBersih && tipeDebitur !== 'PENSIUN') ||
       !jangkaWaktu ||
       !plafond
     )
@@ -359,7 +363,7 @@ const Calc = () => {
     const tBersih = px - tBiaya;
     const sisaGaji =
       jumlahAkad === '3'
-        ? Math.round((gajiBersih * 75) / 100 - angsuran)
+        ? Math.round(((gajiBersih as number) * 75) / 100 - angsuran)
         : gaji - angsuran;
     const hasil: SimulasiResult = {
       tenor: Number(jangkaWaktu),
@@ -414,10 +418,10 @@ const Calc = () => {
         sisaGaji: gaji - (hasil.angsuran + hasil2.angsuran + hasil3.angsuran),
       });
     }
-    console.log('asuransi', asuransi);
-    console.log('provisi  1', hasil.provisiOrAdmin);
-    console.log('blokir ', hasil.tBlokir);
-    console.log('biaya ', hasil.tBiaya);
+    // console.log('asuransi', asuransi);
+    // console.log('provisi  1', hasil.provisiOrAdmin);
+    // console.log('blokir ', hasil.tBlokir);
+    // console.log('biaya ', hasil.tBiaya);
 
     const sum: SumSimulasi = {
       plafond:
@@ -460,13 +464,13 @@ const Calc = () => {
     })?.pengali as number;
     const { blokirAngsuran, plafond } = form.values;
     let px2;
-    console.log(listPlafond2.c, iter);
+    // console.log(listPlafond2.c, iter);
     if (listPlafond2.c === 2 && iter === 2) {
       px2 = inputPlafond - listPlafond2.p1 || 0;
-      console.log('c2 iter 2', px2);
+      // console.log('c2 iter 2', px2);
     } else if (listPlafond2.c === 3 && iter === 2) {
       px2 = listPlafond2.p2 || 0;
-      console.log('c3 iter 2', px2);
+      // console.log('c3 iter 2', px2);
     } else {
       px2 = inputPlafond - listPlafond2.p1 - (listPlafond2.p2 || 0);
     }
