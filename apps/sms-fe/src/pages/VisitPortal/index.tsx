@@ -97,7 +97,7 @@ const VisitPortal = () => {
                         <b>Usia : </b>
                         {(() => {
                           const { days, months, years } = exactAge(
-                            dayjs(p.Maspen.tgLahirPenerima),
+                            p.Maspen.tgLahirPenerima,
                           );
                           return `${years} Tahun ${months} Bulan ${days} Hari`;
                         })()}

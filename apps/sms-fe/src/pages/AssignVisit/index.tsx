@@ -385,7 +385,7 @@ const AssignVisit = () => {
                         <b>Usia : </b>
                         {(() => {
                           const { days, months, years } = exactAge(
-                            dayjs(p.tgLahirPenerima),
+                            p.tgLahirPenerima,
                           );
                           return `${years} Tahun ${months} Bulan ${days} Hari`;
                         })()}
