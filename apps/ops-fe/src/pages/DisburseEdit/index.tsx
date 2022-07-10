@@ -150,7 +150,6 @@ export const DisburseEdit = () => {
 
   return (
     <Container fluid>
-      <LoadingOverlay>
       <form ref={formRef} onSubmit={form.onSubmit(submitData)}>
         <Text size="lg" weight={'bold'}>
           Form Entry Disburse
