@@ -90,6 +90,16 @@ const Shell = () => {
                 <Text weight={'bold'}>Report Visit</Text>
               </UnstyledButton>
             )}
+            {['TL'].includes(currentUser.jabatan) && (
+              <UnstyledButton
+                onClick={() => {
+                  setOpened(false);
+                  navigate('/summary-visit');
+                }}
+              >
+                <Text weight={'bold'}>Summary Visit</Text>
+              </UnstyledButton>
+            )}
 
             {['SF'].includes(currentUser.jabatan) && (
               <UnstyledButton

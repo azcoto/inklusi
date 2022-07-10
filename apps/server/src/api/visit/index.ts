@@ -31,7 +31,7 @@ visit.get(
 );
 
 visit.get('/tl/:nipTl', allVisitByTl);
-visit.get('/report/tl/:nipTl', summaryByTL);
+visit.get('/sum/tl/:nipTl', summaryByTL);
 
 visit.get(
   '/sf/:nipSo',

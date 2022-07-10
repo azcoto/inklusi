@@ -9,10 +9,11 @@ const summaryByTL = async (req: Request<ByTLParams>, res: Response) => {
     Prisma.sql`SELECT karyawan.nama as nama,
         count(case when visit.visited = true then 1 end)  as feedback,
         count(case when visit.visited = false then 1 end)  as pending,
-        count(case when visit."alamatValid" = false  then 1 end)  as alamatTidakValid,
-        count(case when visit.interaksi = false  then 1 end)  as tidakInteraksi,
-        count(case when prospek = 'Tidak Berminat' then 1 end)  as tidakBerminat,
-        count(case when prospek = 'Ragu-Ragu' then 1 end)  as raguRagu,
+        count(case when visit."alamatValid" = false  then 1 end)  as "alamatTidakValid",
+        count(case when visit.interaksi = false  then 1 end)  as "tidakInteraksi",
+        count(case when prospek = 'Tidak Dapat Dilayani' then 1 end)  as "tidakDapatDilayani",
+        count(case when prospek = 'Tidak Berminat' then 1 end)  as "tidakBerminat",
+        count(case when prospek = 'Ragu-Ragu' then 1 end)  as "raguRagu",
         count(case when prospek = 'Berminat' then 1 end)  as berminat
       FROM visit
       INNER JOIN karyawan AS karyawan

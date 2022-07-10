@@ -18,6 +18,7 @@ import Home from 'pages/Home';
 import DisburseEntry from 'pages/DisburseEntry';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { DisburseSummary } from 'pages/DisburseSummary';
+import { DisburseEdit } from 'pages/DisburseEdit';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +91,9 @@ const App = () => {
                         path="disburse-summary"
                         element={<DisburseSummary />}
                       />
+                      <Route path="disburse">
+                        <Route path=":id" element={<DisburseEdit />} />
+                      </Route>
                     </Route>
                   </Routes>
                 </AuthProvider>

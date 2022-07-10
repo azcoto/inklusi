@@ -15,6 +15,7 @@ import {
   visitDetail,
   patchVisit,
   allVisitByTL,
+  sumVisitByTL,
 } from './visit';
 import { allAsuransi } from './asuransi';
 
@@ -54,6 +55,7 @@ const services = {
     visitDetail,
     patchVisit,
     allVisitByTL,
+    sumVisitByTL,
   },
 };
 

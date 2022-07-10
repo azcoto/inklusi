@@ -1,4 +1,12 @@
-import { Container, Text, Divider, Table } from '@mantine/core';
+import {
+  Box,
+  Container,
+  Text,
+  Divider,
+  Table,
+  Card,
+  ActionIcon,
+} from '@mantine/core';
 import {
   ColumnDef,
   createTable,
@@ -6,6 +14,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
@@ -25,6 +34,21 @@ type DisburseData = {
 };
 
 const defaultColumns: ColumnDef<DisburseData>[] = [
+  {
+    header: 'Action',
+    cell: (info) => {
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <ActionIcon>
+            <PencilAltIcon color="blue" />
+          </ActionIcon>
+          <ActionIcon>
+            <TrashIcon color="red" />
+          </ActionIcon>
+        </Box>
+      );
+    },
+  },
   {
     accessorKey: 'nopen',
     header: 'Nopen',
@@ -114,39 +138,41 @@ export const DisburseSummary = () => {
         Disburse Summary
       </Text>
       <Divider mb={20} />
-      <Table>
-        <thead>
-          {tableInstance.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : (
-                      <div>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                      </div>
-                    )}
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {tableInstance.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <Card>
+        <Table>
+          <thead>
+            {tableInstance.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <th key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder ? null : (
+                        <div>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                        </div>
+                      )}
+                    </th>
+                  );
+                })}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {tableInstance.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card>
     </Container>
   );
 };

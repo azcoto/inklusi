@@ -1,27 +1,12 @@
-import dayjs, { Dayjs } from 'dayjs';
+import { intervalToDuration, parse } from 'date-fns';
 
-const exactAge = (birth: Dayjs) => {
-  const now = dayjs();
-  const y = now.diff(birth, 'y');
-  let m = now.diff(
-    dayjs(`${now.year()}-${birth.month() + 1}-${birth.date()}`),
-    'M',
-  );
-  let d = now.diff(
-    dayjs(`${now.year()}-${now.month() + 1}-${birth.date()}`),
-    'd',
-  );
-  if (m < 0) {
-    m = 11 + m;
-  }
-  if (d < 0) {
-    d = 29 + d;
-  }
-  return {
-    years: y,
-    months: m,
-    days: d,
-  };
+const exactAge = (birth: Date) => {
+  console.log(birth);
+  const { years, months, days } = intervalToDuration({
+    start: birth,
+    end: new Date(),
+  });
+  return { years, months, days };
 };
 
 export default exactAge;

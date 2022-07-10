@@ -77,6 +77,7 @@ const zSimulasiForm = z.object({
   skemaBunga: z.string(),
   jangkaWaktu: z.number(),
   gaji: z.number(),
+  gajiBersih: z.number().nullable(),
 
   blokirAngsuran: z
     .string()
@@ -170,6 +171,7 @@ const Calc = () => {
       skemaBunga: 'ANUITAS',
       jangkaWaktu: 60,
       gaji: 0,
+      gajiBersih: null,
       blokirAngsuran: 2,
       plafond: 0,
       maksPlafond: 0,
@@ -218,14 +220,18 @@ const Calc = () => {
 
       let maksPlafond: number;
       if (form.values.jumlahAkad === '3') {
-        const p1 = (pengali * gaji * 75) / 100;
+        const { gajiBersih } = form.values;
+        if (!gajiBersih) return;
+        const p1 = (pengali * gajiBersih * 75) / 100;
+        console.log('IP1', pengali);
+        console.log(pengali, (gajiBersih * 75) / 100);
         const a1 = xPMT(
           p1,
           selectedProduk.bunga,
           jangkaWaktu,
           selectedProduk.skema,
         );
-        const p2 = pengali * ((gaji * 75) / 100 - a1);
+        const p2 = pengali * ((gajiBersih * 75) / 100 - a1);
         const a2 = xPMT(
           p2,
           selectedProduk.bunga,
@@ -235,14 +241,16 @@ const Calc = () => {
         const pengali3 = listPengali?.find((p) => {
           return p.produkId === selectedProduk.id && p.tenor === untilBUP();
         })?.pengali as number;
-        const p3 = pengali3 * ((gaji * 75) / 100 - a1 - a2);
+
+        const p3 = pengali3 * (gaji - (gajiBersih * 75) / 100);
 
         console.log('Plafond 1', p1);
         console.log('Plafond 2', p2);
+        console.log('Plafond 3', p3);
 
         console.log('Angsuran 1', a1);
         console.log('Angsuran 2', a2);
-        console.log('Faktor Pengali 3', (gaji * 75) / 100 - a1 - a2);
+        console.log('Faktor Pengali 3', gaji - gajiBersih);
         console.log('Indeks Pengali 3', pengali3);
         maksPlafond = p1 + p2 + p3;
         setListPlafond({ p1, p2, p3, c: 3 });
@@ -275,6 +283,7 @@ const Calc = () => {
     const {
       plafond,
       gaji,
+      gajiBersih,
       maksPlafond,
       pelunasan,
       jangkaWaktu,
@@ -288,6 +297,7 @@ const Calc = () => {
       !selectedProduk ||
       !listPengali ||
       !gaji ||
+      !gajiBersih ||
       !jangkaWaktu ||
       !plafond
     )
@@ -349,7 +359,7 @@ const Calc = () => {
     const tBersih = px - tBiaya;
     const sisaGaji =
       jumlahAkad === '3'
-        ? Math.round((gaji * 75) / 100 - angsuran)
+        ? Math.round((gajiBersih * 75) / 100 - angsuran)
         : gaji - angsuran;
     const hasil: SimulasiResult = {
       tenor: Number(jangkaWaktu),
@@ -399,7 +409,10 @@ const Calc = () => {
         rateAsuransi,
         rateProvisiOrAdmin,
       );
-      setSimulasiResult3(hasil3);
+      setSimulasiResult3({
+        ...hasil3,
+        sisaGaji: gaji - (hasil.angsuran + hasil2.angsuran + hasil3.angsuran),
+      });
     }
     console.log('asuransi', asuransi);
     console.log('provisi  1', hasil.provisiOrAdmin);
@@ -524,14 +537,15 @@ const Calc = () => {
   };
 
   const displayAge = () => {
-    const age = exactAge(dayjs(form.values.tgLahir));
+    if (!form.values.tgLahir) return;
+    const age = exactAge(form.values.tgLahir);
     return `${age.years} Tahun ${age.months} Bulan ${age.days} Hari`;
   };
 
   const untilBUP = () => {
     if (!form.values.bup) return 0;
     const tglBUP = dayjs(form.values.tgLahir).add(Number(form.values.bup), 'y');
-    return tglBUP.diff(dayjs(), 'M') - 1;
+    return tglBUP.diff(dayjs(), 'M');
   };
 
   const untilPlatinum = () => {
@@ -543,7 +557,8 @@ const Calc = () => {
     <Container size="xs">
       <form ref={formRef} onSubmit={form.onSubmit(simulasi)}>
         <Text weight={'bold'} align="center">
-          SIMULASI PERHITUNGAN KREDIT
+          SIMULASI PERHITUNGAN{' '}
+          {form.values?.produk.includes('KCU') ? 'KREDIT' : 'PEMBIAYAAN'}
         </Text>
         <ScrollArea
           ref={simRef}
@@ -688,7 +703,7 @@ const Calc = () => {
             <Grid.Col span={5}>
               <Text size="sm">Tenor (Bulan)</Text>
             </Grid.Col>
-            <Grid.Col span={2}>
+            <Grid.Col span={3}>
               <NumberInput
                 itemType="number"
                 placeholder=""
@@ -705,8 +720,11 @@ const Calc = () => {
             </Grid.Col>
 
             <Grid.Col span={5}>
-              <Text size="sm">Gaji</Text>
+              <Text size="sm">
+                {form.values.tipeDebitur !== 'PENSIUN' ? 'Gaji Bersih' : 'Gaji'}
+              </Text>
             </Grid.Col>
+
             <Grid.Col span={4}>
               <NumberInput
                 sx={{ input: { textAlign: 'right' } }}
@@ -721,6 +739,28 @@ const Calc = () => {
                 {...form.getInputProps('gaji')}
               />
             </Grid.Col>
+
+            {form.values.jumlahAkad === '3' && (
+              <>
+                <Grid.Col span={5}>
+                  <Text size="sm">{'Gaji Pokok'}</Text>
+                </Grid.Col>
+                <Grid.Col span={4}>
+                  <NumberInput
+                    sx={{ input: { textAlign: 'right' } }}
+                    size="xs"
+                    parser={(value) => value?.replace(/\$\s?|(\.*)/g, '')}
+                    formatter={(value) =>
+                      value && !Number.isNaN(parseInt(value))
+                        ? `${Number(value).toLocaleString('Id')}`
+                        : ''
+                    }
+                    hideControls={true}
+                    {...form.getInputProps('gajiBersih')}
+                  />
+                </Grid.Col>
+              </>
+            )}
 
             <Grid.Col span={5}>
               <Text size="sm">Blokir</Text>

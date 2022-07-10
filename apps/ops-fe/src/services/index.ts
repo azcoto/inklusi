@@ -11,7 +11,12 @@ import { postAssignVisit, bySFVisit, visitDetail, patchVisit } from './visit';
 import { getAlltipeDebitur } from './tipeDebitur';
 import { getAllCabang } from './cabang';
 import { getAllTl, getSoByTl } from './tlso';
-import { allDisburse, putDisburse } from './disburse';
+import {
+  allDisburse,
+  getDisburse,
+  patchDisburse,
+  putDisburse,
+} from './disburse';
 
 const services = {
   auth: {
@@ -46,7 +51,9 @@ const services = {
     patchVisit,
   },
   disburse: {
+    getDisburse,
     putDisburse,
+    patchDisburse,
     allDisburse,
   },
   tlso: {

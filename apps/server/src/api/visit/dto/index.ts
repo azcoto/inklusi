@@ -122,4 +122,5 @@ export type SummaryByTLResponse = {
   tidakBerminat: number;
   raguRagu: number;
   berminat: number;
+  tidakDapatDilayani: number;
 };
