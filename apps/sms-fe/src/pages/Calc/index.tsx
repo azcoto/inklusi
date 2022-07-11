@@ -296,12 +296,21 @@ const Calc = () => {
       tipeDebitur,
     } = form.values;
 
+    console.log(
+      !listPlafond ||
+        !selectedProduk ||
+        !listPengali ||
+        !gaji ||
+        (!gajiBersih && jumlahAkad === '3') ||
+        !jangkaWaktu ||
+        !plafond,
+    );
     if (
       !listPlafond ||
       !selectedProduk ||
       !listPengali ||
       !gaji ||
-      (!gajiBersih && tipeDebitur !== 'PENSIUN') ||
+      (!gajiBersih && jumlahAkad === '3') ||
       !jangkaWaktu ||
       !plafond
     )
