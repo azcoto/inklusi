@@ -357,10 +357,10 @@ const Calc = () => {
       ?.konven as string;
     setCurrentKonven(tipeProduk);
     let rateProvisiOrAdmin: number;
-    if (!takeOver && tipeProduk === 'SYARIAH' && Number(jumlahAkad) === 3) {
+    if (!takeOver && tipeProduk === 'SYARIAH') {
       rateProvisiOrAdmin = 0.5 / 100;
-    } else if (!takeOver) {
-      rateProvisiOrAdmin = 0.5 / 100;
+    } else if (!takeOver && tipeProduk === 'KONVENSIONAL') {
+      rateProvisiOrAdmin = 1.5 / 100;
     } else {
       rateProvisiOrAdmin = 0;
     }
