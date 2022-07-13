@@ -5,10 +5,11 @@ import { join } from 'path';
 import { DataPotensiKecamatanTL, zDataPotensiKecamatanTL } from './dto';
 
 const areaPotensiKecamatanTL = async (
-  req: Request<{ tlNIP: string; dati2: string }>,
+  req: Request<{ tlNIP: string }, unknown, unknown, { dati2: string }>,
   res: Response,
 ) => {
-  const { tlNIP, dati2 } = req.params;
+  const { tlNIP } = req.params;
+  const { dati2 } = req.query;
   const areaKerjaTL = await db.$queryRaw<DataPotensiKecamatanTL>(
     Prisma.sql`select sq.dati3, sq.count_potensi as cnt
       from leader l 

@@ -7,17 +7,17 @@ import areaPotensiKotaTL from './areaPotensiKotaTL';
 const areaPotensiTL = Router();
 
 areaPotensiTL.get(
-  '/:nip',
+  '/:tlNIP/kota',
   authorize({ role: [Roles.tl], appname: [AppName.sms] }),
   areaPotensiKotaTL,
 );
 areaPotensiTL.get(
-  '/:tlNIP/:dati2(.*)',
+  '/:tlNIP/kecamatan',
   authorize({ role: [Roles.tl], appname: [AppName.sms] }),
   areaPotensiKecamatanTL,
 );
 areaPotensiTL.get(
-  '/:tlNIP/:dati2(.*)/:dati3(.*)',
+  '/:tlNIP/kelurahan',
   authorize({ role: [Roles.tl], appname: [AppName.sms] }),
   areaPotensiKelurahanTL,
 );

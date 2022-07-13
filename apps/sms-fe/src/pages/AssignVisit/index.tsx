@@ -37,9 +37,9 @@ import { notifySuccess } from 'libs/notify';
 import { showNotification } from '@mantine/notifications';
 
 const SelectItem = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
-  const { label, value: _, count, ...others } = props;
+  const { idx, label, value: _, count, ...others } = props;
   return (
-    <div ref={ref} {...others}>
+    <div key={idx} ref={ref} {...others}>
       <Group position="apart">
         <Text size="sm">{label}</Text>
         <Text size="xs" color="dimmed">
@@ -53,6 +53,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
 SelectItem.displayName = 'SelectItem';
 
 interface SelectItems {
+  idx: number;
   label: string;
   value: string;
   count: number;
@@ -102,7 +103,10 @@ const AssignVisit = () => {
   }, []);
 
   const parseDataKota = (data: DataPotensiKotaTL) => {
-    const mapped = data.map((item) => ({
+    console.log('Data kota');
+    console.log(data);
+    const mapped = data.map((item, idx) => ({
+      idx,
       label: item.dati2,
       value: item.dati2,
       count: item.cnt,
@@ -125,6 +129,7 @@ const AssignVisit = () => {
           selectedKota,
         );
         parseDataKecamatan(dataKecamatan);
+        console.log(dataKecamatan);
         setIsLoading(false);
       };
       if (selectedKota !== '') fetchKecamatan();
@@ -140,11 +145,13 @@ const AssignVisit = () => {
   }, [selectedKota]);
 
   const parseDataKecamatan = (data: DataPotensiKecamatanTL) => {
-    const mapped = data.map((item) => ({
+    const mapped = data.map((item, idx) => ({
+      idx,
       label: item.dati3,
       value: item.dati3,
       count: item.cnt,
     }));
+
     setListKecamatan(mapped);
   };
 
@@ -176,7 +183,8 @@ const AssignVisit = () => {
   }, [selectedKecamatan]);
 
   const parseDataKelurahan = (data: DataPotensiKelurahanTL) => {
-    const mapped = data.map((item) => ({
+    const mapped = data.map((item, idx) => ({
+      idx,
       label: item.dati4,
       value: item.dati4,
       count: item.cnt,
