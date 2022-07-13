@@ -12,12 +12,12 @@ areaPotensiTL.get(
   areaPotensiKotaTL,
 );
 areaPotensiTL.get(
-  '/:tlNIP/:dati2',
+  '/:tlNIP/:dati2(.*)',
   authorize({ role: [Roles.tl], appname: [AppName.sms] }),
   areaPotensiKecamatanTL,
 );
 areaPotensiTL.get(
-  '/:tlNIP/:dati2/:dati3',
+  '/:tlNIP/:dati2(.*)/:dati3(.*)',
   authorize({ role: [Roles.tl], appname: [AppName.sms] }),
   areaPotensiKelurahanTL,
 );

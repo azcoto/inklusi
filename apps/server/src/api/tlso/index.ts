@@ -7,16 +7,8 @@ import soOfTl from './tlOffSo';
 
 const tlSo = Router();
 
-tlSo.get('/', authorize({ role: [Roles.adm], appname: [AppName.ops] }), allTl);
+tlSo.get('/', allTl);
 
-tlSo.get(
-  '/:nipTl',
-  validate(zSoOfTlValidator),
-  authorize({
-    role: [Roles.tl, Roles.adm],
-    appname: [AppName.sms, AppName.ops],
-  }),
-  soOfTl,
-);
+tlSo.get('/:nipTl', validate(zSoOfTlValidator), soOfTl);
 
 export default tlSo;
