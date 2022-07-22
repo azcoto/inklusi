@@ -17,7 +17,7 @@ import {
 import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import services from 'services';
 
 type DisburseData = {
@@ -74,7 +74,7 @@ const defaultColumns: ColumnDef<DisburseData>[] = [
     accessorKey: 'plafond',
     header: 'Plafond',
     cell: (info) => {
-      return info.getValue().toLocaleString('Id');
+      return info.getValue<number>().toLocaleString('Id');
     },
   },
   {
@@ -93,7 +93,7 @@ const defaultColumns: ColumnDef<DisburseData>[] = [
     accessorKey: 'tgRealisasi',
     header: 'Tgl Realisasi',
     cell: (info) => {
-      const d = info.getValue();
+      const d = info.getValue<Dayjs>();
       return d.format('DD/MM/YYYY');
     },
   },
@@ -127,9 +127,6 @@ export const DisburseSummary = () => {
     data: allDisburseQuery.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
   });
 
   return (

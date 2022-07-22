@@ -17,6 +17,7 @@ import {
   patchDisburse,
   putDisburse,
 } from './disburse';
+import { createDebitur, getDebitur, getManyDebitur } from './debitur';
 
 const services = {
   auth: {
@@ -40,6 +41,11 @@ const services = {
   },
   tipeDebitur: {
     getAlltipeDebitur,
+  },
+  debitur: {
+    createDebitur,
+    getManyDebitur,
+    getDebitur,
   },
   cabang: {
     getAllCabang,

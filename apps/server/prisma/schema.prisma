@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -16,6 +17,7 @@ model TipeDebitur {
   kategoriAsuransi String @map("kategori_asuransi") @db.Char(1)
 
   Disburse Disburse[]
+
   @@map("tipe_debitur")
 }
 
@@ -29,6 +31,7 @@ model Produk {
   IndeksPengali IndeksPengali[]
 
   Disburse Disburse[]
+
   @@map("produk")
 }
 
@@ -39,7 +42,33 @@ model Cabang {
   tipe   String @db.VarChar(256)
 
   Disburse Disburse[]
+
   @@map("cabang")
+}
+
+model Debitur {
+  id            Int      @id @default(autoincrement())
+  cif           String   @unique @db.Char(6)
+  nopen         String   @unique @db.VarChar(255)
+  nik           String   @unique @db.VarChar(255)
+  nama          String   @db.VarChar(255)
+  tempatLahir   String   @map("tempat_lahir") @db.VarChar(255)
+  tglLahir      DateTime @map("tgl_lahir")
+  alamat        String   @db.VarChar(255)
+  kelurahan     String   @db.VarChar(255)
+  kecamatan     String   @db.VarChar(255)
+  kota          String   @db.VarChar(255)
+  namaIbu       String   @map("nama_ibu") @db.VarChar(255)
+  instansi      String?  @db.VarChar(255)
+  pangkat       String?  @db.VarChar(255)
+  golongan      String?  @db.VarChar(255)
+  bup           Int?
+  sisaMasaDinas Int?     @map("sisa_masa_dinas")
+  telepon       String   @db.VarChar(255)
+  createdAt     DateTime @map("created_at")
+  updatedAt     DateTime @map("updated_at")
+
+  @@map("debitur")
 }
 
 model IndeksPengali {
@@ -116,7 +145,6 @@ model Karyawan {
   bawahan Karyawan[] @relation(name: "level")
   atasan  Karyawan?  @relation(name: "level", fields: [nipAtasan], references: [nip])
 
-
   users  Users[]
   tlArea Leader[]
 
@@ -148,7 +176,6 @@ model Distribusi {
   dati4    String @db.VarChar(256)
   cPotensi BigInt @map("count_potensi")
 
-
   @@unique(fields: [dati1, dati2, dati3, dati4], name: "distibusiIdentifier")
   @@map("distribusi")
 }
@@ -158,8 +185,8 @@ model Leader {
   nip   String @db.VarChar(14)
   dati2 String @db.VarChar(256)
 
-
   Karyawan Karyawan? @relation(fields: [nip], references: [nip])
+
   @@unique(fields: [nip, dati2], name: "leaderIdentifier")
   @@map("leader")
 }
@@ -178,8 +205,8 @@ model Visit {
   tlKaryawan  Karyawan @relation(name: "tlKaryawan", fields: [nipTl], references: [nip])
   soKaryawan  Karyawan @relation(name: "soKaryawan", fields: [nipSo], references: [nip])
 
-
   Maspen Maspen? @relation(fields: [notas], references: [notas])
+
   @@map("visit")
 }
 
@@ -224,8 +251,6 @@ model Maspen {
   cleaned          Boolean   @default(false) @db.Boolean
   onVisit          Boolean   @default(false) @map("on_visit") @db.Boolean
   Visit            Visit[]
-
-
 
   Wilayah Wilayah? @relation(fields: [dati1, dati2, dati3, dati4], references: [dati1, dati2, dati3, dati4])
 

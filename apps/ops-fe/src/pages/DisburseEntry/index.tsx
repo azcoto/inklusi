@@ -14,7 +14,7 @@ import { DatePicker } from '@mantine/dates';
 import { useForm, zodResolver } from '@mantine/form';
 import { useRef } from 'react';
 import { z } from 'zod';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import services from 'services';
 
 const zEntryForm = z.object({

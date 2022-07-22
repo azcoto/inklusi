@@ -66,6 +66,30 @@ const Shell = () => {
               <UnstyledButton
                 onClick={() => {
                   setOpened(false);
+                  navigate('/debitur-entry');
+                }}
+              >
+                <Text weight={'bold'}>Entry Debitur</Text>
+              </UnstyledButton>
+              <UnstyledButton
+                onClick={() => {
+                  setOpened(false);
+                  navigate('/debitur-data');
+                }}
+              >
+                <Text weight={'bold'}>Data Debitur</Text>
+              </UnstyledButton>
+              <UnstyledButton
+                onClick={() => {
+                  setOpened(false);
+                  navigate('/loan-entry');
+                }}
+              >
+                <Text weight={'bold'}>Entry Pengajuan Kredit</Text>
+              </UnstyledButton>
+              <UnstyledButton
+                onClick={() => {
+                  setOpened(false);
                   navigate('/disburse-entry');
                 }}
               >

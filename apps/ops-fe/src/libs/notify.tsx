@@ -9,9 +9,19 @@ const optionsSuccess: CustomNotificationProps = {
   icon: <CheckCircleIcon />,
 };
 
+const optionsFast: CustomNotificationProps = {
+  autoClose: 500,
+  color: 'green',
+  icon: <CheckCircleIcon />,
+};
+
 export const notifySuccess = (
   message: string,
   show: typeof showNotification,
 ) => {
   show({ message, ...optionsSuccess });
+};
+
+export const notifyFast = (message: string, show: typeof showNotification) => {
+  show({ message, ...optionsFast });
 };

@@ -1,5 +1,5 @@
 import 'dayjs/locale/id';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
   ColorScheme,
@@ -8,6 +8,7 @@ import {
 } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import '@fontsource/open-sans';
+import '@fontsource/lato';
 import Shell from './components/Shell';
 import SignIn from './pages/SignIn';
 import React from 'react';
@@ -16,9 +17,12 @@ import { AuthProvider } from 'context/auth';
 import { getItem } from 'services/localStorage';
 import Home from 'pages/Home';
 import DisburseEntry from 'pages/DisburseEntry';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DisburseSummary } from 'pages/DisburseSummary';
 import { DisburseEdit } from 'pages/DisburseEdit';
+import { EntryDebitur } from 'pages/EntryDebitur';
+import { DataDebitur } from './pages/DataDebitur';
+import { EntryLoan } from './pages/EntryLoan';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,23 +83,31 @@ const App = () => {
             >
               <NotificationsProvider position="top-center" zIndex={2077}>
                 <AuthProvider user={getItem('user')}>
-                  <Routes>
-                    <Route path="/signin" element={<SignIn />} />
-                    <Route path="/" element={<Shell />}>
-                      <Route index element={<Home />} />
-                      <Route
-                        path="disburse-entry"
-                        element={<DisburseEntry />}
-                      />
-                      <Route
-                        path="disburse-summary"
-                        element={<DisburseSummary />}
-                      />
-                      <Route path="disburse">
-                        <Route path=":id" element={<DisburseEdit />} />
+                  <NotificationsProvider position="top-center" zIndex={2077}>
+                    <Routes>
+                      <Route path="/signin" element={<SignIn />} />
+                      <Route path="/" element={<Shell />}>
+                        <Route index element={<Home />} />
+                        <Route
+                          path="debitur-entry"
+                          element={<EntryDebitur />}
+                        />
+                        <Route path="debitur-data" element={<DataDebitur />} />
+                        <Route path="loan-entry" element={<EntryLoan />} />
+                        <Route
+                          path="disburse-entry"
+                          element={<DisburseEntry />}
+                        />
+                        <Route
+                          path="disburse-summary"
+                          element={<DisburseSummary />}
+                        />
+                        <Route path="disburse">
+                          <Route path=":id" element={<DisburseEdit />} />
+                        </Route>
                       </Route>
-                    </Route>
-                  </Routes>
+                    </Routes>
+                  </NotificationsProvider>
                 </AuthProvider>
               </NotificationsProvider>
             </MantineProvider>
@@ -106,4 +118,8 @@ const App = () => {
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);

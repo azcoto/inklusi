@@ -11,6 +11,7 @@ import cabang from './cabang';
 import disburse from './disburse';
 import asuransi from './asuransi';
 import indeksPengali from './indeksPengali';
+import debitur from './debitur';
 
 const apiRouter = Router();
 
@@ -30,5 +31,6 @@ apiRouter.use('/tipe-debitur', tipeDebitur);
 apiRouter.use('/disburse', disburse);
 apiRouter.use('/asuransi', asuransi);
 apiRouter.use('/pengali', indeksPengali);
+apiRouter.use('/debitur', debitur);
 
 export default apiRouter;

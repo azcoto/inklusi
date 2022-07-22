@@ -172,7 +172,7 @@ const Calc = () => {
       jangkaWaktu: 60,
       gaji: 0,
       gajiBersih: null,
-      blokirAngsuran: 2,
+      blokirAngsuran: 3,
       plafond: 0,
       maksPlafond: 0,
       pelunasan: 0,

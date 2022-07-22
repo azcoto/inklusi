@@ -6,6 +6,7 @@
     "baseUrl": "./src",
     "outDir": "./dist",
     "paths": {
+      "@/*": ["./*"],
       "@api/*": ["../../server/src/api/*"]
     }
   },
