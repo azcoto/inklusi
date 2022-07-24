@@ -733,16 +733,16 @@
     use-sync-external-store "^1.2.0"
 
 "@tanstack/react-table@^8.1.3":
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.3.1.tgz#a1bd45e3e9f1b856e7fb45449a12e4788d7d667a"
-  integrity sha512-+S8WvJGhYaeRwXDOBSAgt797KrvRv3xLi03UHfDqInTAySFp7SWebS6scpwiie55AAfHT36UL3mIq7uVUmpk1Q==
+  version "8.3.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.3.3.tgz#bcad6e4ec8e34c96ec50c9d7df14190042fc54ce"
+  integrity sha512-Zvp40XmxJgage/GKzqQVH38gVRtF5rmLV7WIWE4WZUtKsZgPhU3ZUt7ijc2Nyej8v/KGkF4ja8FA/UITevZA4A==
   dependencies:
-    "@tanstack/table-core" "8.3.1"
+    "@tanstack/table-core" "8.3.3"
 
-"@tanstack/table-core@8.3.1":
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.3.1.tgz#a16c1e24245dd1ca6900b55459b750c84291c157"
-  integrity sha512-ujOENKf/QSNmupmwqMx8vz/tKr8yT9zKjnG6EJvxoe6wV8qp/bI9TsYLsb5PkdLWKomBABs6IFQCedW9X1Pf2w==
+"@tanstack/table-core@8.3.3":
+  version "8.3.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.3.3.tgz#c01103ffd7cdc070f470c79b2c14401c7d7ca5ae"
+  integrity sha512-Y9lVatqOsQaQBmoKynWIkThC9MN+z4RCP8hSyGPlxI4K1MINFUBswpi3mEg157g0Q9UOXtmt13s7wnoHHfe+2Q==
 
 "@trpc/server@^9.23.2":
   version "9.26.2"
@@ -1272,9 +1272,9 @@ callsites@^3.0.0:
   integrity sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==
 
 caniuse-lite@^1.0.30001366:
-  version "1.0.30001368"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001368.tgz#c5c06381c6051cd863c45021475434e81936f713"
-  integrity sha512-wgfRYa9DenEomLG/SdWgQxpIyvdtH3NW8Vq+tB6AwR9e56iOIcu1im5F/wNdDf04XlKHXqIx4N8Jo0PemeBenQ==
+  version "1.0.30001369"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001369.tgz#58ca6974acf839a72a02003258a005cbb0cb340d"
+  integrity sha512-OY1SBHaodJc4wflDIKnlkdqWzJZd1Ls/2zbVJHBSv3AT7vgOJ58yAhd2CN4d57l2kPJrgMb7P9+N1Mhy4tNSQA==
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -1466,7 +1466,7 @@ damerau-levenshtein@^1.0.8:
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz#b43d286ccbd36bc5b2f7ed41caf2d0aba1f8a6e7"
   integrity sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==
 
-date-fns@^2.28.0:
+date-fns@^2.28.0, date-fns@^2.29.1:
   version "2.29.1"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.1.tgz#9667c2615525e552b5135a3116b95b1961456e60"
   integrity sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==
@@ -1597,9 +1597,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.188:
-  version "1.4.198"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.198.tgz#36a8e7871046f7f94c01dc0133912fd5cf226c6a"
-  integrity sha512-jwqQPdKGeAslcq8L+1SZZgL6uDiIDmTe9Gq4brsdWAH27y7MJ2g9Ue6MyST3ogmSM49EAQP7bype1V5hsuNrmQ==
+  version "1.4.199"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.199.tgz#e0384fde79fdda89880e8be58196a9153e04db3b"
+  integrity sha512-WIGME0Cs7oob3mxsJwHbeWkH0tYkIE/sjkJ8ML2BYmuRcjhRl/q5kVDXG7W9LOOKwzPU5M0LBlXRq9rlSgnNlg==
 
 emoji-regex@^8.0.0:
   version "8.0.0"

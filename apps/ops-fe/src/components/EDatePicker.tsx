@@ -16,6 +16,7 @@ export const EDatePicker = ({ name, ...other }: Props) => {
           type="text"
           {...other}
           {...field}
+          value={field.value ? new Date(field.value) : null}
           onChange={(value) => {
             field.onChange(`${value}`);
           }}

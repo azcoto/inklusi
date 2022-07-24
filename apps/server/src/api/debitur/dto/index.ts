@@ -22,6 +22,32 @@ export const zPutDisburseBody = z.object({
 export type CreateDebiturIn = z.infer<typeof zPutDisburseBody>;
 export type CreateDebiturOut = Prisma.DebiturCreateInput;
 
+export const zUpdateDebiturBody = z.object({
+  nopen: z.string(),
+  nik: z.string(),
+  nama: z.string(),
+  tempatLahir: z.string(),
+  tglLahir: z.date(),
+  alamat: z.string(),
+  kelurahan: z.string(),
+  kecamatan: z.string(),
+  kota: z.string(),
+  instansi: z.string().optional(),
+  pangkat: z.string().optional(),
+  golongan: z.string().optional(),
+  bup: z.number().optional(),
+  sisaMasaDinas: z.number().optional(),
+  telepon: z.string(),
+});
+
+export const zUpdateDebiturParams = z.object({
+  cif: z.string(),
+});
+
+export type UpdateDebiturIn = z.infer<typeof zUpdateDebiturBody>;
+export type UpdateDebiturParams = z.infer<typeof zUpdateDebiturParams>;
+export type UpdateDebiturOut = Prisma.DebiturUpdateInput;
+
 export const zGetManyDebiturParams = z.object({
   page: z.string(),
   filter: z.string().optional(),

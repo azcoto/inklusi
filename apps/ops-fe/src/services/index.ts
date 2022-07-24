@@ -17,7 +17,13 @@ import {
   patchDisburse,
   putDisburse,
 } from './disburse';
-import { createDebitur, getDebitur, getManyDebitur } from './debitur';
+import {
+  createDebitur,
+  getDebitur,
+  getManyDebitur,
+  updateDebitur,
+} from './debitur';
+import { createLoan, getLoan, getManyLoan } from './loan';
 
 const services = {
   auth: {
@@ -44,8 +50,14 @@ const services = {
   },
   debitur: {
     createDebitur,
+    updateDebitur,
     getManyDebitur,
     getDebitur,
+  },
+  loan: {
+    createLoan,
+    getManyLoan,
+    getLoan,
   },
   cabang: {
     getAllCabang,

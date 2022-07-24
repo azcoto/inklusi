@@ -3,9 +3,7 @@ import {
   Text,
   Stack,
   Group,
-  Select,
   Button,
-  Switch,
   LoadingOverlay,
   Divider,
   Card,
@@ -14,38 +12,38 @@ import { ETextInput } from '@/components/ETextInput';
 import { ENumberInput } from '@/components/ENumberInput';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import {
+  FormProvider,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { EDatePicker } from '@/components/EDatePicker';
 import { useEffect, useState } from 'react';
 import { ESelect } from '@/components/ESelect';
-import dayjs from 'dayjs';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createDebitur } from '@/services/debitur';
+import services from '@/services';
+import { ESwitch } from '@/components/ESwitch';
+import DebiturDisplay from '@/components/DebiturDisplay';
 import { notifySuccess } from '@/libs/notify';
 import { showNotification } from '@mantine/notifications';
-import services from '@/services';
-import { AlltipeDebiturResponse } from '@/../../server/src/api/tipeDebitur/dto';
-import { GetProdukResponse } from '@/../../server/src/api/produk/dto';
-import { ESwitch } from '@/components/ESwitch';
-import { EAutocomplete } from '@/components/EAutocomplete';
-import DebiturDisplay from '@/components/DebiturDisplay';
 
 const zMyForm = z.object({
   cif: z.string().min(6, { message: 'CIF Invalid' }),
   tglPengajuan: z.string().min(1, { message: 'Jenis PK Required' }),
-  jenisPK: z.string().min(1, { message: 'Jenis PK Required' }),
-  plafond: z.string().min(1, { message: 'Tempat Lahir Required' }),
-  angsuran: z.string().min(1, { message: 'Tanggal Lahir Required' }),
-  tenor: z.string().min(1, { message: 'Alamat Required' }),
-  tipeDebitur: z.string().min(1, { message: 'Kelurahan Required' }),
-  produk: z.string().min(1, { message: 'Kelurahan Required' }),
-  takeOver: z.string().min(1, { message: 'Password Invalid' }),
-  nominalPelunasan: z.string().min(1, { message: 'Kota Required' }),
-  bankPelunasan: z.string().min(1, { message: 'Nama Ibu Required' }),
-  cabang: z.string().min(1, { message: 'Instansi Required' }),
-  tl: z.string().min(1, { message: 'Pangkat Required' }),
-  mr: z.string().min(1, { message: 'Golongan Required' }),
+  jenisPk: z.string().min(1, { message: 'Jenis PK Required' }),
+  plafondPengajuan: z.string().min(1, { message: 'Tempat Lahir Required' }),
+  angsuranPengajuan: z.string().min(1, { message: 'Tanggal Lahir Required' }),
+  tenorPengajuan: z.string().min(1, { message: 'Alamat Required' }),
+  tipeDebiturId: z.string().min(1, { message: 'Kelurahan Required' }),
+  produkId: z.string().min(1, { message: 'Kelurahan Required' }),
+  takeover: z.string().min(1, { message: 'Password Invalid' }),
+  pelunasan: z.string().min(1, { message: 'Kota Required' }).optional(),
+  bankPelunasan: z.string().min(1, { message: 'Nama Ibu Required' }).optional(),
+  cabangId: z.string().min(1, { message: 'Instansi Required' }),
+  tlNip: z.string().min(1, { message: 'Pangkat Required' }),
+  mrNip: z.string().min(1, { message: 'Golongan Required' }),
 });
 
 type MyForm = z.infer<typeof zMyForm>;
@@ -87,18 +85,18 @@ export const EntryLoan = () => {
     defaultValues: {
       cif: '',
       tglPengajuan: '',
-      jenisPK: '',
-      plafond: '',
-      angsuran: '',
-      tenor: '',
-      tipeDebitur: '',
-      produk: '',
-      takeOver: '0',
-      nominalPelunasan: '',
+      jenisPk: '',
+      plafondPengajuan: '',
+      angsuranPengajuan: '',
+      tenorPengajuan: '',
+      tipeDebiturId: '',
+      produkId: '',
+      takeover: '0',
+      pelunasan: '',
       bankPelunasan: '',
-      cabang: '',
-      tl: '',
-      mr: '',
+      cabangId: '',
+      tlNip: '',
+      mrNip: '',
     },
   });
 
@@ -143,13 +141,23 @@ export const EntryLoan = () => {
     },
   });
 
-  const watchTl = methods.watch('tl');
+  const mCreateLoan = useMutation(['create-loan'], services.loan.createLoan, {
+    onSuccess: (data) => {
+      notifySuccess(
+        `Pengajuan ${data.noPengajuan} Berhasil Ditambahkan`,
+        showNotification,
+      );
+      methods.reset();
+    },
+  });
+
+  const watchTl = methods.watch('tlNip');
 
   const qMr = useQuery(
     ['get-all-mr', watchTl],
     () => services.tlso.getSoByTl(watchTl),
     {
-      enabled: methods.getValues('tl') !== '' ? true : false,
+      enabled: methods.getValues('tlNip') !== '' ? true : false,
       onSuccess: (data) => {
         setAllMr(
           data.map((item) => ({
@@ -172,15 +180,60 @@ export const EntryLoan = () => {
     },
   });
 
-  const watchTakeOver = methods.watch('takeOver');
+  const watchTakeOver = methods.watch('takeover');
+  useEffect(() => {
+    if (watchTakeOver === '0') {
+      methods.setValue('pelunasan', undefined);
+      methods.setValue('bankPelunasan', undefined);
+      methods.unregister('pelunasan');
+      methods.unregister('bankPelunasan');
+    } else if (watchTakeOver === '1') {
+      methods.setValue('pelunasan', '');
+      methods.setValue('bankPelunasan', '');
+      methods.register('pelunasan');
+      methods.register('bankPelunasan');
+    }
+  }, [watchTakeOver]);
+
   const watchCIF = methods.watch('cif');
+
+  const submitHandler: SubmitHandler<MyForm> = async (values) => {
+    const parsedValues = {
+      ...values,
+      tglPengajuan: new Date(values.tglPengajuan),
+      tipeDebiturId: Number(values.tipeDebiturId),
+      produkId: Number(values.produkId),
+      takeover: values.takeover === '1' ? true : false,
+      pelunasan: isNaN(Number(values.pelunasan?.replaceAll('.', '')))
+        ? undefined
+        : Number(values.pelunasan?.replaceAll('.', '')),
+      plafondPengajuan: Number(values.plafondPengajuan?.replaceAll('.', '')),
+      angsuranPengajuan: Number(values.angsuranPengajuan?.replaceAll('.', '')),
+      tenorPengajuan: Number(values.tenorPengajuan),
+      cabangId: Number(values.cabangId),
+    };
+    if (parsedValues.takeover === false) {
+      delete parsedValues.pelunasan;
+      delete parsedValues.bankPelunasan;
+    }
+    //@ts-ignore
+    console.log(parsedValues);
+    //@ts-ignore
+    mCreateLoan.mutate(parsedValues);
+  };
+
+  const submitErrorHandler: SubmitErrorHandler<MyForm> = (errors) => {
+    console.log(errors);
+  };
 
   return (
     <Container sx={{ position: 'relative' }} fluid>
       <DevTool control={methods.control} />
       <Group grow align="start">
         <FormProvider {...methods}>
-          <form>
+          <form
+            onSubmit={methods.handleSubmit(submitHandler, submitErrorHandler)}
+          >
             <Card sx={{ position: 'relative' }}>
               <LoadingOverlay
                 visible={
@@ -202,7 +255,7 @@ export const EntryLoan = () => {
                   <EDatePicker name="tglPengajuan" label="Tanggal Pengajuan" />
                   <ESelect
                     sx={{ flex: 1 }}
-                    name="jenisPK"
+                    name="jenisPk"
                     label="Jenis PK"
                     data={[
                       {
@@ -222,20 +275,20 @@ export const EntryLoan = () => {
                 </Group>
                 <Group grow>
                   <ENumberInput
-                    name="plafond"
+                    name="plafondPengajuan"
                     label="Plafond (Rp.)"
                     currencyMask={true}
                     rtl
                   />
                   <ENumberInput
-                    name="angsuran"
+                    name="angsuranPengajuan"
                     label="Angsuran (Rp.)"
                     currencyMask={true}
                     rtl
                   />
                   <ENumberInput
                     sx={{ width: '100px' }}
-                    name="tenor"
+                    name="tenorPengajuan"
                     label="Jangka Waktu (Bulan)"
                   />
                 </Group>
@@ -244,13 +297,13 @@ export const EntryLoan = () => {
                     <>
                       <ESelect
                         sx={{ flex: 1 }}
-                        name="tipeDebitur"
+                        name="tipeDebiturId"
                         label="Tipe Debitur"
                         data={allTipeDebitur}
                       />
                       <ESelect
                         sx={{ flex: 1 }}
-                        name="produk"
+                        name="produkId"
                         label="Produk"
                         data={allProduk}
                       />
@@ -258,7 +311,7 @@ export const EntryLoan = () => {
                   )}
                   <ESwitch
                     size="md"
-                    name="takeOver"
+                    name="takeover"
                     onSideLabel="Take Over"
                     offSideLabel="SK On Hand"
                   />
@@ -268,7 +321,7 @@ export const EntryLoan = () => {
                   <Group grow>
                     <ENumberInput
                       sx={{ flex: 1 }}
-                      name="nominalPelunasan"
+                      name="pelunasan"
                       label="Nominal Pelunasan (Rp.)"
                       currencyMask
                       rtl
@@ -284,7 +337,7 @@ export const EntryLoan = () => {
                 <Group grow>
                   {qTl.isFetched && (
                     <ESelect
-                      name="tl"
+                      name="tlNip"
                       data={allTl}
                       label="Team Leader"
                       searchable
@@ -293,7 +346,7 @@ export const EntryLoan = () => {
 
                   {qMr.isFetched && (
                     <ESelect
-                      name="mr"
+                      name="mrNip"
                       data={allMr}
                       label="Marketing Representative"
                       searchable
@@ -301,7 +354,7 @@ export const EntryLoan = () => {
                   )}
                   {qCabang.isFetched && (
                     <ESelect
-                      name="cabang"
+                      name="cabangId"
                       data={allCabang}
                       label="Cabang Pengajuan"
                       searchable

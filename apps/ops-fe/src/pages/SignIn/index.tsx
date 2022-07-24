@@ -22,7 +22,7 @@ import { showNotification } from '@mantine/notifications';
 import { useAuth } from 'context/auth';
 import { setToken } from 'libs/axios-instance';
 
-const SignIn = () => {
+export const SignIn = () => {
   const signInRef = useRef(false);
   const { setCurrentUser } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -118,5 +118,3 @@ const SignIn = () => {
     </Container>
   );
 };
-
-export default SignIn;

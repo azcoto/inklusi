@@ -12,6 +12,6 @@
       "@db/*": ["prisma/*"]
     }
   },
-  "include": ["./src/**/*.ts", "./prisma/**/*.ts"],
+  "include": ["./src/**/*.ts", "./prisma/**/*.ts", "src/api/loan/dto"],
   "exclude": ["node_modules", "dist", ".eslintrc.js"]
 }

@@ -35,31 +35,36 @@ import { notifyFast, notifySuccess } from '@/libs/notify';
 import { showNotification } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
 
-type DebiturDataPaginated = {
+type LoanDataPaginated = {
   count: number;
   data: {
-    cif: string;
+    noPengajuan: string;
     nopen: string;
     nama: string;
-    telepon: string;
-    created: Date;
-    updated: Date;
+    tipeDebitur: string;
+    tglPengajuan: string;
+    produk: string;
+    plafondPengajuan: string;
+    tenorPengajuan: string;
+    created: string;
+    updated: string;
   }[];
 };
 
-type DebiturData = DebiturDataPaginated['data'][0];
+type LoanData = LoanDataPaginated['data'][0];
 
-export const DataDebitur = () => {
+export const DataLoan = () => {
   const navigate = useNavigate();
-  const defaultColumns: ColumnDef<DebiturData>[] = [
+
+  const defaultColumns: ColumnDef<LoanData>[] = [
     {
-      accessorKey: 'cif',
-      header: 'CIF',
+      accessorKey: 'noPengajuan',
+      header: 'No Pengajuan',
       cell: (info) => (
-        <Group sx={{ flexWrap: 'nowrap' }}>
+        <Group sx={{ flexWrap: 'nowrap' }} spacing="xs">
           <ActionIcon
             onClick={() => {
-              notifyFast('CIF Copied to Clipboard', showNotification);
+              notifyFast('Nomor Copied to Clipboard', showNotification);
               navigator.clipboard.writeText(info.getValue<string>());
             }}
           >
@@ -68,7 +73,7 @@ export const DataDebitur = () => {
           <Button
             variant="subtle"
             onClick={() => {
-              navigate(`/debitur/${info.getValue<string>()}`, {
+              navigate(`/loan/${info.getValue<string>()}`, {
                 replace: false,
               });
             }}
@@ -87,26 +92,32 @@ export const DataDebitur = () => {
       header: 'Nama',
     },
     {
-      accessorKey: 'telepon',
-      header: 'Telepon / WA',
+      accessorKey: 'tglPengajuan',
+      header: 'Tgl Pengajuan',
+    },
+    {
+      accessorKey: 'tipeDebitur',
+      header: 'Tipe Debitur',
+    },
+    {
+      accessorKey: 'produk',
+      header: 'Produk',
+    },
+    {
+      accessorKey: 'plafondPengajuan',
+      header: 'Plafond',
+    },
+    {
+      accessorKey: 'tenorPengajuan',
+      header: 'Tenor',
     },
     {
       accessorKey: 'updated',
       header: 'Updated',
-      cell: (info) => (
-        <Text size="sm">
-          {dayjs(info.getValue<string>()).format('DD/MM/YYYY HH:mm')}
-        </Text>
-      ),
     },
     {
       accessorKey: 'created',
       header: 'Created',
-      cell: (info) => (
-        <Text size="sm">
-          {dayjs(info.getValue<string>()).format('DD/MM/YYYY HH:mm')}
-        </Text>
-      ),
     },
   ];
 
@@ -118,10 +129,10 @@ export const DataDebitur = () => {
   const [debouncedPage] = useDebouncedValue(page, 200);
   const [countDebitur, setCountDebitur] = useState<number>(0);
 
-  const qGetManyDebitur = useQuery(
-    ['get-many-debitur', { page: debouncedPage, filter: debouncedFilter }],
+  const qGetManyLoan = useQuery(
+    ['get-many-loan', { page: debouncedPage, filter: debouncedFilter }],
     async () =>
-      await services.debitur.getManyDebitur(
+      await services.loan.getManyLoan(
         page,
         filter ? filter.toUpperCase() : null,
       ),
@@ -129,26 +140,34 @@ export const DataDebitur = () => {
       keepPreviousData: true,
       select: (result) => {
         const { count, data } = result;
-        const arrDebitur = data.map((d) => {
+        const loans = data.map((d) => {
+          console.log(dayjs(d.tglPengajuan).format('DD/MM/YYYY'));
           return {
-            cif: d.cif,
-            nopen: d.nopen,
-            nama: d.nama,
-            telepon: d.telepon,
-            created: d.createdAt,
-            updated: d.updatedAt,
+            noPengajuan: d.noPengajuan,
+            nopen: d.Debitur.nopen,
+            nama: d.Debitur.nama,
+            tipeDebitur: d.TipeDebitur.nama,
+            tglPengajuan: dayjs(d.tglPengajuan).format('DD/MM/YYYY') as string,
+            produk: d.Produk.nama,
+            plafondPengajuan: new Intl.NumberFormat('id-ID').format(
+              d.plafondPengajuan,
+            ),
+            tenorPengajuan: String(d.tenorPengajuan),
+
+            created: dayjs(d.createdAt).format('DD/MM/YYYY HH:mm'),
+            updated: dayjs(d.updatedAt).format('DD/MM/YYYY HH:mm'),
           };
         });
         return {
           count,
-          data: arrDebitur,
+          data: loans,
         };
       },
     },
   );
 
   const tableInstance = useReactTable({
-    data: qGetManyDebitur.data?.data ?? [],
+    data: qGetManyLoan.data?.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -156,11 +175,11 @@ export const DataDebitur = () => {
   return (
     <Container sx={{ position: 'relative' }} fluid>
       <LoadingOverlay
-        visible={qGetManyDebitur.isLoading}
+        visible={qGetManyLoan.isLoading}
         transitionDuration={500}
       />
       <Text size="xl" weight={'bold'}>
-        Data Debitur
+        Data Pengajuan Kredit
       </Text>
       <Divider my={20} />
       <Card>
@@ -186,7 +205,7 @@ export const DataDebitur = () => {
             mb={16}
           />
         </Group>
-        {qGetManyDebitur.data && qGetManyDebitur.data?.count > 10 && (
+        {qGetManyLoan.data && qGetManyLoan.data?.count > 10 && (
           <Pagination
             total={Math.floor(countDebitur / 10) + 2}
             page={page}
@@ -199,10 +218,10 @@ export const DataDebitur = () => {
         )}
 
         <Table striped captionSide="bottom">
-          {qGetManyDebitur.data && (
+          {qGetManyLoan.data && (
             <caption>
               <Text size="sm" align="left" pl={16} weight="bold">
-                JUMLAH DATA : {qGetManyDebitur.data.count}
+                JUMLAH DATA : {qGetManyLoan.data.count}
               </Text>
             </caption>
           )}

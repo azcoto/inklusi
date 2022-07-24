@@ -12,6 +12,7 @@ import disburse from './disburse';
 import asuransi from './asuransi';
 import indeksPengali from './indeksPengali';
 import debitur from './debitur';
+import loan from './loan';
 
 const apiRouter = Router();
 
@@ -32,5 +33,6 @@ apiRouter.use('/disburse', disburse);
 apiRouter.use('/asuransi', asuransi);
 apiRouter.use('/pengali', indeksPengali);
 apiRouter.use('/debitur', debitur);
+apiRouter.use('/loan', loan);
 
 export default apiRouter;

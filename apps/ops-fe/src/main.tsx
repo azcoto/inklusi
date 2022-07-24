@@ -10,20 +10,22 @@ import { NotificationsProvider } from '@mantine/notifications';
 import '@fontsource/open-sans';
 import '@fontsource/lato';
 import Shell from './components/Shell';
-import SignIn from './pages/SignIn';
 import React from 'react';
 import { useLocalStorage } from '@mantine/hooks';
 import { AuthProvider } from 'context/auth';
 import { getItem } from 'services/localStorage';
-import Home from 'pages/Home';
-import DisburseEntry from 'pages/DisburseEntry';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { DisburseSummary } from 'pages/DisburseSummary';
-import { DisburseEdit } from 'pages/DisburseEdit';
-import { EntryDebitur } from 'pages/EntryDebitur';
-import { DataDebitur } from './pages/DataDebitur';
-import { EntryLoan } from './pages/EntryLoan';
-
+import {
+  DataDebitur,
+  DataLoan,
+  DetailDebitur,
+  DetailLoan,
+  EntryDebitur,
+  EntryLoan,
+  Home,
+  SignIn,
+} from './pages';
+import { EditDebitur } from './pages/EditDebitur';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -93,18 +95,22 @@ const App = () => {
                           element={<EntryDebitur />}
                         />
                         <Route path="debitur-data" element={<DataDebitur />} />
+
+                        <Route
+                          path="debitur/:cif"
+                          element={<DetailDebitur />}
+                        />
+                        <Route
+                          path="debitur-edit/:cif"
+                          element={<EditDebitur />}
+                        />
                         <Route path="loan-entry" element={<EntryLoan />} />
+                        <Route path="loan-data" element={<DataLoan />} />
                         <Route
-                          path="disburse-entry"
-                          element={<DisburseEntry />}
+                          path="loan/:noPengajuan"
+                          element={<DetailLoan />}
                         />
-                        <Route
-                          path="disburse-summary"
-                          element={<DisburseSummary />}
-                        />
-                        <Route path="disburse">
-                          <Route path=":id" element={<DisburseEdit />} />
-                        </Route>
+                        <Route path="*" element={<Home />} />
                       </Route>
                     </Routes>
                   </NotificationsProvider>

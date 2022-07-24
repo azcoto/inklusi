@@ -3,12 +3,13 @@ import {
   AppShell,
   Drawer,
   Stack,
-  UnstyledButton,
   Box,
   Footer,
   Navbar,
   MediaQuery,
   Aside,
+  Divider,
+  Button,
 } from '@mantine/core';
 import { useAuthed } from 'context/auth';
 import { useEffect, useRef, useState } from 'react';
@@ -55,64 +56,71 @@ const Shell = () => {
             pl={8}
           >
             <Stack>
-              <UnstyledButton
+              <Button
+                sx={{ div: { justifyContent: 'start' } }}
+                variant="subtle"
                 onClick={() => {
                   setOpened(false);
                   navigate('/');
                 }}
               >
                 <Text weight={'bold'}>Home</Text>
-              </UnstyledButton>
-              <UnstyledButton
+              </Button>
+              <Divider label="Debitur" />
+              <Button
+                sx={{ div: { justifyContent: 'start' } }}
+                variant="subtle"
                 onClick={() => {
                   setOpened(false);
                   navigate('/debitur-entry');
                 }}
               >
                 <Text weight={'bold'}>Entry Debitur</Text>
-              </UnstyledButton>
-              <UnstyledButton
+              </Button>
+
+              <Button
+                sx={{ div: { justifyContent: 'start' } }}
+                variant="subtle"
                 onClick={() => {
                   setOpened(false);
                   navigate('/debitur-data');
                 }}
               >
                 <Text weight={'bold'}>Data Debitur</Text>
-              </UnstyledButton>
-              <UnstyledButton
+              </Button>
+              <Divider label="Pengajuan Kredit" />
+              <Button
+                sx={{ div: { justifyContent: 'start' } }}
+                variant="subtle"
                 onClick={() => {
                   setOpened(false);
                   navigate('/loan-entry');
                 }}
               >
                 <Text weight={'bold'}>Entry Pengajuan Kredit</Text>
-              </UnstyledButton>
-              <UnstyledButton
-                onClick={() => {
-                  setOpened(false);
-                  navigate('/disburse-entry');
-                }}
-              >
-                <Text weight={'bold'}>Disburse Entry</Text>
-              </UnstyledButton>
+              </Button>
 
-              <UnstyledButton
+              <Button
+                sx={{ div: { justifyContent: 'start' } }}
+                variant="subtle"
                 onClick={() => {
                   setOpened(false);
-                  navigate('/disburse-summary');
+                  navigate('/loan-data');
                 }}
               >
-                <Text weight={'bold'}>Disburse Summary</Text>
-              </UnstyledButton>
+                <Text weight={'bold'}>Data Pengajuan</Text>
+              </Button>
             </Stack>
-            <UnstyledButton
+            <Button
+              sx={{ div: { justifyContent: 'start' } }}
+              variant="subtle"
               onClick={() => {
                 setOpened(false);
                 navigate('/signin');
               }}
             >
               <Text weight={'bold'}>Logout</Text>
-            </UnstyledButton>
+            </Button>
           </Box>
         </Navbar>
       }

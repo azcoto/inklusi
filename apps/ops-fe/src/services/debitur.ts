@@ -1,15 +1,35 @@
 import {
   CreateDebiturIn,
+  CreateDebiturOut,
   GetDebiturIn,
   GetDebiturOut,
   GetManyDebiturIn,
   GetManyDebiturOut,
+  UpdateDebiturIn,
+  UpdateDebiturOut,
 } from '@api/debitur/dto';
 import api from 'libs/axios-instance';
 import { AxiosResponse } from 'axios';
 
 export const createDebitur = async (body: CreateDebiturIn) => {
-  const response = await api.put<CreateDebiturIn>('/debitur', body);
+  const response = await api.put<
+    CreateDebiturIn,
+    AxiosResponse<CreateDebiturOut>
+  >('/debitur', body);
+  return response.data;
+};
+
+export const updateDebitur = async ({
+  cif,
+  body,
+}: {
+  cif: string;
+  body: UpdateDebiturIn;
+}) => {
+  const response = await api.patch<
+    UpdateDebiturIn,
+    AxiosResponse<UpdateDebiturOut>
+  >(`/debitur/${cif}`, body);
   return response.data;
 };
 

@@ -17,6 +17,7 @@ model TipeDebitur {
   kategoriAsuransi String @map("kategori_asuransi") @db.Char(1)
 
   Disburse Disburse[]
+  Loan     Loan[]
 
   @@map("tipe_debitur")
 }
@@ -31,6 +32,7 @@ model Produk {
   IndeksPengali IndeksPengali[]
 
   Disburse Disburse[]
+  Loan     Loan[]
 
   @@map("produk")
 }
@@ -42,6 +44,7 @@ model Cabang {
   tipe   String @db.VarChar(256)
 
   Disburse Disburse[]
+  Loan     Loan[]
 
   @@map("cabang")
 }
@@ -67,8 +70,46 @@ model Debitur {
   telepon       String   @db.VarChar(255)
   createdAt     DateTime @map("created_at")
   updatedAt     DateTime @map("updated_at")
+  Loan          Loan[]
 
   @@map("debitur")
+}
+
+model Loan {
+  id                Int      @id @default(autoincrement())
+  noPengajuan       String   @unique @map("no_pengajuan") @db.Char(12)
+  cif               String   @db.Char(12)
+  tglPengajuan      DateTime @map("tgl_pengajuan")
+  jenisPk           String   @map("jenis_pk") @db.VarChar(255)
+  plafond           Decimal? @db.Decimal(14, 0)
+  plafondPengajuan  Decimal  @map("plafond_pengajuan") @db.Decimal(14, 0)
+  angsuran          Decimal? @db.Decimal(14, 0)
+  angsuranPengajuan Decimal  @map("angsuran_pengajuan") @db.Decimal(14, 0)
+  tenor             Int?
+  tenorPengajuan    Int      @map("tenor_pengajuan")
+  tipeDebiturId     Int      @map("tipe_debitur_id")
+  produkId          Int      @map("produk_id")
+  takeover          Boolean
+  pelunasan         Decimal? @db.Decimal(14, 0)
+  bankPelunasan     String?  @map("bank_pelunasan") @db.VarChar(255)
+  tlNip             String   @map("tl_nip") @db.VarChar(255)
+  mrNip             String   @map("mr_nip") @db.VarChar(255)
+  cabangId          Int      @map("cabang_id")
+  noRekKredit       String?  @map("no_rek_kredit") @db.VarChar(255)
+  status            String   @default("PENDING") @db.VarChar(255)
+  keterangan        String?  @db.Text
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
+
+  Debitur     Debitur     @relation(fields: [cif], references: [cif])
+  TipeDebitur TipeDebitur @relation(fields: [tipeDebiturId], references: [id])
+  Produk      Produk      @relation(fields: [produkId], references: [id])
+  KaryawanTL  Karyawan    @relation(name: "loan-karyawan-tl", fields: [tlNip], references: [nip])
+  KaryawanMR  Karyawan    @relation(name: "loan-karyawan-mr", fields: [mrNip], references: [nip])
+  Cabang      Cabang      @relation(fields: [cabangId], references: [id])
+
+  @@map("loan")
 }
 
 model IndeksPengali {
@@ -152,6 +193,8 @@ model Karyawan {
   soVisit    Visit[]    @relation("soKaryawan")
   DisburseTl Disburse[] @relation("disbTl")
   DisburseMr Disburse[] @relation("disbMr")
+  LoanTl     Loan[]     @relation("loan-karyawan-tl")
+  LoanMr     Loan[]     @relation("loan-karyawan-mr")
 
   @@map("karyawan")
 }
