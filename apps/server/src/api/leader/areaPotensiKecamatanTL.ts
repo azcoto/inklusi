@@ -14,7 +14,7 @@ const areaPotensiKecamatanTL = async (
     Prisma.sql`select sq.dati3, sq.count_potensi as cnt
       from leader l 
       join(
-        select dati2, dati3, sum(count_potensi) as count_potensi
+        select dati2, dati3, sum(count_potensi)::int as count_potensi
         from distribusi
         group by dati2, dati3
       ) as sq

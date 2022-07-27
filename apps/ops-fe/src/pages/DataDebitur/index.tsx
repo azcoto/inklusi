@@ -127,9 +127,9 @@ export const DataDebitur = () => {
       ),
     {
       keepPreviousData: true,
-      select: (result) => {
-        const { count, data } = result;
-        const arrDebitur = data.map((d) => {
+      select: (data) => {
+        const { count, data: result } = data;
+        const arrDebitur = result.map((d) => {
           return {
             cif: d.cif,
             nopen: d.nopen,

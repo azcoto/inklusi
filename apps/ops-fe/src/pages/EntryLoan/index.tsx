@@ -74,12 +74,6 @@ type CabangData = {
 }[];
 
 export const EntryLoan = () => {
-  const [allTipeDebitur, setAlltipeDebitur] = useState<TipeDebiturData>([]);
-  const [allProduk, setAllProduk] = useState<ProdukData>([]);
-  const [allTl, setAllTl] = useState<TLData>([]);
-  const [allMr, setAllMr] = useState<MRData>([]);
-  const [allCabang, setAllCabang] = useState<CabangData>([]);
-
   const methods = useForm<MyForm>({
     resolver: zodResolver(zMyForm),
     defaultValues: {
@@ -102,44 +96,42 @@ export const EntryLoan = () => {
 
   const qTipeDebitur = useQuery(
     ['get-all-tipe-debitur'],
-    () => services.tipeDebitur.getAlltipeDebitur(),
+    async () => await services.tipeDebitur.getAlltipeDebitur(),
     {
-      onSuccess: (data) => {
-        setAlltipeDebitur(
-          data.map((item) => ({
-            value: String(item.id),
-            label: item.nama,
-          })),
-        );
+      select: (data) => {
+        return data.map((item) => ({
+          value: String(item.id),
+          label: item.nama,
+        }));
       },
     },
   );
 
   const qProduk = useQuery(
     ['get-all-produk'],
-    () => services.produk.getProduk(),
+    async () => await services.produk.getProduk(),
     {
-      onSuccess: (data) => {
-        setAllProduk(
-          data.map((item) => ({
-            value: String(item.id),
-            label: item.nama,
-          })),
-        );
+      select: (data) => {
+        return data.map((item) => ({
+          value: String(item.id),
+          label: item.nama,
+        }));
       },
     },
   );
 
-  const qTl = useQuery(['get-all-tl'], () => services.tlso.getAllTl(), {
-    onSuccess: (data) => {
-      setAllTl(
-        data.map((item) => ({
+  const qTl = useQuery(
+    ['get-all-tl'],
+    async () => await services.tlso.getAllTl(),
+    {
+      select: (data) => {
+        return data.map((item) => ({
           value: String(item.nip),
           label: item.nama,
-        })),
-      );
+        }));
+      },
     },
-  });
+  );
 
   const mCreateLoan = useMutation(['create-loan'], services.loan.createLoan, {
     onSuccess: (data) => {
@@ -158,25 +150,21 @@ export const EntryLoan = () => {
     () => services.tlso.getSoByTl(watchTl),
     {
       enabled: methods.getValues('tlNip') !== '' ? true : false,
-      onSuccess: (data) => {
-        setAllMr(
-          data.map((item) => ({
-            value: String(item.nip),
-            label: item.nama,
-          })),
-        );
+      select: (data) => {
+        return data.map((item) => ({
+          value: String(item.nip),
+          label: item.nama,
+        }));
       },
     },
   );
 
   const qCabang = useQuery(['cabang'], services.cabang.getAllCabang, {
-    onSuccess(data) {
-      setAllCabang(
-        data.map((item) => ({
-          value: String(item.id),
-          label: item.nama,
-        })),
-      );
+    select(data) {
+      return data.map((item) => ({
+        value: String(item.id),
+        label: item.nama,
+      }));
     },
   });
 
@@ -293,19 +281,19 @@ export const EntryLoan = () => {
                   />
                 </Group>
                 <Group align="end">
-                  {qTipeDebitur.isSuccess && qProduk.isSuccess && (
+                  {qTipeDebitur.data && qProduk.data && (
                     <>
                       <ESelect
                         sx={{ flex: 1 }}
                         name="tipeDebiturId"
                         label="Tipe Debitur"
-                        data={allTipeDebitur}
+                        data={qTipeDebitur.data}
                       />
                       <ESelect
                         sx={{ flex: 1 }}
                         name="produkId"
                         label="Produk"
-                        data={allProduk}
+                        data={qProduk.data}
                       />
                     </>
                   )}
@@ -335,27 +323,27 @@ export const EntryLoan = () => {
                   </Group>
                 )}
                 <Group grow>
-                  {qTl.isFetched && (
+                  {qTl.data && (
                     <ESelect
                       name="tlNip"
-                      data={allTl}
+                      data={qTl.data}
                       label="Team Leader"
                       searchable
                     />
                   )}
 
-                  {qMr.isFetched && (
+                  {qMr.data && (
                     <ESelect
                       name="mrNip"
-                      data={allMr}
+                      data={qMr.data}
                       label="Marketing Representative"
                       searchable
                     />
                   )}
-                  {qCabang.isFetched && (
+                  {qCabang.data && (
                     <ESelect
                       name="cabangId"
-                      data={allCabang}
+                      data={qCabang.data}
                       label="Cabang Pengajuan"
                       searchable
                     />

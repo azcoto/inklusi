@@ -45,24 +45,28 @@ const App = () => {
               fontFamily: 'Open Sans',
               colorScheme: colorScheme,
               primaryShade: 7,
-            }}
-            styles={{
-              AppShell: (theme) => ({
-                root: {
-                  background:
-                    theme.colorScheme === 'dark'
-                      ? theme.colors.dark[8]
-                      : theme.colors.gray[1],
+              components: {
+                AppShell: {
+                  styles: (theme) => ({
+                    root: {
+                      background:
+                        theme.colorScheme === 'dark'
+                          ? theme.colors.dark[8]
+                          : theme.colors.gray[1],
+                    },
+                  }),
                 },
-              }),
-              Footer: (theme) => ({
-                root: {
-                  background:
-                    theme.colorScheme === 'dark'
-                      ? theme.colors.dark[8]
-                      : theme.colors.gray[1],
+                Footer: {
+                  styles: (theme) => ({
+                    root: {
+                      background:
+                        theme.colorScheme === 'dark'
+                          ? theme.colors.dark[8]
+                          : theme.colors.gray[1],
+                    },
+                  }),
                 },
-              }),
+              },
             }}
             withGlobalStyles
             withNormalizeCSS

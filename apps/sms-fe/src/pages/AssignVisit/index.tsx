@@ -115,6 +115,7 @@ const AssignVisit = () => {
   };
 
   const kotaChanged = (value: string) => {
+    console.log('Kota Changed');
     setSelectedKota(value);
   };
   //#endregion
@@ -293,6 +294,7 @@ const AssignVisit = () => {
         {listKota.length !== 0 && (
           <Select
             sx={{ flex: 0 }}
+            value={selectedKota}
             itemComponent={SelectItem}
             data={listKota}
             label="Kota/Kabupaten"
@@ -303,6 +305,7 @@ const AssignVisit = () => {
         {listKecamatan.length !== 0 && (
           <Select
             sx={{ flex: 0 }}
+            value={selectedKecamatan}
             itemComponent={SelectItem}
             data={listKecamatan}
             label="Kecamatan"
@@ -313,6 +316,7 @@ const AssignVisit = () => {
         {listKelurahan.length !== 0 && (
           <Select
             sx={{ flex: 0 }}
+            value={selectedKelurahan}
             itemComponent={SelectItem}
             data={listKelurahan}
             label="Kelurahan"

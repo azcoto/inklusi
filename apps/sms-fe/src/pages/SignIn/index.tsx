@@ -10,6 +10,7 @@ import {
   LoadingOverlay,
   Image,
   Text,
+  useMantineColorScheme,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { zSignInDTO, SignInDTO } from '@api/auth/dto';
@@ -23,6 +24,7 @@ import { useAuth } from 'context/auth';
 import { setToken } from 'libs/axios-instance';
 
 const SignIn = () => {
+  const { colorScheme } = useMantineColorScheme();
   const signInRef = useRef(false);
   const { setCurrentUser } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,7 +39,7 @@ const SignIn = () => {
   }, []);
   let navigate = useNavigate();
   const form = useForm<SignInDTO>({
-    schema: zodResolver(zSignInDTO),
+    validate: zodResolver(zSignInDTO),
     initialValues: {
       phone: '',
       password: '',
@@ -62,7 +64,13 @@ const SignIn = () => {
   };
 
   return (
-    <Container sx={{ height: '100vh', backgroundColor: '#F1F3F5' }} p={4}>
+    <Container
+      sx={{
+        height: '100vh',
+        backgroundColor: colorScheme === 'light' ? '#F1F3F5' : '#141517',
+      }}
+      p={4}
+    >
       <LoadingOverlay visible={isLoading} />
       <Box
         sx={{

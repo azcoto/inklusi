@@ -8,7 +8,7 @@ const getMany = async (
   next: NextFunction,
 ) => {
   try {
-    const { page, filter } = req.query;
+    const { page, filter, cabangId } = req.query;
 
     const pCount = db.loan.count({
       where: {
@@ -17,6 +17,7 @@ const getMany = async (
             contains: filter ? `%${filter}%` : '%',
           },
         },
+        ...(cabangId && { cabangId: Number(cabangId) }),
       },
     });
     const pData = db.loan.findMany({
@@ -35,6 +36,7 @@ const getMany = async (
             contains: filter ? `%${filter}%` : '%',
           },
         },
+        ...(cabangId && { cabangId: Number(cabangId) }),
       },
       orderBy: {
         updatedAt: 'desc',

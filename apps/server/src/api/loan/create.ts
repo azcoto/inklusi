@@ -10,6 +10,7 @@ const create = async (
 ) => {
   try {
     const generatedNoPengajuan = await genNoPengajuan();
+    console.log(req.body);
     const created = await db.loan.create({
       data: {
         noPengajuan: generatedNoPengajuan,

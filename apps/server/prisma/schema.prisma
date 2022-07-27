@@ -43,8 +43,9 @@ model Cabang {
   nama   String @unique @db.VarChar(256)
   tipe   String @db.VarChar(256)
 
-  Disburse Disburse[]
-  Loan     Loan[]
+  Disburse   Disburse[]
+  Loan       Loan[]
+  UserCabang UserCabang[]
 
   @@map("cabang")
 }
@@ -167,6 +168,23 @@ model Users {
 
   @@unique([notelp, appname])
   @@map("users")
+}
+
+model UserCabang {
+  id        Int      @id @default(autoincrement())
+  nama      String   @db.VarChar(255)
+  nip       String   @db.VarChar(20)
+  pass      String   @db.Char(60)
+  enabled   Boolean  @default(true) @db.Boolean
+  cabangId  Int      @map("cabang_id")
+  jabatan   String   @db.VarChar(255)
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
+
+  Cabang Cabang @relation(fields: [cabangId], references: [id])
+
+  @@unique(nip)
+  @@map("user_cabang")
 }
 
 model Karyawan {

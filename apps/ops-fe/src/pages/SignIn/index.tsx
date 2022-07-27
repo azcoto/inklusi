@@ -10,13 +10,15 @@ import {
   LoadingOverlay,
   Image,
   Text,
+  useMantineColorScheme,
+  Switch,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { zSignInDTO, SignInDTO } from '@api/auth/dto';
 import React, { useEffect, useRef, useState } from 'react';
 import services from 'services';
 import { removeItem, setItem } from 'services/localStorage';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { createPath, Navigate, useNavigate } from 'react-router-dom';
 import { handleError } from 'libs/handleError';
 import { showNotification } from '@mantine/notifications';
 import { useAuth } from 'context/auth';
@@ -26,6 +28,8 @@ export const SignIn = () => {
   const signInRef = useRef(false);
   const { setCurrentUser } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { colorScheme } = useMantineColorScheme();
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     if (signInRef.current) {
@@ -37,7 +41,7 @@ export const SignIn = () => {
   }, []);
   let navigate = useNavigate();
   const form = useForm<SignInDTO>({
-    schema: zodResolver(zSignInDTO),
+    validate: zodResolver(zSignInDTO),
     initialValues: {
       phone: '',
       password: '',
@@ -49,7 +53,16 @@ export const SignIn = () => {
     event.preventDefault();
     try {
       setIsLoading(true);
-      const data = await services.auth.signIn(values);
+      let data;
+      console.log(checked);
+      if (checked) {
+        data = await services.auth.userCabangSignIn({
+          nip: values.phone,
+          pass: values.password,
+        });
+      } else {
+        data = await services.auth.signIn(values);
+      }
       setItem('user', data.user);
       setCurrentUser(data.user);
       setItem('token', data.token);
@@ -67,7 +80,7 @@ export const SignIn = () => {
         maxWidth: '100%',
         height: '100vh',
         position: 'relative',
-        backgroundColor: '#F1F3F5',
+        backgroundColor: colorScheme === 'light' ? '#F1F3F5' : '#141517',
       }}
       p={4}
     >
@@ -88,7 +101,7 @@ export const SignIn = () => {
         </Text>
       </Box>
 
-      <Box sx={{ maxWidth: 200 }} mx="auto">
+      <Box sx={{ maxWidth: 300 }} mx="auto">
         <form onSubmit={form.onSubmit(doSignIn)}>
           <TextInput label="NIP" required {...form.getInputProps('phone')} />
           <PasswordInput
@@ -96,7 +109,12 @@ export const SignIn = () => {
             required
             {...form.getInputProps('password')}
           />
-          <Group position="right" mt="md">
+          <Group mt="md" position="apart">
+            <Switch
+              label={checked ? 'User Cabang' : 'User JIKU'}
+              checked={checked}
+              onChange={(event) => setChecked(event.currentTarget.checked)}
+            />
             <Button type="submit">LOGIN</Button>
           </Group>
         </form>

@@ -35,6 +35,7 @@ export type CreateLoanOut = Prisma.LoanCreateInput;
 export const zGetManyLoanParams = z.object({
   page: z.string(),
   filter: z.string().optional(),
+  cabangId: z.string().regex(new RegExp(/^\d+$/)).optional(),
 });
 
 export type GetManyLoanIn = z.infer<typeof zGetManyLoanParams>;
@@ -52,12 +53,14 @@ const getManyLoanOut = Prisma.validator<Prisma.LoanFindManyArgs>()({
 
 type LoanPayload = Omit<
   Prisma.LoanGetPayload<typeof getManyLoanOut>,
-  'plafondPengajuan' | 'angsuranPengajuan'
+  'plafondPengajuan' | 'angsuranPengajuan' | 'plafond' | 'angsuran'
 >;
 
 interface CleanLoanPayload extends LoanPayload {
   plafondPengajuan: number;
   angsuranPengajuan: number;
+  plafond: number | null;
+  angsuran: number | null;
 }
 
 export type GetManyLoanOut = {
@@ -88,9 +91,15 @@ const getLoanOut = Prisma.validator<Prisma.LoanArgs>()({
 export interface GetLoanOut
   extends Omit<
     Prisma.LoanGetPayload<typeof getLoanOut>,
-    'plafondPengajuan' | 'angsuranPengajuan' | 'pelunasan'
+    | 'plafondPengajuan'
+    | 'angsuranPengajuan'
+    | 'pelunasan'
+    | 'plafond'
+    | 'angsuran'
   > {
   plafondPengajuan: number;
   angsuranPengajuan: number;
   pelunasan: number | null;
+  plafond: number | null;
+  angsuran: number | null;
 }

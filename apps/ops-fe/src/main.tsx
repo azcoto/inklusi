@@ -1,5 +1,6 @@
 import 'dayjs/locale/id';
 import ReactDOM from 'react-dom/client';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
   ColorScheme,
@@ -28,13 +29,7 @@ import {
 import { EditDebitur } from './pages/EditDebitur';
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      retry: false,
-      staleTime: Infinity,
-    },
+    queries: {},
   },
 });
 
@@ -51,6 +46,7 @@ const App = () => {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
         <Router>
           <ColorSchemeProvider
             colorScheme={colorScheme}

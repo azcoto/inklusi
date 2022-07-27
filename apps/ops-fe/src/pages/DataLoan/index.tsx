@@ -34,6 +34,7 @@ import services from 'services';
 import { notifyFast, notifySuccess } from '@/libs/notify';
 import { showNotification } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
+import { useAuthed } from '@/context/auth';
 
 type LoanDataPaginated = {
   count: number;
@@ -128,14 +129,24 @@ export const DataLoan = () => {
   const [debouncedFilter] = useDebouncedValue(filter, 500);
   const [debouncedPage] = useDebouncedValue(page, 200);
   const [countDebitur, setCountDebitur] = useState<number>(0);
+  const { currentUser } = useAuthed();
+  console.log(currentUser);
 
   const qGetManyLoan = useQuery(
-    ['get-many-loan', { page: debouncedPage, filter: debouncedFilter }],
+    [
+      'get-many-loan',
+      {
+        page: debouncedPage,
+        filter: debouncedFilter,
+        cabangId: currentUser.cabangId,
+      },
+    ],
     async () =>
-      await services.loan.getManyLoan(
-        page,
-        filter ? filter.toUpperCase() : null,
-      ),
+      await services.loan.getManyLoan({
+        page: String(page),
+        ...(filter && { filter: filter.toUpperCase() }),
+        ...(currentUser.cabangId && { cabangId: currentUser.cabangId }),
+      }),
     {
       keepPreviousData: true,
       select: (result) => {

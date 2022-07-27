@@ -1,4 +1,6 @@
 import { DatePicker, DatePickerProps } from '@mantine/dates';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { Controller, useFormContext } from 'react-hook-form';
 
 type Props = {
@@ -16,9 +18,15 @@ export const EDatePicker = ({ name, ...other }: Props) => {
           type="text"
           {...other}
           {...field}
-          value={field.value ? new Date(field.value) : null}
+          value={field.value ? field.value : null}
           onChange={(value) => {
-            field.onChange(`${value}`);
+            if (value) {
+              dayjs.extend(utc);
+              console.log(value);
+              const toUTC = dayjs.utc(value).utcOffset(0, true).toDate();
+              console.log(toUTC);
+              field.onChange(`${toUTC}`);
+            }
           }}
           clearable={true}
           locale="id"

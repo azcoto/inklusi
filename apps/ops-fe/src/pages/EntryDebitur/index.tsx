@@ -59,7 +59,6 @@ export const EntryDebitur = () => {
       methods.unregister('golongan');
       methods.unregister('instansi');
       methods.unregister('sisaMasaDinas');
-      console.log('unregistered');
     } else if (statusKerja === 'AKTIF') {
       methods.setValue('bup', '');
       methods.setValue('pangkat', '');

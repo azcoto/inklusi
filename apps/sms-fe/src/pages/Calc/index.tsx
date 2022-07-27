@@ -69,7 +69,6 @@ const zSimulasiForm = z.object({
   tgLahir: z
     .date({ required_error: 'Tanggal lahir tidak boleh kosong' })
     .nullable(),
-  // .default(new Date('1970-01-01')),
   kanBayarAsal: z.string().min(1, { message: 'Asal tidak boleh kosong' }),
   takeOver: z.boolean(),
   tipeDebitur: z.string(),
@@ -152,15 +151,13 @@ const Calc = () => {
   const [simulasiResult3, setSimulasiResult3] =
     useState<SimulasiResult | null>();
   const [sumSimulasiResult, setSumSimulasiResult] = useState<SumSimulasi>();
-  const [currentIndeksPengali, setCurrentIndeksPengali] = useState<number>(0);
-  const [currentRateAsuransi, setCurrentRateAsuransi] = useState<number>(0);
   const [currentKonven, setCurrentKonven] = useState<string>('');
   const [listPengali, setListPengali] = useState<AllIndeksPengaliResponse>();
   const [listPlafond, setListPlafond] = useState<ListPlafond>();
   const [maksTenor, setMaksTenor] = useState<number>(0);
 
   const form = useForm<SimulasiForm>({
-    schema: zodResolver(zSimulasiForm),
+    validate: zodResolver(zSimulasiForm),
     initialValues: {
       nama: '',
       tgLahir: null,
@@ -567,14 +564,13 @@ const Calc = () => {
   };
 
   return (
-    <Container size="xs">
+    <Container ref={simRef} size="xs">
       <form ref={formRef} onSubmit={form.onSubmit(simulasi)}>
         <Text weight={'bold'} align="center">
           SIMULASI PERHITUNGAN{' '}
           {form.values?.produk.includes('KCU') ? 'KREDIT' : 'PEMBIAYAAN'}
         </Text>
         <ScrollArea
-          ref={simRef}
           offsetScrollbars
           style={{ height: '75vh' }}
           mt={10}
@@ -653,8 +649,9 @@ const Calc = () => {
             )}
             {listAllTipeDebitur && (
               <Rows title="Tipe Debitur">
-                <NativeSelect
+                <Select
                   data={listAllTipeDebitur.map((item) => item.nama)}
+                  value={form.values.tipeDebitur}
                   size="xs"
                   {...form.getInputProps('tipeDebitur')}
                 />
@@ -706,7 +703,8 @@ const Calc = () => {
 
             {listProduk && (
               <Rows title="Produk">
-                <NativeSelect
+                <Select
+                  value={form.values.produk}
                   data={listProduk.map((item) => item.nama)}
                   size="xs"
                   {...form.getInputProps('produk')}

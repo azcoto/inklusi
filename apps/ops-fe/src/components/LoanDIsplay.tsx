@@ -51,7 +51,7 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
           angsuranPengajuan: new Intl.NumberFormat('id-ID').format(
             data.angsuranPengajuan,
           ),
-          tenor: String(data.tenorPengajuan),
+          tenorPengajuan: String(data.tenorPengajuan),
           tipeDebitur: data.TipeDebitur.nama,
           produk: data.Produk.nama,
           takeover: data.takeover ? 'YA' : 'TIDAK',
@@ -62,6 +62,17 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
           namaTl: data.KaryawanTL.nama,
           namaMr: data.KaryawanMR.nama,
           cabang: data.Cabang.nama,
+          status: data.status,
+          plafond: data.plafond
+            ? new Intl.NumberFormat('id-ID').format(data.plafond)
+            : null,
+          tenor: data.tenor
+            ? new Intl.NumberFormat('id-ID').format(data.tenor)
+            : null,
+          angsuran: data.angsuran
+            ? new Intl.NumberFormat('id-ID').format(data.angsuran)
+            : null,
+
           updated: dayjs(data.updatedAt).format('DD/MM/YYYY hh:mm'),
           created: dayjs(data.createdAt).format('DD/MM/YYYY hh:mm'),
         };
@@ -73,7 +84,7 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
     <>
       {isFetched && data && <DebiturDisplay cif={data.cif} />}
 
-      <Card sx={{ position: 'relative', maxWidth: '300px' }}>
+      <Card sx={{ position: 'relative', maxWidth: '400px' }}>
         <LoadingOverlay visible={isLoading} />
         {isFetched && !data && (
           <Text size="lg" weight="bold">
@@ -93,9 +104,25 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
               <GridRow title="Jenis PK" value={data.jenisPk} />
               <GridRow title="Tipe" value={data.tipeDebitur} />
               <GridRow title="Produk" value={data.produk} />
-              <GridRow title="Plafond" value={data.plafondPengajuan} />
-              <GridRow title="Angsuran" value={data.angsuranPengajuan} />
-              <GridRow title="Tenor" value={data.tenor} />
+              <GridRow
+                title="Plafond Pengajuan"
+                value={data.plafondPengajuan}
+              />
+              {data.plafond && (
+                <GridRow title="Plafond" value={data.plafondPengajuan} />
+              )}
+
+              <GridRow title="Tenor Pengajuan" value={data.tenorPengajuan} />
+              {data.tenor && <GridRow title="Plafond" value={data.tenor} />}
+
+              <GridRow
+                title="Angsuran Pengajuan"
+                value={data.angsuranPengajuan}
+              />
+              {data.angsuran && (
+                <GridRow title="Angsuran" value={data.angsuran} />
+              )}
+
               <GridRow title="Take Over" value={data.takeover} />
               {data.takeover && data.pelunasan && data.bankPelunasan && (
                 <>

@@ -1,4 +1,4 @@
-import { signIn } from './auth';
+import { signIn, userCabangSignIn } from './auth';
 import { setItem, getItem } from './localStorage';
 import { getPotensiByArea, testConcurrent } from './potensi';
 import {
@@ -28,6 +28,7 @@ import { createLoan, getLoan, getManyLoan } from './loan';
 const services = {
   auth: {
     signIn,
+    userCabangSignIn,
   },
   storage: {
     setItem,

@@ -17,9 +17,17 @@ export const createLoan = async (body: CreateLoanIn) => {
   return response.data;
 };
 
-export const getManyLoan = async (page: number, filter: string | null) => {
+export const getManyLoan = async (body: GetManyLoanIn) => {
+  const { page, filter, cabangId } = body;
+  console.log(
+    `/loan?page=${page}` +
+      (filter ? `&filter=${filter}` : '') +
+      (cabangId ? `&cabangId=${cabangId}` : ''),
+  );
   const response = await api.get<GetManyLoanIn, AxiosResponse<GetManyLoanOut>>(
-    `/loan?page=${page}` + `${filter ? `&filter=${filter}` : ``}`,
+    `/loan?page=${page}` +
+      (filter ? `&filter=${filter}` : '') +
+      (cabangId ? `&cabangId=${cabangId}` : ''),
   );
   return response.data;
 };
