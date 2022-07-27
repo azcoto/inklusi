@@ -13,6 +13,7 @@ type User = {
   nip: string;
   nama: string;
   jabatan: string;
+  cabangId?: string;
 };
 
 type ContextState = {
@@ -71,6 +72,7 @@ export const useAuthed = () => {
       nip: '',
       nama: '',
       jabatan: '',
+      cabangId: '',
     };
   }
   const authedContext: AuthedContextState = {

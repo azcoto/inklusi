@@ -1,5 +1,5 @@
 {
-  "name": "ops-fe",
+  "name": "@inklusi/ops-fe",
   "private": true,
   "version": "0.0.0",
   "scripts": {

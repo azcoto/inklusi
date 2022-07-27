@@ -1,5 +1,10 @@
 {
-  "eslint.workingDirectories": ["apps/sms-fe", "apps/server"],
+  "eslint.workingDirectories": [
+    "apps/sms-fe",
+    "apps/server",
+    "apps/ops-fe",
+    "apps/hr-fe"
+  ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

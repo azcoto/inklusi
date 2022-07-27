@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
-import { optional, z } from 'zod';
 import { parseISO, isValid } from 'date-fns';
+
+import { z } from 'zod';
 
 const zCreateLoanBody = z.object({
   cif: z.string().length(6, 'Invalid CIF'),
@@ -16,7 +17,7 @@ const zCreateLoanBody = z.object({
   produkId: z.number().positive().int(),
   takeover: z.boolean(),
   pelunasan: z.number().positive().optional(),
-  bankPelunasan: z.string().length(1).optional(),
+  bankPelunasan: z.string().min(1).optional(),
   tlNip: z.string().length(11),
   mrNip: z.string().length(11),
   cabangId: z.number().positive().int(),
@@ -36,6 +37,7 @@ export const zGetManyLoanParams = z.object({
   page: z.string(),
   filter: z.string().optional(),
   cabangId: z.string().regex(new RegExp(/^\d+$/)).optional(),
+  status: z.string().optional(),
 });
 
 export type GetManyLoanIn = z.infer<typeof zGetManyLoanParams>;
@@ -103,3 +105,25 @@ export interface GetLoanOut
   plafond: number | null;
   angsuran: number | null;
 }
+
+const zUpdateStatusParams = z.object({
+  noPengajuan: z.string(),
+});
+
+const zUpdateStatusBody = z.object({
+  keterangan: z.string(),
+  plafond: z.number().optional(),
+  angsuran: z.number().optional(),
+  tenor: z.number().optional(),
+});
+
+export const zUpdateStatusValidator = z.object({
+  params: zUpdateStatusParams,
+  body: zUpdateStatusBody,
+});
+
+export type UpdateStatusParamsIn = z.infer<typeof zUpdateStatusParams>;
+export type UpdateStatusBodyIn = z.infer<typeof zUpdateStatusBody>;
+
+const updateStatusOut = Prisma.validator<Prisma.DebiturArgs>()({});
+export type UpdateStatusOut = Prisma.LoanGetPayload<typeof updateStatusOut>;
