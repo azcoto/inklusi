@@ -18,7 +18,7 @@ const getMany = async (
               ? {
                   Debitur: {
                     nama: {
-                      contains: filter ? `%${filter}%` : '%',
+                      contains: `%${filter}%`,
                     },
                   },
                 }
