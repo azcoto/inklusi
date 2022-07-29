@@ -32,7 +32,7 @@ const getMany = async (
         KaryawanTL: true,
         KaryawanMR: true,
       },
-      skip: (Number(page) - 1) * 10,
+      ...(page !== '1' ? { skip: Number(page) * 10 } : {}),
       take: 10,
       where: {
         ...(filter
