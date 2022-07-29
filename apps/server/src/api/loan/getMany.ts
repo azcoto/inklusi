@@ -12,22 +12,16 @@ const getMany = async (
 
     const pCount = db.loan.count({
       where: {
-        AND: [
-          {
-            ...(filter
-              ? {
-                  Debitur: {
-                    nama: {
-                      contains: filter ? `%${filter}%` : '%',
-                    },
-                  },
-                }
-              : {}),
-          },
-          {
-            ...(cabangId ? { cabangId: Number(cabangId) } : {}),
-          },
-        ],
+        ...(filter
+          ? {
+              Debitur: {
+                nama: {
+                  contains: filter ? `%${filter}%` : '%',
+                },
+              },
+            }
+          : {}),
+        ...(cabangId ? { cabangId: Number(cabangId) } : {}),
       },
     });
     const pData = db.loan.findMany({
@@ -41,22 +35,16 @@ const getMany = async (
       skip: (Number(page) - 1) * 10,
       take: 10,
       where: {
-        AND: [
-          {
-            ...(filter
-              ? {
-                  Debitur: {
-                    nama: {
-                      contains: filter ? `%${filter}%` : '%',
-                    },
-                  },
-                }
-              : {}),
-          },
-          {
-            ...(cabangId ? { cabangId: Number(cabangId) } : {}),
-          },
-        ],
+        ...(filter
+          ? {
+              Debitur: {
+                nama: {
+                  contains: filter ? `%${filter}%` : '%',
+                },
+              },
+            }
+          : {}),
+        ...(cabangId ? { cabangId: Number(cabangId) } : {}),
       },
       orderBy: {
         updatedAt: 'desc',
