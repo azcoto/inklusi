@@ -30,7 +30,7 @@ const getMany = async (
     //     ],
     //   },
     // });
-    const pCount = db.loan.count();
+    const pCount = db.$queryRaw`SELECT COUNT(*) AS count`;
     const pData = db.loan.findMany({
       include: {
         Debitur: true,
