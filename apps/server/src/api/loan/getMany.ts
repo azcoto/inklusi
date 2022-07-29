@@ -12,12 +12,22 @@ const getMany = async (
 
     const pCount = db.loan.count({
       where: {
-        Debitur: {
-          nama: {
-            contains: filter ? `%${filter}%` : '%',
+        AND: [
+          {
+            ...(filter
+              ? {
+                  Debitur: {
+                    nama: {
+                      contains: filter ? `%${filter}%` : '%',
+                    },
+                  },
+                }
+              : {}),
           },
-        },
-        ...(cabangId && { cabangId: Number(cabangId) }),
+          {
+            ...(cabangId ? { cabangId: Number(cabangId) } : {}),
+          },
+        ],
       },
     });
     const pData = db.loan.findMany({
