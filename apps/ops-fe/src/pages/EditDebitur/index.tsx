@@ -64,11 +64,6 @@ export const EditDebitur = () => {
       methods.unregister('instansi');
       methods.unregister('sisaMasaDinas');
     } else if (statusKerja === 'AKTIF') {
-      methods.setValue('bup', '');
-      methods.setValue('pangkat', '');
-      methods.setValue('golongan', '');
-      methods.setValue('instansi', '');
-      methods.setValue('sisaMasaDinas', '');
       methods.register('bup');
       methods.register('pangkat');
       methods.register('golongan');

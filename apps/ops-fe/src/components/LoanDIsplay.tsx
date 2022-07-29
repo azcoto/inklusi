@@ -73,6 +73,8 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
             ? new Intl.NumberFormat('id-ID').format(data.angsuran)
             : null,
 
+          keterangan: data.keterangan,
+
           updated: dayjs(data.updatedAt).format('DD/MM/YYYY hh:mm'),
           created: dayjs(data.createdAt).format('DD/MM/YYYY hh:mm'),
         };
@@ -108,9 +110,7 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
                 title="Plafond Pengajuan"
                 value={data.plafondPengajuan}
               />
-              {data.plafond && (
-                <GridRow title="Plafond" value={data.plafondPengajuan} />
-              )}
+              {data.plafond && <GridRow title="Plafond" value={data.plafond} />}
 
               <GridRow title="Tenor Pengajuan" value={data.tenorPengajuan} />
               {data.tenor && <GridRow title="Plafond" value={data.tenor} />}
@@ -134,6 +134,10 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
               <GridRow title="Cabang" value={data.cabang} />
               <GridRow title="Team Leader" value={data.namaTl} />
               <GridRow title="Marketing" value={data.namaMr} />
+              <GridRow title="Status" value={data.status} />
+              {data.keterangan && (
+                <GridRow title="Keterangan" value={data.keterangan} />
+              )}
             </Grid>
           </>
         )}

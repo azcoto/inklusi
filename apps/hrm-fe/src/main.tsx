@@ -91,24 +91,18 @@ const App = () => {
                       <Route path="/" element={<Shell />}>
                         <Route index element={<Home />} />
                         <Route
-                          path="debitur-entry"
+                          path="karyawab-entry"
                           element={<EntryDebitur />}
                         />
-                        <Route path="debitur-data" element={<DataDebitur />} />
+                        <Route path="karyawan-data" element={<DataDebitur />} />
 
                         <Route
-                          path="debitur/:cif"
+                          path="karyawan/:nip"
                           element={<DetailDebitur />}
                         />
                         <Route
-                          path="debitur-edit/:cif"
+                          path="karyawan-edit/:cif"
                           element={<EditDebitur />}
-                        />
-                        <Route path="loan-entry" element={<EntryLoan />} />
-                        <Route path="loan-data" element={<DataLoan />} />
-                        <Route
-                          path="loan/:noPengajuan"
-                          element={<DetailLoan />}
                         />
                         <Route path="*" element={<Home />} />
                       </Route>

@@ -66,55 +66,19 @@ const Shell = () => {
               >
                 <Text weight={'bold'}>Home</Text>
               </Button>
-              {currentUser.jabatan !== 'CA' && (
-                <>
-                  <Divider label="Debitur" />
-                  <Button
-                    sx={{ div: { justifyContent: 'start' } }}
-                    variant="subtle"
-                    onClick={() => {
-                      setOpened(false);
-                      navigate('/debitur-entry');
-                    }}
-                  >
-                    <Text weight={'bold'}>Entry Debitur</Text>
-                  </Button>
-
-                  <Button
-                    sx={{ div: { justifyContent: 'start' } }}
-                    variant="subtle"
-                    onClick={() => {
-                      setOpened(false);
-                      navigate('/debitur-data');
-                    }}
-                  >
-                    <Text weight={'bold'}>Data Debitur</Text>
-                  </Button>
-                  <Divider label="Pengajuan Kredit" />
-                  <Button
-                    sx={{ div: { justifyContent: 'start' } }}
-                    variant="subtle"
-                    onClick={() => {
-                      setOpened(false);
-                      navigate('/loan-entry');
-                    }}
-                  >
-                    <Text weight={'bold'}>Entry Pengajuan Kredit</Text>
-                  </Button>
-                </>
-              )}
 
               <Button
                 sx={{ div: { justifyContent: 'start' } }}
                 variant="subtle"
                 onClick={() => {
                   setOpened(false);
-                  navigate('/loan-data');
+                  navigate('/karyawan-entry');
                 }}
               >
-                <Text weight={'bold'}>Data Pengajuan</Text>
+                <Text weight={'bold'}>Karyawan Entry</Text>
               </Button>
             </Stack>
+
             <Button
               sx={{ div: { justifyContent: 'start' } }}
               variant="subtle"
