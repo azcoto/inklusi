@@ -17,8 +17,9 @@
   "dependencies": {
     "@prisma/client": "^4.0.0",
     "@trpc/server": "^9.23.2",
+    "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.12",
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^2.29.1",
@@ -35,6 +36,7 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^18.0.5",
     "config": "*",
+    "esbuild": "^0.14.51",
     "nodemon": "^2.0.16",
     "prisma": "^4.0.0",
     "ts-node": "^10.7.0",

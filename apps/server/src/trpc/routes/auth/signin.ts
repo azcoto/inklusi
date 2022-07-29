@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import prisma from '../../libs/prisma';
 
 import { createRouter } from '../../libs/router';

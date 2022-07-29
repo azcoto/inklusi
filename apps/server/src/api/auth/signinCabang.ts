@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import db from '../../../prisma/prisma-client';
 import { NextFunction, Request, Response } from 'express';
 import { UserCabangSignInDTO } from './dto';
