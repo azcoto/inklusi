@@ -10,26 +10,27 @@ const getMany = async (
   try {
     const { page, filter, cabangId } = req.query;
 
-    const pCount = db.loan.count({
-      where: {
-        AND: [
-          {
-            ...(filter
-              ? {
-                  Debitur: {
-                    nama: {
-                      contains: `%${filter}%`,
-                    },
-                  },
-                }
-              : {}),
-          },
-          {
-            ...(cabangId ? { cabangId: Number(cabangId) } : {}),
-          },
-        ],
-      },
-    });
+    // const pCount = db.loan.count({
+    //   where: {
+    //     AND: [
+    //       {
+    //         ...(filter
+    //           ? {
+    //               Debitur: {
+    //                 nama: {
+    //                   contains: `%${filter}%`,
+    //                 },
+    //               },
+    //             }
+    //           : {}),
+    //       },
+    //       {
+    //         ...(cabangId ? { cabangId: Number(cabangId) } : {}),
+    //       },
+    //     ],
+    //   },
+    // });
+    const pCount = db.loan.count();
     const pData = db.loan.findMany({
       include: {
         Debitur: true,
