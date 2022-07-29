@@ -10,27 +10,26 @@ const getMany = async (
   try {
     const { page, filter, cabangId } = req.query;
 
-    // const pCount = db.loan.count({
-    //   where: {
-    //     AND: [
-    //       {
-    //         ...(filter
-    //           ? {
-    //               Debitur: {
-    //                 nama: {
-    //                   contains: `%${filter}%`,
-    //                 },
-    //               },
-    //             }
-    //           : {}),
-    //       },
-    //       {
-    //         ...(cabangId ? { cabangId: Number(cabangId) } : {}),
-    //       },
-    //     ],
-    //   },
-    // });
-    const pCount = db.$queryRaw`SELECT COUNT(*) AS count`;
+    const pCount = db.loan.count({
+      where: {
+        AND: [
+          {
+            ...(filter
+              ? {
+                  Debitur: {
+                    nama: {
+                      contains: filter ? `%${filter}%` : '%',
+                    },
+                  },
+                }
+              : {}),
+          },
+          {
+            ...(cabangId ? { cabangId: Number(cabangId) } : {}),
+          },
+        ],
+      },
+    });
     const pData = db.loan.findMany({
       include: {
         Debitur: true,
@@ -42,12 +41,22 @@ const getMany = async (
       skip: (Number(page) - 1) * 10,
       take: 10,
       where: {
-        Debitur: {
-          nama: {
-            contains: filter ? `%${filter}%` : '%',
+        AND: [
+          {
+            ...(filter
+              ? {
+                  Debitur: {
+                    nama: {
+                      contains: filter ? `%${filter}%` : '%',
+                    },
+                  },
+                }
+              : {}),
           },
-        },
-        ...(cabangId && { cabangId: Number(cabangId) }),
+          {
+            ...(cabangId ? { cabangId: Number(cabangId) } : {}),
+          },
+        ],
       },
       orderBy: {
         updatedAt: 'desc',
