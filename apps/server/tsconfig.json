@@ -1,6 +1,14 @@
 {
-  "extends": "tsconfig/server.json",
   "compilerOptions": {
+    "target": "ES2018",
+    "useDefineForClassFields": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "noEmit": false,
     "declaration": true,
     "declarationMap": true,
