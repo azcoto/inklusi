@@ -18,9 +18,7 @@ import { getItem } from 'services/localStorage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   DataDebitur,
-  DataLoan,
   DetailDebitur,
-  DetailLoan,
   EntryDebitur,
   EntryLoan,
   Home,
