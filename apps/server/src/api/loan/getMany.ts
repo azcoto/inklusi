@@ -24,6 +24,7 @@ const getMany = async (
         ...(cabangId ? { cabangId: Number(cabangId) } : {}),
       },
     });
+    console.log((Number(page) - 1) * 10);
     const pData = db.loan.findMany({
       include: {
         Debitur: true,
@@ -32,7 +33,7 @@ const getMany = async (
         KaryawanTL: true,
         KaryawanMR: true,
       },
-      ...(page !== '1' ? { skip: Number(page) * 10 } : {}),
+      skip: (Number(page) - 1) * 10,
       take: 10,
       where: {
         ...(filter

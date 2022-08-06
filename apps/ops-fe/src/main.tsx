@@ -27,9 +27,12 @@ import {
   SignIn,
 } from './pages';
 import { EditDebitur } from './pages/EditDebitur';
+import { EditLoan } from './pages/EditLoan';
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {},
+    queries: {
+      refetchOnWindowFocus: false,
+    },
   },
 });
 
@@ -109,6 +112,10 @@ const App = () => {
                         <Route
                           path="loan/:noPengajuan"
                           element={<DetailLoan />}
+                        />
+                        <Route
+                          path="loan-edit/:noPengajuan"
+                          element={<EditLoan />}
                         />
                         <Route path="*" element={<Home />} />
                       </Route>

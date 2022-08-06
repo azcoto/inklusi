@@ -47,8 +47,8 @@ type LoanDataPaginated = {
     tipeDebitur: string;
     tglPengajuan: string;
     produk: string;
-    plafondPengajuan: string;
-    tenorPengajuan: string;
+    plafond: string;
+    tenor: string;
     status: string;
     created: string;
     updated: string;
@@ -58,10 +58,9 @@ type LoanDataPaginated = {
 type LoanData = LoanDataPaginated['data'][0];
 
 const colorStatus = [
-  { status: 'PENDING', color: 'DarkOrange' },
-  { status: 'ON PROSES', color: 'Gold' },
-  { status: 'APPROVED', color: 'LimeGreen' },
-  { status: 'REJECTED', color: 'Crimson' },
+  { status: 'PENGAJUAN', color: 'DarkOrange' },
+  { status: 'CAIR', color: 'LimeGreen' },
+  { status: 'CANCEL', color: 'Red' },
 ];
 export const DataLoan = () => {
   const navigate = useNavigate();
@@ -112,11 +111,11 @@ export const DataLoan = () => {
       header: 'Produk',
     },
     {
-      accessorKey: 'plafondPengajuan',
+      accessorKey: 'plafond',
       header: 'Plafond',
     },
     {
-      accessorKey: 'tenorPengajuan',
+      accessorKey: 'tenor',
       header: 'Tenor',
     },
     {
@@ -182,10 +181,8 @@ export const DataLoan = () => {
             tipeDebitur: d.TipeDebitur.nama,
             tglPengajuan: dayjs(d.tglPengajuan).format('DD/MM/YYYY') as string,
             produk: d.Produk.nama,
-            plafondPengajuan: new Intl.NumberFormat('id-ID').format(
-              d.plafondPengajuan,
-            ),
-            tenorPengajuan: String(d.tenorPengajuan),
+            plafond: new Intl.NumberFormat('id-ID').format(d.plafond),
+            tenor: String(d.tenor),
             status: d.status,
             created: dayjs(d.createdAt).format('DD/MM/YYYY HH:mm'),
             updated: dayjs(d.updatedAt).format('DD/MM/YYYY HH:mm'),
@@ -236,13 +233,10 @@ export const DataLoan = () => {
           }
           mb={16}
         />
-        <Checkbox.Group
-          defaultValue={['PENDING', 'ON PROSES', 'APPROVED', 'REJECTED']}
-        >
-          <Checkbox value="PENDING" label="Pending" />
-          <Checkbox value="ON PROSES" label="On Proses" />
-          <Checkbox value="APPROVED" label="Approved" />
-          <Checkbox value="REJECTED" label="Rejected" />
+        <Checkbox.Group defaultValue={['Pengajuan', 'Cair', 'Cancel']}>
+          <Checkbox value="PENGAJUAN" label="Pengajuan" />
+          <Checkbox value="CAIR" label="Cair" />
+          <Checkbox value="CANCEL" label="Cancel" />
         </Checkbox.Group>
       </Group>
       <ScrollArea style={{ width: 1300 }}>

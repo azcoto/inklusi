@@ -33,9 +33,9 @@ const zMyForm = z.object({
   cif: z.string().min(6, { message: 'CIF Invalid' }),
   tglPengajuan: z.string().min(1, { message: 'Jenis PK Required' }),
   jenisPk: z.string().min(1, { message: 'Jenis PK Required' }),
-  plafondPengajuan: z.string().min(1, { message: 'Tempat Lahir Required' }),
-  angsuranPengajuan: z.string().min(1, { message: 'Tanggal Lahir Required' }),
-  tenorPengajuan: z.string().min(1, { message: 'Alamat Required' }),
+  plafond: z.string().min(1, { message: 'Tempat Lahir Required' }),
+  angsuran: z.string().optional(),
+  tenor: z.string().min(1, { message: 'Alamat Required' }),
   tipeDebiturId: z.string().min(1, { message: 'Kelurahan Required' }),
   produkId: z.string().min(1, { message: 'Kelurahan Required' }),
   takeover: z.string().min(1, { message: 'Password Invalid' }),
@@ -80,9 +80,9 @@ export const EntryLoan = () => {
       cif: '',
       tglPengajuan: '',
       jenisPk: '',
-      plafondPengajuan: '',
-      angsuranPengajuan: '',
-      tenorPengajuan: '',
+      plafond: '',
+      angsuran: '',
+      tenor: '',
       tipeDebiturId: '',
       produkId: '',
       takeover: '0',
@@ -205,9 +205,12 @@ export const EntryLoan = () => {
       pelunasan: isNaN(Number(values.pelunasan?.replaceAll('.', '')))
         ? undefined
         : Number(values.pelunasan?.replaceAll('.', '')),
-      plafondPengajuan: Number(values.plafondPengajuan?.replaceAll('.', '')),
-      angsuranPengajuan: Number(values.angsuranPengajuan?.replaceAll('.', '')),
-      tenorPengajuan: Number(values.tenorPengajuan),
+      plafond: Number(values.plafond?.replaceAll('.', '')),
+      angsuran:
+        values.angsuran !== ''
+          ? Number(values.angsuran?.replaceAll('.', ''))
+          : null,
+      tenor: Number(values.tenor),
       cabangId: Number(values.cabangId),
     };
     if (parsedValues.takeover === false) {
@@ -271,20 +274,20 @@ export const EntryLoan = () => {
                 </Group>
                 <Group grow>
                   <ENumberInput
-                    name="plafondPengajuan"
+                    name="plafond"
                     label="Plafond (Rp.)"
                     currencyMask={true}
                     rtl
                   />
                   <ENumberInput
-                    name="angsuranPengajuan"
+                    name="angsuran"
                     label="Angsuran (Rp.)"
                     currencyMask={true}
                     rtl
                   />
                   <ENumberInput
                     sx={{ width: '100px' }}
-                    name="tenorPengajuan"
+                    name="tenor"
                     label="Jangka Waktu (Bulan)"
                   />
                 </Group>

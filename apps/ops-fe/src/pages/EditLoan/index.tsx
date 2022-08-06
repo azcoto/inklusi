@@ -28,14 +28,15 @@ import { ESwitch } from '@/components/ESwitch';
 import DebiturDisplay from '@/components/DebiturDisplay';
 import { notifySuccess } from '@/libs/notify';
 import { showNotification } from '@mantine/notifications';
+import { useParams } from 'react-router-dom';
 
 const zMyForm = z.object({
   cif: z.string().min(6, { message: 'CIF Invalid' }),
   tglPengajuan: z.string().min(1, { message: 'Jenis PK Required' }),
   jenisPk: z.string().min(1, { message: 'Jenis PK Required' }),
-  plafondPengajuan: z.string().min(1, { message: 'Tempat Lahir Required' }),
-  angsuranPengajuan: z.string().min(1, { message: 'Tanggal Lahir Required' }),
-  tenorPengajuan: z.string().min(1, { message: 'Alamat Required' }),
+  plafond: z.string().min(1, { message: 'Tempat Lahir Required' }),
+  angsuran: z.string().min(1, { message: 'Tanggal Lahir Required' }),
+  tenor: z.string().optional(),
   tipeDebiturId: z.string().min(1, { message: 'Kelurahan Required' }),
   produkId: z.string().min(1, { message: 'Kelurahan Required' }),
   takeover: z.string().min(1, { message: 'Password Invalid' }),
@@ -74,15 +75,16 @@ type CabangData = {
 }[];
 
 export const EditLoan = () => {
+  const { noPengajuan } = useParams() as { noPengajuan: string };
   const methods = useForm<MyForm>({
     resolver: zodResolver(zMyForm),
     defaultValues: {
       cif: '',
       tglPengajuan: '',
       jenisPk: '',
-      plafondPengajuan: '',
-      angsuranPengajuan: '',
-      tenorPengajuan: '',
+      plafond: '',
+      angsuran: '',
+      tenor: '',
       tipeDebiturId: '',
       produkId: '',
       takeover: '0',
@@ -93,6 +95,7 @@ export const EditLoan = () => {
       mrNip: '',
     },
   });
+  const watchTakeOver = methods.watch('takeover');
 
   const qTipeDebitur = useQuery(
     ['get-all-tipe-debitur'],
@@ -139,10 +142,36 @@ export const EditLoan = () => {
     },
   );
 
+  const qGetLoan = useQuery(
+    ['get-loan', noPengajuan],
+    async () => await services.loan.getLoan(noPengajuan),
+    {
+      refetchOnMount: 'always',
+      onSuccess: (data) => {
+        methods.reset({
+          cif: data.cif,
+          tglPengajuan: String(data.tglPengajuan),
+          jenisPk: data.jenisPk,
+          plafond: data.plafond.toLocaleString('Id'),
+          angsuran: data.angsuran ? data.angsuran.toLocaleString('Id') : '',
+          tenor: String(data.tenor),
+          tipeDebiturId: String(data.tipeDebiturId),
+          produkId: String(data.produkId),
+          takeover: data.takeover ? '1' : '0',
+          pelunasan: data.pelunasan ? data.pelunasan.toLocaleString('Id') : '',
+          bankPelunasan: data.bankPelunasan ? data.bankPelunasan : '',
+          tlNip: data.tlNip,
+          mrNip: data.mrNip,
+          cabangId: String(data.cabangId),
+        });
+      },
+    },
+  );
+
   const mCreateLoan = useMutation(['create-loan'], services.loan.createLoan, {
     onSuccess: (data) => {
       notifySuccess(
-        `Pengajuan ${data.noPengajuan} Berhasil Ditambahkan`,
+        `Pengajuan ${data.noPengajuan} Berhasil Diubah`,
         showNotification,
       );
       methods.reset();
@@ -178,16 +207,25 @@ export const EditLoan = () => {
     },
   });
 
-  const watchTakeOver = methods.watch('takeover');
   useEffect(() => {
+    console.log(watchTakeOver);
     if (watchTakeOver === '0') {
       methods.setValue('pelunasan', undefined);
       methods.setValue('bankPelunasan', undefined);
       methods.unregister('pelunasan');
       methods.unregister('bankPelunasan');
     } else if (watchTakeOver === '1') {
-      methods.setValue('pelunasan', '');
-      methods.setValue('bankPelunasan', '');
+      console.log('fired');
+      methods.setValue(
+        'pelunasan',
+        qGetLoan.data?.pelunasan
+          ? qGetLoan.data.pelunasan.toLocaleString('Id')
+          : '',
+      );
+      methods.setValue(
+        'bankPelunasan',
+        qGetLoan.data?.bankPelunasan ? qGetLoan.data.bankPelunasan : '',
+      );
       methods.register('pelunasan');
       methods.register('bankPelunasan');
     }
@@ -205,9 +243,9 @@ export const EditLoan = () => {
       pelunasan: isNaN(Number(values.pelunasan?.replaceAll('.', '')))
         ? undefined
         : Number(values.pelunasan?.replaceAll('.', '')),
-      plafondPengajuan: Number(values.plafondPengajuan?.replaceAll('.', '')),
-      angsuranPengajuan: Number(values.angsuranPengajuan?.replaceAll('.', '')),
-      tenorPengajuan: Number(values.tenorPengajuan),
+      plafond: Number(values.plafond?.replaceAll('.', '')),
+      angsuran: Number(values.angsuran?.replaceAll('.', '')),
+      tenor: Number(values.tenor),
       cabangId: Number(values.cabangId),
     };
     if (parsedValues.takeover === false) {
@@ -271,20 +309,20 @@ export const EditLoan = () => {
                 </Group>
                 <Group grow>
                   <ENumberInput
-                    name="plafondPengajuan"
+                    name="plafond"
                     label="Plafond (Rp.)"
                     currencyMask={true}
                     rtl
                   />
                   <ENumberInput
-                    name="angsuranPengajuan"
+                    name="angsuran"
                     label="Angsuran (Rp.)"
                     currencyMask={true}
                     rtl
                   />
                   <ENumberInput
                     sx={{ width: '100px' }}
-                    name="tenorPengajuan"
+                    name="tenor"
                     label="Jangka Waktu (Bulan)"
                   />
                 </Group>

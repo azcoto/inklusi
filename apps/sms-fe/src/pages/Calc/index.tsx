@@ -571,6 +571,8 @@ const Calc = () => {
           {form.values?.produk.includes('KCU') ? 'KREDIT' : 'PEMBIAYAAN'}
         </Text>
         <ScrollArea
+          //@ts-ignore
+          ref={simRef}
           offsetScrollbars
           style={{ height: '75vh' }}
           mt={10}

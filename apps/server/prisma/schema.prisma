@@ -77,28 +77,25 @@ model Debitur {
 }
 
 model Loan {
-  id                Int      @id @default(autoincrement())
-  noPengajuan       String   @unique @map("no_pengajuan") @db.Char(12)
-  cif               String   @db.Char(12)
-  tglPengajuan      DateTime @map("tgl_pengajuan")
-  jenisPk           String   @map("jenis_pk") @db.VarChar(255)
-  plafond           Decimal? @db.Decimal(14, 0)
-  plafondPengajuan  Decimal  @map("plafond_pengajuan") @db.Decimal(14, 0)
-  angsuran          Decimal? @db.Decimal(14, 0)
-  angsuranPengajuan Decimal  @map("angsuran_pengajuan") @db.Decimal(14, 0)
-  tenor             Int?
-  tenorPengajuan    Int      @map("tenor_pengajuan")
-  tipeDebiturId     Int      @map("tipe_debitur_id")
-  produkId          Int      @map("produk_id")
-  takeover          Boolean
-  pelunasan         Decimal? @db.Decimal(14, 0)
-  bankPelunasan     String?  @map("bank_pelunasan") @db.VarChar(255)
-  tlNip             String   @map("tl_nip") @db.VarChar(255)
-  mrNip             String   @map("mr_nip") @db.VarChar(255)
-  cabangId          Int      @map("cabang_id")
-  noRekKredit       String?  @map("no_rek_kredit") @db.VarChar(255)
-  status            String   @default("PENDING") @db.VarChar(255)
-  keterangan        String?  @db.Text
+  id            Int      @id @default(autoincrement())
+  noPengajuan   String   @unique @map("no_pengajuan") @db.Char(12)
+  cif           String   @db.Char(12)
+  tglPengajuan  DateTime @map("tgl_pengajuan")
+  jenisPk       String   @map("jenis_pk") @db.VarChar(255)
+  plafond       Decimal  @db.Decimal(14, 0)
+  angsuran      Decimal? @db.Decimal(14, 0)
+  tenor         Int
+  tipeDebiturId Int      @map("tipe_debitur_id")
+  produkId      Int      @map("produk_id")
+  takeover      Boolean
+  pelunasan     Decimal? @db.Decimal(14, 0)
+  bankPelunasan String?  @map("bank_pelunasan") @db.VarChar(255)
+  tlNip         String   @map("tl_nip") @db.VarChar(255)
+  mrNip         String   @map("mr_nip") @db.VarChar(255)
+  cabangId      Int      @map("cabang_id")
+  noRekKredit   String?  @map("no_rek_kredit") @db.VarChar(255)
+  status        String   @default("PENDING") @db.VarChar(255)
+  keterangan    String?  @db.Text
 
   createdAt DateTime @map("created_at")
   updatedAt DateTime @map("updated_at")

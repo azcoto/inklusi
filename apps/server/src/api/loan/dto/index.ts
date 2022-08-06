@@ -8,11 +8,8 @@ const zCreateLoanBody = z.object({
   tglPengajuan: z.string().refine((s) => isValid(parseISO(s))),
   jenisPk: z.string().length(1, 'Invalid Jenis PK'),
   plafond: z.number().positive().optional(),
-  plafondPengajuan: z.number().positive(),
-  angsuran: z.number().positive().optional(),
-  angsuranPengajuan: z.number().positive(),
+  angsuran: z.number().positive().nullable(),
   tenor: z.number().positive().lte(300).optional(),
-  tenorPengajuan: z.number().positive().lte(300),
   tipeDebiturId: z.number().positive().int(),
   produkId: z.number().positive().int(),
   takeover: z.boolean(),
@@ -55,13 +52,11 @@ const getManyLoanOut = Prisma.validator<Prisma.LoanFindManyArgs>()({
 
 type LoanPayload = Omit<
   Prisma.LoanGetPayload<typeof getManyLoanOut>,
-  'plafondPengajuan' | 'angsuranPengajuan' | 'plafond' | 'angsuran'
+  'plafond' | 'angsuran'
 >;
 
 interface CleanLoanPayload extends LoanPayload {
-  plafondPengajuan: number;
-  angsuranPengajuan: number;
-  plafond: number | null;
+  plafond: number;
   angsuran: number | null;
 }
 
@@ -93,16 +88,10 @@ const getLoanOut = Prisma.validator<Prisma.LoanArgs>()({
 export interface GetLoanOut
   extends Omit<
     Prisma.LoanGetPayload<typeof getLoanOut>,
-    | 'plafondPengajuan'
-    | 'angsuranPengajuan'
-    | 'pelunasan'
-    | 'plafond'
-    | 'angsuran'
+    'pelunasan' | 'plafond' | 'angsuran'
   > {
-  plafondPengajuan: number;
-  angsuranPengajuan: number;
   pelunasan: number | null;
-  plafond: number | null;
+  plafond: number;
   angsuran: number | null;
 }
 
