@@ -164,9 +164,23 @@ export const EditLoan = () => {
           mrNip: data.mrNip,
           cabangId: String(data.cabangId),
         });
+        methods.trigger();
       },
     },
   );
+
+  useEffect(() => {
+    console.log(watchTakeOver);
+    if (watchTakeOver === '0') {
+      methods.unregister('pelunasan');
+      methods.unregister('bankPelunasan');
+    } else if (watchTakeOver === '1') {
+      methods.register('pelunasan');
+      methods.register('bankPelunasan');
+      methods.setValue('pelunasan', '');
+      methods.setValue('bankPelunasan', '');
+    }
+  }, [watchTakeOver]);
 
   const mCreateLoan = useMutation(['create-loan'], services.loan.createLoan, {
     onSuccess: (data) => {
@@ -206,30 +220,6 @@ export const EditLoan = () => {
       }));
     },
   });
-
-  useEffect(() => {
-    console.log(watchTakeOver);
-    if (watchTakeOver === '0') {
-      methods.setValue('pelunasan', undefined);
-      methods.setValue('bankPelunasan', undefined);
-      methods.unregister('pelunasan');
-      methods.unregister('bankPelunasan');
-    } else if (watchTakeOver === '1') {
-      console.log('fired');
-      methods.setValue(
-        'pelunasan',
-        qGetLoan.data?.pelunasan
-          ? qGetLoan.data.pelunasan.toLocaleString('Id')
-          : '',
-      );
-      methods.setValue(
-        'bankPelunasan',
-        qGetLoan.data?.bankPelunasan ? qGetLoan.data.bankPelunasan : '',
-      );
-      methods.register('pelunasan');
-      methods.register('bankPelunasan');
-    }
-  }, [watchTakeOver]);
 
   const watchCIF = methods.watch('cif');
 

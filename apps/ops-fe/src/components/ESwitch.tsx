@@ -22,6 +22,7 @@ export const ESwitch = ({
         <Switch
           {...other}
           {...field}
+          checked={field.value === '1' ? true : false}
           label={field.value === '1' ? onSideLabel : offSideLabel}
           onChange={(evt) => {
             field.onChange(evt.target.checked ? '1' : '0');
