@@ -1,7 +1,5 @@
 export * from './DataDebitur';
-export * from './DataLoan';
 export * from './DetailDebitur';
-export * from './DetailLoan';
 export * from './EntryDebitur';
 export * from './EntryLoan';
 export * from './EditDebitur';
