@@ -45,13 +45,6 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
           noPengajuan: data.noPengajuan,
           tglPengajuan: dayjs(data.tglPengajuan).format('DD/MM/YYYY'),
           jenisPk: `PK ${data.jenisPk}`,
-          plafondPengajuan: new Intl.NumberFormat('id-ID').format(
-            data.plafondPengajuan,
-          ),
-          angsuranPengajuan: new Intl.NumberFormat('id-ID').format(
-            data.angsuranPengajuan,
-          ),
-          tenorPengajuan: String(data.tenorPengajuan),
           tipeDebitur: data.TipeDebitur.nama,
           produk: data.Produk.nama,
           takeover: data.takeover ? 'YA' : 'TIDAK',
@@ -104,21 +97,8 @@ const LoanDisplay = ({ noPengajuan }: Props) => {
               <GridRow title="Jenis PK" value={data.jenisPk} />
               <GridRow title="Tipe" value={data.tipeDebitur} />
               <GridRow title="Produk" value={data.produk} />
-              <GridRow
-                title="Plafond Pengajuan"
-                value={data.plafondPengajuan}
-              />
-              {data.plafond && (
-                <GridRow title="Plafond" value={data.plafondPengajuan} />
-              )}
-
-              <GridRow title="Tenor Pengajuan" value={data.tenorPengajuan} />
               {data.tenor && <GridRow title="Plafond" value={data.tenor} />}
 
-              <GridRow
-                title="Angsuran Pengajuan"
-                value={data.angsuranPengajuan}
-              />
               {data.angsuran && (
                 <GridRow title="Angsuran" value={data.angsuran} />
               )}
