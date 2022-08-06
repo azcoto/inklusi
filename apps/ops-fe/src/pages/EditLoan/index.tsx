@@ -35,7 +35,7 @@ const zMyForm = z.object({
   tglPengajuan: z.string().min(1, { message: 'Jenis PK Required' }),
   jenisPk: z.string().min(1, { message: 'Jenis PK Required' }),
   plafond: z.string().min(1, { message: 'Tempat Lahir Required' }),
-  angsuran: z.string().min(1, { message: 'Tanggal Lahir Required' }),
+  angsuran: z.string().optional(),
   tenor: z.string().optional(),
   tipeDebiturId: z.string().min(1, { message: 'Kelurahan Required' }),
   produkId: z.string().min(1, { message: 'Kelurahan Required' }),
