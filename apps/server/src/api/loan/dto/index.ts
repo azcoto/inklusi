@@ -116,3 +116,29 @@ export type UpdateStatusBodyIn = z.infer<typeof zUpdateStatusBody>;
 
 const updateStatusOut = Prisma.validator<Prisma.DebiturArgs>()({});
 export type UpdateStatusOut = Prisma.LoanGetPayload<typeof updateStatusOut>;
+
+export const zUpdateLoanBody = z.object({
+  cif: z.string().length(6, 'Invalid CIF'),
+  tglPengajuan: z.string().refine((s) => isValid(parseISO(s))),
+  jenisPk: z.string().length(1, 'Invalid Jenis PK'),
+  plafond: z.number().positive().optional(),
+  angsuran: z.number().positive().nullable(),
+  tenor: z.number().positive().lte(300).optional(),
+  tipeDebiturId: z.number().positive().int(),
+  produkId: z.number().positive().int(),
+  takeover: z.boolean(),
+  pelunasan: z.number().positive().optional(),
+  bankPelunasan: z.string().min(1).optional(),
+  tlNip: z.string().length(11),
+  mrNip: z.string().length(11),
+  cabangId: z.number().positive().int(),
+  noRekKredit: z.string().optional(),
+});
+
+export const zUpdateLoanParams = z.object({
+  noPengajuan: z.string(),
+});
+
+export type UpdateLoanIn = z.infer<typeof zUpdateLoanBody>;
+export type UpdateLoanParams = z.infer<typeof zUpdateLoanParams>;
+export type UpdateDebiturOut = Prisma.LoanUpdateInput;

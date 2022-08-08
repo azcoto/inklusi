@@ -23,7 +23,13 @@ import {
   getManyDebitur,
   updateDebitur,
 } from './debitur';
-import { createLoan, getLoan, getManyLoan, updateStatusLoan } from './loan';
+import {
+  createLoan,
+  getLoan,
+  getManyLoan,
+  updateLoan,
+  updateStatusLoan,
+} from './loan';
 
 const services = {
   auth: {
@@ -60,6 +66,7 @@ const services = {
     getManyLoan,
     getLoan,
     updateStatusLoan,
+    updateLoan,
   },
   cabang: {
     getAllCabang,

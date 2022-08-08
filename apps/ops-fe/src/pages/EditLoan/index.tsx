@@ -1,3 +1,4 @@
+import formatISO from 'date-fns/formatISO';
 import {
   Container,
   Text,
@@ -17,6 +18,7 @@ import {
   SubmitErrorHandler,
   SubmitHandler,
   useForm,
+  useWatch,
 } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { EDatePicker } from '@/components/EDatePicker';
@@ -36,7 +38,7 @@ const zMyForm = z.object({
   jenisPk: z.string().min(1, { message: 'Jenis PK Required' }),
   plafond: z.string().min(1, { message: 'Tempat Lahir Required' }),
   angsuran: z.string().optional(),
-  tenor: z.string().optional(),
+  tenor: z.string().min(1, { message: 'Alamat Required' }),
   tipeDebiturId: z.string().min(1, { message: 'Kelurahan Required' }),
   produkId: z.string().min(1, { message: 'Kelurahan Required' }),
   takeover: z.string().min(1, { message: 'Password Invalid' }),
@@ -75,6 +77,7 @@ type CabangData = {
 }[];
 
 export const EditLoan = () => {
+  const [isTakeOver, setIsTakeOver] = useState(false);
   const { noPengajuan } = useParams() as { noPengajuan: string };
   const methods = useForm<MyForm>({
     resolver: zodResolver(zMyForm),
@@ -95,7 +98,17 @@ export const EditLoan = () => {
       mrNip: '',
     },
   });
-  const watchTakeOver = methods.watch('takeover');
+  const watchTakeOver = useWatch({
+    control: methods.control,
+    name: 'takeover',
+  });
+  useEffect(() => {
+    if (watchTakeOver === '1') {
+      setIsTakeOver(true);
+    } else {
+      setIsTakeOver(false);
+    }
+  }, [watchTakeOver]);
 
   const qTipeDebitur = useQuery(
     ['get-all-tipe-debitur'],
@@ -148,47 +161,53 @@ export const EditLoan = () => {
     {
       refetchOnMount: 'always',
       onSuccess: (data) => {
+        setIsTakeOver(data.takeover);
         methods.reset({
           cif: data.cif,
           tglPengajuan: String(data.tglPengajuan),
           jenisPk: data.jenisPk,
-          plafond: data.plafond.toLocaleString('Id'),
-          angsuran: data.angsuran ? data.angsuran.toLocaleString('Id') : '',
+          plafond: new Intl.NumberFormat('Id').format(data.plafond),
+          angsuran: data.angsuran
+            ? new Intl.NumberFormat('Id').format(data.angsuran)
+            : '',
           tenor: String(data.tenor),
           tipeDebiturId: String(data.tipeDebiturId),
           produkId: String(data.produkId),
           takeover: data.takeover ? '1' : '0',
-          pelunasan: data.pelunasan ? data.pelunasan.toLocaleString('Id') : '',
+          pelunasan: data.pelunasan
+            ? new Intl.NumberFormat('Id').format(data.pelunasan)
+            : '',
           bankPelunasan: data.bankPelunasan ? data.bankPelunasan : '',
           tlNip: data.tlNip,
           mrNip: data.mrNip,
           cabangId: String(data.cabangId),
         });
-        methods.trigger();
       },
     },
   );
 
   useEffect(() => {
-    console.log(watchTakeOver);
-    if (watchTakeOver === '0') {
-      methods.unregister('pelunasan');
-      methods.unregister('bankPelunasan');
-    } else if (watchTakeOver === '1') {
+    if (!isTakeOver) {
+      methods.unregister('pelunasan', { keepDefaultValue: true });
+      methods.unregister('bankPelunasan', { keepDefaultValue: true });
+    } else if (isTakeOver) {
       methods.register('pelunasan');
       methods.register('bankPelunasan');
-      methods.setValue('pelunasan', '');
-      methods.setValue('bankPelunasan', '');
     }
-  }, [watchTakeOver]);
+  }, [isTakeOver]);
 
-  const mCreateLoan = useMutation(['create-loan'], services.loan.createLoan, {
+  const mUpdateLoan = useMutation(['update-loan'], services.loan.updateLoan, {
     onSuccess: (data) => {
       notifySuccess(
         `Pengajuan ${data.noPengajuan} Berhasil Diubah`,
         showNotification,
       );
-      methods.reset();
+      qGetLoan.refetch();
+      qCabang.refetch();
+      qMr.refetch();
+      qTl.refetch();
+      qProduk.refetch();
+      qTipeDebitur.refetch();
     },
   });
 
@@ -226,7 +245,7 @@ export const EditLoan = () => {
   const submitHandler: SubmitHandler<MyForm> = async (values) => {
     const parsedValues = {
       ...values,
-      tglPengajuan: new Date(values.tglPengajuan),
+      tglPengajuan: formatISO(new Date(values.tglPengajuan)),
       tipeDebiturId: Number(values.tipeDebiturId),
       produkId: Number(values.produkId),
       takeover: values.takeover === '1' ? true : false,
@@ -242,8 +261,7 @@ export const EditLoan = () => {
       delete parsedValues.pelunasan;
       delete parsedValues.bankPelunasan;
     }
-    //@ts-ignore
-    mCreateLoan.mutate(parsedValues);
+    mUpdateLoan.mutate({ params: { noPengajuan }, body: parsedValues });
   };
 
   const submitErrorHandler: SubmitErrorHandler<MyForm> = (errors) => {
@@ -341,7 +359,7 @@ export const EditLoan = () => {
                   />
                 </Group>
 
-                {watchTakeOver === '1' && (
+                {isTakeOver && (
                   <Group grow>
                     <ENumberInput
                       sx={{ flex: 1 }}

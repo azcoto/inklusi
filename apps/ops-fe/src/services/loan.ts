@@ -5,6 +5,8 @@ import {
   GetLoanOut,
   GetManyLoanIn,
   GetManyLoanOut,
+  UpdateLoanIn,
+  UpdateLoanParams,
   UpdateStatusBodyIn,
   UpdateStatusOut,
   UpdateStatusParamsIn,
@@ -37,6 +39,21 @@ export const getLoan = async (noPengajuan: string) => {
   return response.data;
 };
 
+export const updateLoan = async ({
+  params,
+  body,
+}: {
+  params: UpdateLoanParams;
+  body: UpdateLoanIn;
+}) => {
+  const { noPengajuan } = params;
+  const response = await api.patch<any, AxiosResponse<UpdateStatusOut>>(
+    `/loan/${noPengajuan}`,
+    body,
+  );
+  return response.data;
+};
+
 export const updateStatusLoan = async ({
   params,
   body,
@@ -46,7 +63,7 @@ export const updateStatusLoan = async ({
 }) => {
   const { noPengajuan } = params;
   const response = await api.patch<any, AxiosResponse<UpdateStatusOut>>(
-    `/loan/${noPengajuan}`,
+    `/loan/${noPengajuan}/status`,
     body,
   );
   return response.data;
