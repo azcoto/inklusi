@@ -25,7 +25,7 @@ import { ESelect } from '@/components/ESelect';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import services from '@/services';
 import { ESwitch } from '@/components/ESwitch';
-import DebiturDisplay from '@/components/DebiturDisplay';
+import DebiturDisplay from '@/components/KaryawanDisplay';
 import { notifySuccess } from '@/libs/notify';
 import { showNotification } from '@mantine/notifications';
 

@@ -6,7 +6,7 @@ import {
   Transition,
   ActionIcon,
 } from '@mantine/core';
-import React, { KeyboardEventHandler } from 'react';
+import React, { ClipboardEventHandler, KeyboardEventHandler } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import XIcon from '@heroicons/react/solid/XIcon';
 
@@ -25,7 +25,13 @@ export const ENumberInput = ({
   ...other
 }: Props) => {
   const allowNum: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.ctrlKey === true || e.metaKey === true) return;
     if (!isNumericChar(e.keyCode)) e.preventDefault();
+  };
+  const allowPasteNum: ClipboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.clipboardData.getData('Text').match(/[^\d]/)) {
+      e.preventDefault();
+    }
   };
   const { control } = useFormContext();
 
@@ -41,6 +47,7 @@ export const ENumberInput = ({
           {...other}
           sx={{ input: { textAlign: rtl ? 'right' : 'left' } }}
           onKeyDown={allowNum}
+          onPaste={allowPasteNum}
           onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
             if (currencyMask) {
               const num = evt.target.value.replaceAll('.', '');

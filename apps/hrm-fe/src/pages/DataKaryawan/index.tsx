@@ -28,40 +28,30 @@ import { notifyFast, notifySuccess } from '@/libs/notify';
 import { showNotification } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
 
-type DebiturDataPaginated = {
+type KaryawanDataPaginated = {
   count: number;
   data: {
-    cif: string;
-    nopen: string;
+    nip: string;
     nama: string;
     telepon: string;
-    created: Date;
-    updated: Date;
+    jabatan: string;
   }[];
 };
 
-type DebiturData = DebiturDataPaginated['data'][0];
+type KaryawanData = KaryawanDataPaginated['data'][0];
 
-export const DataDebitur = () => {
+export const DataKaryawan = () => {
   const navigate = useNavigate();
-  const defaultColumns: ColumnDef<DebiturData>[] = [
+  const defaultColumns: ColumnDef<KaryawanData>[] = [
     {
-      accessorKey: 'cif',
-      header: 'CIF',
+      accessorKey: 'nip',
+      header: 'NIP',
       cell: (info) => (
         <Group sx={{ flexWrap: 'nowrap' }}>
-          <ActionIcon
-            onClick={() => {
-              notifyFast('CIF Copied to Clipboard', showNotification);
-              navigator.clipboard.writeText(info.getValue<string>());
-            }}
-          >
-            <DocumentDuplicateIcon color="green" />
-          </ActionIcon>
           <Button
             variant="subtle"
             onClick={() => {
-              navigate(`/debitur/${info.getValue<string>()}`, {
+              navigate(`/karyawan/${info.getValue<string>()}`, {
                 replace: false,
               });
             }}
@@ -72,10 +62,6 @@ export const DataDebitur = () => {
       ),
     },
     {
-      accessorKey: 'nopen',
-      header: 'Nopen',
-    },
-    {
       accessorKey: 'nama',
       header: 'Nama',
     },
@@ -84,22 +70,8 @@ export const DataDebitur = () => {
       header: 'Telepon / WA',
     },
     {
-      accessorKey: 'updated',
-      header: 'Updated',
-      cell: (info) => (
-        <Text size="sm">
-          {dayjs(info.getValue<string>()).format('DD/MM/YYYY HH:mm')}
-        </Text>
-      ),
-    },
-    {
-      accessorKey: 'created',
-      header: 'Created',
-      cell: (info) => (
-        <Text size="sm">
-          {dayjs(info.getValue<string>()).format('DD/MM/YYYY HH:mm')}
-        </Text>
-      ),
+      accessorKey: 'jabatan',
+      header: 'Jabatan',
     },
   ];
 
@@ -109,12 +81,12 @@ export const DataDebitur = () => {
 
   const [debouncedFilter] = useDebouncedValue(filter, 500);
   const [debouncedPage] = useDebouncedValue(page, 200);
-  const [countDebitur, setCountDebitur] = useState<number>(0);
+  const [countkaryawan, setCountkaryawan] = useState<number>(0);
 
-  const qGetManyDebitur = useQuery(
-    ['get-many-debitur', { page: debouncedPage, filter: debouncedFilter }],
+  const qGetManyKaryawan = useQuery(
+    ['get-many-karyawan', { page: debouncedPage, filter: debouncedFilter }],
     async () =>
-      await services.debitur.getManyDebitur(
+      await services.karyawan.getManyKaryawan(
         page,
         filter ? filter.toUpperCase() : null,
       ),
@@ -122,26 +94,24 @@ export const DataDebitur = () => {
       keepPreviousData: true,
       select: (data) => {
         const { count, data: result } = data;
-        const arrDebitur = result.map((d) => {
+        const arrKaryawan = result.map((d) => {
           return {
-            cif: d.cif,
-            nopen: d.nopen,
+            nip: d.nip,
             nama: d.nama,
-            telepon: d.telepon,
-            created: d.createdAt,
-            updated: d.updatedAt,
+            telepon: d.notelp,
+            jabatan: d.jabatan,
           };
         });
         return {
           count,
-          data: arrDebitur,
+          data: arrKaryawan,
         };
       },
     },
   );
 
   const tableInstance = useReactTable({
-    data: qGetManyDebitur.data?.data ?? [],
+    data: qGetManyKaryawan.data?.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -149,7 +119,7 @@ export const DataDebitur = () => {
   return (
     <Container sx={{ position: 'relative' }} fluid>
       <LoadingOverlay
-        visible={qGetManyDebitur.isLoading}
+        visible={qGetManyKaryawan.isLoading}
         transitionDuration={500}
       />
       <Text size="xl" weight={'bold'}>
@@ -179,9 +149,9 @@ export const DataDebitur = () => {
             mb={16}
           />
         </Group>
-        {qGetManyDebitur.data && qGetManyDebitur.data?.count > 10 && (
+        {qGetManyKaryawan.data && qGetManyKaryawan.data?.count > 10 && (
           <Pagination
-            total={Math.floor(countDebitur / 10) + 2}
+            total={Math.floor(countkaryawan / 10) + 2}
             page={page}
             onChange={(page) => {
               setPage(page);
@@ -192,10 +162,10 @@ export const DataDebitur = () => {
         )}
 
         <Table striped captionSide="bottom">
-          {qGetManyDebitur.data && (
+          {qGetManyKaryawan.data && (
             <caption>
               <Text size="sm" align="left" pl={16} weight="bold">
-                JUMLAH DATA : {qGetManyDebitur.data.count}
+                JUMLAH DATA : {qGetManyKaryawan.data.count}
               </Text>
             </caption>
           )}

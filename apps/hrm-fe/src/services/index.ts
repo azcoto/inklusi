@@ -24,6 +24,7 @@ import {
   updateDebitur,
 } from './debitur';
 import { createLoan, getLoan, getManyLoan, updateStatusLoan } from './loan';
+import { createKaryawan, getKaryawan, getManyKaryawan } from './karyawan';
 
 const services = {
   auth: {
@@ -79,6 +80,11 @@ const services = {
   tlso: {
     getAllTl,
     getSoByTl,
+  },
+  karyawan: {
+    createKaryawan,
+    getManyKaryawan,
+    getKaryawan,
   },
 };
 

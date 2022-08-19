@@ -17,9 +17,9 @@ import { AuthProvider } from 'context/auth';
 import { getItem } from 'services/localStorage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  DataDebitur,
-  DetailDebitur,
-  EntryDebitur,
+  DataKaryawan,
+  DetailKaryawan,
+  EntryKaryawan,
   EntryLoan,
   Home,
   SignIn,
@@ -89,14 +89,17 @@ const App = () => {
                       <Route path="/" element={<Shell />}>
                         <Route index element={<Home />} />
                         <Route
-                          path="karyawab-entry"
-                          element={<EntryDebitur />}
+                          path="karyawan-entry"
+                          element={<EntryKaryawan />}
                         />
-                        <Route path="karyawan-data" element={<DataDebitur />} />
+                        <Route
+                          path="karyawan-data"
+                          element={<DataKaryawan />}
+                        />
 
                         <Route
                           path="karyawan/:nip"
-                          element={<DetailDebitur />}
+                          element={<DetailKaryawan />}
                         />
                         <Route
                           path="karyawan-edit/:cif"

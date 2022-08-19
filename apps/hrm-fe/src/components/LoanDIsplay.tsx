@@ -9,7 +9,7 @@ import {
 } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import DebiturDisplay from './DebiturDisplay';
+import DebiturDisplay from './KaryawanDisplay';
 
 type Props = {
   noPengajuan: string;

@@ -174,6 +174,7 @@ export const EntryLoan = () => {
       return data.map((item) => ({
         value: String(item.id),
         label: item.nama,
+        group: item.kanwil,
       }));
     },
   });

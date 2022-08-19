@@ -77,6 +77,17 @@ const Shell = () => {
               >
                 <Text weight={'bold'}>Karyawan Entry</Text>
               </Button>
+
+              <Button
+                sx={{ div: { justifyContent: 'start' } }}
+                variant="subtle"
+                onClick={() => {
+                  setOpened(false);
+                  navigate('/karyawan-data');
+                }}
+              >
+                <Text weight={'bold'}>Karyawan Data</Text>
+              </Button>
             </Stack>
 
             <Button
