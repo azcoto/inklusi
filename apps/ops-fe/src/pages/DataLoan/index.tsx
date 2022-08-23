@@ -243,7 +243,7 @@ export const DataLoan = () => {
         <Card>
           {qGetManyLoan.data && qGetManyLoan.data?.count > 10 && (
             <Pagination
-              total={Math.floor(countDebitur / 10) + 2}
+              total={Math.floor(qGetManyLoan.data.count / 10) + 1}
               page={page}
               onChange={(page) => {
                 setPage(page);
