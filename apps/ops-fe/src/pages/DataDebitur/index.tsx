@@ -122,6 +122,7 @@ export const DataDebitur = () => {
       keepPreviousData: true,
       select: (data) => {
         const { count, data: result } = data;
+        setCountDebitur(count);
         const arrDebitur = result.map((d) => {
           return {
             cif: d.cif,
