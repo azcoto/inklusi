@@ -181,7 +181,7 @@ export const DataDebitur = () => {
         </Group>
         {qGetManyDebitur.data && qGetManyDebitur.data?.count > 10 && (
           <Pagination
-            total={Math.floor(qGetManyDebitur.data.count / 10) + 2}
+            total={Math.floor(qGetManyDebitur.data.count / 10) + 1}
             page={page}
             onChange={(page) => {
               setPage(page);
