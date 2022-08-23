@@ -122,7 +122,6 @@ export const DataDebitur = () => {
       keepPreviousData: true,
       select: (data) => {
         const { count, data: result } = data;
-        setCountDebitur(count);
         const arrDebitur = result.map((d) => {
           return {
             cif: d.cif,
@@ -182,7 +181,7 @@ export const DataDebitur = () => {
         </Group>
         {qGetManyDebitur.data && qGetManyDebitur.data?.count > 10 && (
           <Pagination
-            total={Math.floor(countDebitur / 10) + 2}
+            total={Math.floor(qGetManyDebitur.data.count / 10) + 2}
             page={page}
             onChange={(page) => {
               setPage(page);
