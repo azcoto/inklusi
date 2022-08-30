@@ -580,7 +580,7 @@ const Calc = () => {
           sx={{ div: { div: { paddingRight: '3px' } } }}
         >
           <Grid gutter={'xs'} align="flex-end">
-            {currentUser && currentUser.jabatan === 'SF' && (
+            {currentUser && currentUser.jabatan === 'MR' && (
               <Rows title="Marketing Representative">
                 <Text weight="bold">{currentUser.nama}</Text>
               </Rows>

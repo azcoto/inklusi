@@ -6,7 +6,7 @@ import { AuthError } from '../errorHandler';
 
 export enum Roles {
   tl = 'TL',
-  so = 'SF',
+  so = 'MR',
   adm = 'ADM',
 }
 export enum AppName {

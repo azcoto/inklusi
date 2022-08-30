@@ -101,7 +101,7 @@ const Shell = () => {
               </UnstyledButton>
             )}
 
-            {['SF'].includes(currentUser.jabatan) && (
+            {['MR'].includes(currentUser.jabatan) && (
               <UnstyledButton
                 onClick={() => {
                   setOpened(false);

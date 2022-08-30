@@ -128,13 +128,13 @@ export const EntryKaryawan = () => {
                 <ETextInput name="notelp" label="Telepon" />
                 <EAutocomplete
                   data={[
-                    { value: 'SF', label: 'MARKETING' },
+                    { value: 'MR', label: 'MARKETING' },
                     { value: 'TL', label: 'TEAM LEADER' },
                   ]}
                   name="jabatan"
                   label="Jabatan"
                 />
-                {watchJabatan === 'SF' && qTl.data && (
+                {watchJabatan === 'MR' && qTl.data && (
                   <EAutocomplete
                     data={qTl.data}
                     name="nipAtasan"
