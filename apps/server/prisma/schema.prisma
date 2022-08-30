@@ -161,7 +161,7 @@ model Users {
   enabled   Boolean   @default(true) @db.Boolean
   lastLogin DateTime? @map("last_login")
 
-  karyawan Karyawan @relation(fields: [notelp], references: [notelp])
+  karyawan Karyawan @relation(fields: [notelp], references: [nip])
 
   @@unique([notelp, appname])
   @@map("users")
