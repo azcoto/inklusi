@@ -49,7 +49,7 @@ export const refresh = async (
       },
       where: {
         notelp_appname: {
-          notelp: decRefresh['notelp'],
+          notelp: decRefresh['nip'],
           appname: decRefresh['appname'],
         },
       },
