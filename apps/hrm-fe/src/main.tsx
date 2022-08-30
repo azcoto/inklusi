@@ -20,7 +20,6 @@ import {
   DataKaryawan,
   DetailKaryawan,
   EntryKaryawan,
-  EntryLoan,
   Home,
   SignIn,
 } from './pages';
