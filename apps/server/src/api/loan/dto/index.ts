@@ -123,7 +123,7 @@ export const zUpdateLoanBody = z.object({
   jenisPk: z.string().length(1, 'Invalid Jenis PK'),
   plafond: z.number().positive().optional(),
   angsuran: z.number().positive().nullable(),
-  tenor: z.number().positive().lte(300).optional(),
+  tenor: z.number().positive().lte(500).optional(),
   tipeDebiturId: z.number().positive().int(),
   produkId: z.number().positive().int(),
   takeover: z.boolean(),
