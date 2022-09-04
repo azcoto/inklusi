@@ -241,7 +241,8 @@ export const EntryLoan = () => {
                   qProduk.isFetching ||
                   qCabang.isFetching ||
                   qTl.isFetching ||
-                  qMr.isFetching
+                  qMr.isFetching ||
+                  mCreateLoan.isLoading
                 }
               />
 
@@ -362,7 +363,9 @@ export const EntryLoan = () => {
                   )}
                 </Group>
 
-                <Button type="submit">SUBMIT</Button>
+                <Button type="submit" disabled={mCreateLoan.isLoading}>
+                  SUBMIT
+                </Button>
               </Stack>
             </Card>
           </form>
