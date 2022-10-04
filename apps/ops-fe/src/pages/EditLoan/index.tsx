@@ -97,18 +97,8 @@ export const EditLoan = () => {
       tlNip: '',
       mrNip: '',
     },
+    shouldUnregister: true,
   });
-  const watchTakeOver = useWatch({
-    control: methods.control,
-    name: 'takeover',
-  });
-  useEffect(() => {
-    if (watchTakeOver === '1') {
-      setIsTakeOver(true);
-    } else {
-      setIsTakeOver(false);
-    }
-  }, [watchTakeOver]);
 
   const qTipeDebitur = useQuery(
     ['get-all-tipe-debitur'],
@@ -161,7 +151,6 @@ export const EditLoan = () => {
     {
       refetchOnMount: 'always',
       onSuccess: (data) => {
-        setIsTakeOver(data.takeover);
         methods.reset({
           cif: data.cif,
           tglPengajuan: String(data.tglPengajuan),
@@ -182,19 +171,31 @@ export const EditLoan = () => {
           mrNip: data.mrNip,
           cabangId: String(data.cabangId),
         });
+        // setIsTakeOver(data.takeover);
       },
     },
   );
 
+  const watchTakeOver = useWatch({
+    control: methods.control,
+    name: 'takeover',
+  });
+
   useEffect(() => {
-    if (!isTakeOver) {
-      methods.unregister('pelunasan', { keepDefaultValue: true });
-      methods.unregister('bankPelunasan', { keepDefaultValue: true });
-    } else if (isTakeOver) {
+    if (watchTakeOver === '0') {
+      methods.setValue('pelunasan', undefined);
+      methods.setValue('bankPelunasan', undefined);
+      methods.unregister('pelunasan');
+      methods.unregister('bankPelunasan');
+      console.log('unreg');
+    } else if (watchTakeOver === '1') {
+      methods.setValue('pelunasan', '');
+      methods.setValue('bankPelunasan', '');
       methods.register('pelunasan');
       methods.register('bankPelunasan');
+      console.log('reg');
     }
-  }, [isTakeOver]);
+  }, [watchTakeOver]);
 
   const mUpdateLoan = useMutation(['update-loan'], services.loan.updateLoan, {
     onSuccess: (data) => {
@@ -359,7 +360,7 @@ export const EditLoan = () => {
                   />
                 </Group>
 
-                {isTakeOver && (
+                {watchTakeOver !== '0' && (
                   <Group grow>
                     <ENumberInput
                       sx={{ flex: 1 }}
