@@ -197,7 +197,7 @@ model Karyawan {
   notelp    String  @unique @db.VarChar(13)
   jabatan   String  @db.VarChar(10)
   nipAtasan String? @map("nip_atasan") @db.VarChar(14)
-
+  aktif Boolean
   bawahan Karyawan[] @relation(name: "level")
   atasan  Karyawan?  @relation(name: "level", fields: [nipAtasan], references: [nip])
 
