@@ -9,6 +9,7 @@ const allTl = async (req: Request, res: Response) => {
     },
     where: {
       jabatan: 'TL',
+      aktif: true,
     },
   });
 
